@@ -514,12 +514,78 @@
           <span class="text-[10px] text-white/50 block">Total Amount:</span>
           <div class="text-2xl font-black text-emerald-400 font-mono" id="checkoutTotalAmount">₹1,499</div>
         </div>
-        <button onclick="processFunnelPayment()" class="btn-gold text-sm px-7 py-3.5 rounded-xl flex items-center gap-2">
-          <span>Pay via UPI / Card</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        <button onclick="openRealPaymentGateway()" class="btn-gold text-sm px-7 py-3.5 rounded-xl flex items-center gap-2">
+          <span>Proceed to Real Payment →</span>
         </button>
       </div>
       <div class="text-center text-[10px] text-white/40">GPay · PhonePe · Paytm · NetBanking · RuPay</div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- ⚡ REAL PAYMENT GATEWAY MODAL (UPI QR + GPAY/PHONEPE + SUPERPROFILE)       -->
+  <!-- ========================================================================= -->
+  <div id="realPaymentModal" class="funnel-modal-overlay hidden">
+    <div class="bg-[#0f1b2d] text-[#faf8f3] w-full max-w-lg rounded-3xl border border-[#c4953a]/50 shadow-2xl p-6 sm:p-7 space-y-5 max-h-[95vh] overflow-y-auto">
+      
+      <div class="flex justify-between items-center border-b border-white/10 pb-3">
+        <div>
+          <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Step 2: Real Payment Gateway</span>
+          <h3 class="text-lg font-bold text-white">Scan UPI QR or Open Payment App</h3>
+        </div>
+        <button onclick="closeFunnelModal('realPaymentModal')" class="text-white/40 hover:text-white text-xl">✕</button>
+      </div>
+
+      <!-- Amount to pay -->
+      <div class="p-4 rounded-xl bg-black/40 border border-[#c4953a]/30 flex justify-between items-center">
+        <div>
+          <div class="text-xs text-white/70">Payable for <span id="paymentItemSummary" class="text-white font-bold">5-Module AI Course</span></div>
+          <div class="text-[11px] text-[#c4953a]">Instant Course Access Unlock</div>
+        </div>
+        <div class="text-2xl font-black text-emerald-400 font-mono" id="realPayAmount">₹1,499</div>
+      </div>
+
+      <!-- Real Dynamic Scannable QR Code -->
+      <div class="bg-white p-4 rounded-2xl max-w-[220px] mx-auto text-center shadow-lg border-2 border-[#c4953a]">
+        <img id="upiQrImage" src="" alt="Live UPI QR Code" class="w-full h-auto mx-auto rounded">
+        <p class="text-[11px] text-[#0f1b2d] font-bold mt-2">Scan with Any UPI App</p>
+        <p class="text-[9px] text-[#0f1b2d]/60">GPay · PhonePe · Paytm · Cred</p>
+      </div>
+
+      <!-- Mobile 1-Tap UPI Apps (Works on Phone) -->
+      <div class="space-y-2">
+        <span class="text-[11px] text-white/60 block text-center">Tap to open app directly on phone:</span>
+        <div class="grid grid-cols-3 gap-2">
+          <a id="gpayLink" href="#" class="py-2.5 px-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-center text-xs font-bold text-white transition block">
+            Google Pay
+          </a>
+          <a id="phonepeLink" href="#" class="py-2.5 px-2 rounded-xl bg-purple-600/30 hover:bg-purple-600/40 border border-purple-500/40 text-center text-xs font-bold text-purple-200 transition block">
+            PhonePe
+          </a>
+          <a id="paytmLink" href="#" class="py-2.5 px-2 rounded-xl bg-blue-600/30 hover:bg-blue-600/40 border border-blue-500/40 text-center text-xs font-bold text-blue-200 transition block">
+            Paytm
+          </a>
+        </div>
+      </div>
+
+      <!-- Alternative: Direct SuperProfile Official Checkout Link -->
+      <div class="border-t border-white/10 pt-4">
+        <a href="https://superprofile.bio/course/633d8759-74c2-43e2-9141-ac89ef39cd04" target="_blank" class="w-full py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white text-xs font-semibold flex items-center justify-center gap-2 transition block text-center">
+          <span>Or Pay on SuperProfile Official Gateway (Cards/NetBanking) →</span>
+        </a>
+      </div>
+
+      <!-- Transaction UTR Verification -->
+      <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 space-y-2">
+        <span class="text-xs font-bold text-white/80">Paid? Enter UPI Ref / UTR No to verify:</span>
+        <div class="flex gap-2">
+          <input type="text" id="txnUtrInput" placeholder="e.g. 429182749102" class="bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-xs text-white flex-1 focus:outline-none focus:border-emerald-400 font-mono">
+          <button onclick="confirmRealPayment()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition">
+            Verify &amp; Continue →
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 

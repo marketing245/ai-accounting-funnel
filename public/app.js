@@ -1,5 +1,5 @@
 /**
- * AI Accounting Engineer - High-Converting Sales Funnel Logic
+ * AI Accounting Engineer - Real Marketing Funnel & Dynamic UPI Gateway
  */
 
 let funnelState = {
@@ -10,10 +10,11 @@ let funnelState = {
   hasUpsell: false,
   buyerName: 'Manak Sehgal',
   buyerEmail: 'manakppc@gmail.com',
-  buyerPhone: '+91 98765 43210'
+  buyerPhone: '+91 98765 43210',
+  upiVpa: 'manakppc@okhdfcbank' // Default merchant UPI ID
 };
 
-// Open Checkout Modal
+// Open Checkout Modal (Step 1)
 function startFunnelCheckout() {
   const modal = document.getElementById('funnelCheckoutModal');
   if (modal) {
@@ -41,8 +42,8 @@ function updateCheckoutTotal() {
   if (el) el.innerText = `₹${total.toLocaleString('en-IN')}`;
 }
 
-// Payment Processing -> Triggers Post-Purchase Upsell
-function processFunnelPayment() {
+// Open Real Payment Gateway (Step 2 - Real UPI QR / Intent / SuperProfile)
+function openRealPaymentGateway() {
   // Capture buyer info
   funnelState.buyerName = document.getElementById('buyerName').value || 'Customer';
   funnelState.buyerEmail = document.getElementById('buyerEmail').value || 'manakppc@gmail.com';
@@ -50,7 +51,42 @@ function processFunnelPayment() {
 
   closeFunnelModal('funnelCheckoutModal');
 
-  // Open Upsell Modal (OTO)
+  const total = funnelState.basePrice + (funnelState.hasOrderBump ? funnelState.bumpPrice : 0);
+  const itemSummary = funnelState.hasOrderBump 
+    ? '5-Module Course + Prompt Pack' 
+    : '5-Module AI Course';
+
+  document.getElementById('realPayAmount').innerText = `₹${total.toLocaleString('en-IN')}`;
+  document.getElementById('paymentItemSummary').innerText = itemSummary;
+
+  // Generate NPCI Standard UPI Link with Dynamic Total
+  const note = encodeURIComponent(`AI Accounting Course - ${funnelState.buyerName}`);
+  const upiUrl = `upi://pay?pa=${funnelState.upiVpa}&pn=AIAccountingEngineer&am=${total}&cu=INR&tn=${note}`;
+  
+  // Real QR Code via standard API
+  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUrl)}`;
+  const qrImg = document.getElementById('upiQrImage');
+  if (qrImg) qrImg.src = qrApiUrl;
+
+  // Set Direct App Intent Links
+  const gpay = document.getElementById('gpayLink');
+  const phonepe = document.getElementById('phonepeLink');
+  const paytm = document.getElementById('paytmLink');
+  if (gpay) gpay.href = upiUrl;
+  if (phonepe) phonepe.href = upiUrl;
+  if (paytm) paytm.href = upiUrl;
+
+  // Open Real Payment Gateway Screen
+  const paymentModal = document.getElementById('realPaymentModal');
+  if (paymentModal) paymentModal.classList.remove('hidden');
+}
+
+// Confirm Payment -> Triggers Post-Purchase Upsell (Step 3)
+function confirmRealPayment() {
+  const utr = document.getElementById('txnUtrInput').value.trim();
+  closeFunnelModal('realPaymentModal');
+
+  // Trigger One-Click Upsell Modal
   const upsellModal = document.getElementById('funnelUpsellModal');
   if (upsellModal) {
     upsellModal.classList.remove('hidden');
