@@ -63,6 +63,20 @@
           <span>Limited Spots — Enroll Now ₹1,499</span>
           <span class="text-xs bg-[#0a1320]/20 px-2 py-0.5 rounded font-mono">70% OFF</span>
         </button>
+        <button onclick="openLeadQualifier()" class="w-full sm:w-auto px-6 py-4 rounded-xl bg-white hover:bg-[#f3f0e8] border-2 border-[#0f1b2d]/20 text-[#0f1b2d] font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition">
+          <span>🎯 Take 60-Sec AI Readiness Quiz (Free)</span>
+        </button>
+      </div>
+
+      <!-- Lead Qualifier Teaser Banner -->
+      <div class="bg-[#c4953a]/15 border border-[#c4953a]/40 rounded-2xl p-4 max-w-xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-left shadow-sm">
+        <div class="text-xs text-[#0f1b2d] space-y-0.5">
+          <span class="font-extrabold text-[#0f1b2d] block text-sm">Not sure if AI works for your specific accounting tasks?</span>
+          <div class="text-[11px] text-[#0f1b2d]/70">Answer 4 quick questions to see your exact automation potential &amp; time savings.</div>
+        </div>
+        <button onclick="openLeadQualifier()" class="w-full sm:w-auto shrink-0 text-xs px-4 py-2.5 rounded-xl bg-[#0f1b2d] text-[#c4953a] font-bold hover:bg-[#0a1320] transition shadow">
+          Check My Score →
+        </button>
       </div>
 
       <p class="text-xs text-[#0f1b2d]/60 font-medium">
@@ -455,6 +469,31 @@
     <button onclick="startFunnelCheckout()" class="btn-gold text-xs px-5 py-2.5 rounded-lg shadow-md">
       Enroll Now →
     </button>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 🎯 THE INTERACTIVE LEAD QUALIFIER & SCORECARD (60-SECOND READINESS QUIZ)   -->
+  <!-- ========================================================================= -->
+  <div id="leadQualifierModal" class="funnel-modal-overlay hidden">
+    <div class="bg-[#0f1b2d] text-[#faf8f3] w-full max-w-lg rounded-3xl border border-[#c4953a]/50 shadow-2xl p-6 sm:p-8 space-y-6 max-h-[95vh] overflow-y-auto">
+      
+      <!-- Top Progress Bar -->
+      <div class="space-y-2">
+        <div class="flex justify-between items-center text-xs">
+          <span class="text-[10px] font-bold text-[#c4953a] uppercase tracking-wider" id="quizStepIndicator">Step 1 of 5</span>
+          <button onclick="closeFunnelModal('leadQualifierModal')" class="text-white/40 hover:text-white text-xl">✕</button>
+        </div>
+        <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+          <div id="quizProgressBar" class="bg-[#c4953a] h-full transition-all duration-300 w-[20%]"></div>
+        </div>
+      </div>
+
+      <!-- Dynamic Quiz Question / Diagnosis Area -->
+      <div id="quizContainer">
+        <!-- Rendered via JS -->
+      </div>
+
+    </div>
   </div>
 
   <!-- ========================================================================= -->
