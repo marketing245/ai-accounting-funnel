@@ -1,0 +1,21 @@
+{
+  "name": "ai-accounting-funnel",
+  "version": "1.0.0",
+  "description": "Multi-Variation Marketing Funnel & Unit Economics Engine for AI in Accounting Course",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "marketing-funnel",
+    "ai-accounting",
+    "growth-engine",
+    "railway"
+  ],
+  "author": "Manak Sehgal",
+  "license": "MIT"
+}

@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Accounting Engineer — Multi-Variation Marketing Funnel Engine</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: '#0f1b2d',
+            'navy-deep': '#0a1320',
+            'navy-card': '#152338',
+            gold: '#c4953a',
+            'gold-light': '#dfb35a',
+            cream: '#faf8f3',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-navy-deep text-cream min-h-screen flex flex-col">
+
+  <!-- Top Announcement Bar -->
+  <div class="bg-gradient-to-r from-amber-900/60 via-gold/40 to-amber-900/60 border-b border-gold/30 text-xs py-2 px-4 text-center font-medium">
+    ⚡ Marketing Funnel Engine &amp; Growth Simulator — Product: <span class="font-bold text-gold-light">AI in Accounting by CA Varsha Varyani</span> (Base: ₹1,499)
+  </div>
+
+  <!-- Header -->
+  <header class="border-b border-white/10 bg-navy/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-gold/20 border border-gold/40 flex items-center justify-center font-bold text-gold text-lg">
+          AI
+        </div>
+        <div>
+          <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+            AI Accounting Engineer
+            <span class="text-xs px-2 py-0.5 rounded-full badge-gold font-normal">Funnel Architecture Matrix</span>
+          </h1>
+          <p class="text-xs text-white/60">Live interactive simulators, order bump mechanics &amp; unit economics</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a href="https://superprofile.bio/course/633d8759-74c2-43e2-9141-ac89ef39cd04" target="_blank" class="text-xs px-3 py-1.5 rounded-md bg-white/10 hover:bg-white/20 border border-white/10 text-white/80 transition flex items-center gap-1.5">
+          <span>Source Superprofile Link</span>
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        </a>
+        <a href="https://aiaccountingengineer.com" target="_blank" class="text-xs px-3 py-1.5 rounded-md bg-gold/20 hover:bg-gold/30 border border-gold/40 text-gold-light transition flex items-center gap-1.5">
+          <span>Source Landing Page</span>
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-white/5 overflow-x-auto">
+      <nav class="flex space-x-2 py-2" id="navTabs">
+        <button onclick="switchTab('v1')" class="tab-btn active px-3.5 py-1.5 text-xs rounded-lg transition whitespace-nowrap" data-tab="v1">
+          🚀 Variation 1: Direct Scale + Order Bump
+        </button>
+        <button onclick="switchTab('v2')" class="tab-btn px-3.5 py-1.5 text-xs rounded-lg bg-white/5 hover:bg-white/10 text-white/70 transition whitespace-nowrap" data-tab="v2">
+          💬 Variation 2: Free Lead Magnet + WhatsApp
+        </button>
+        <button onclick="switchTab('v3')" class="tab-btn px-3.5 py-1.5 text-xs rounded-lg bg-white/5 hover:bg-white/10 text-white/70 transition whitespace-nowrap" data-tab="v3">
+          🎓 Variation 3: ₹99 Sunday Workshop
+        </button>
+        <button onclick="switchTab('v4')" class="tab-btn px-3.5 py-1.5 text-xs rounded-lg bg-white/5 hover:bg-white/10 text-white/70 transition whitespace-nowrap" data-tab="v4">
+          💼 Variation 4: LinkedIn Organic Engine
+        </button>
+        <button onclick="switchTab('v5')" class="tab-btn px-3.5 py-1.5 text-xs rounded-lg bg-white/5 hover:bg-white/10 text-white/70 transition whitespace-nowrap" data-tab="v5">
+          🏢 Variation 5: CA Firm Team License
+        </button>
+        <button onclick="switchTab('calculator')" class="tab-btn px-3.5 py-1.5 text-xs rounded-lg bg-white/5 hover:bg-white/10 text-white/70 transition whitespace-nowrap" data-tab="calculator">
+          📊 Unit Economics &amp; ROAS Calculator
+        </button>
+        <button onclick="switchTab('matrix')" class="tab-btn px-3.5 py-1.5 text-xs rounded-lg bg-white/5 hover:bg-white/10 text-white/70 transition whitespace-nowrap" data-tab="matrix">
+          🗺️ Architecture Map &amp; Comparison
+        </button>
+        <button onclick="switchTab('vault')" class="tab-btn px-3.5 py-1.5 text-xs rounded-lg bg-white/5 hover:bg-white/10 text-white/70 transition whitespace-nowrap" data-tab="vault">
+          📜 Ad Scripts &amp; Copy Vault
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- ================= VARIATION 1: DIRECT TRIPWIRE + ORDER BUMP + UPSELL ================= -->
+    <section id="tab-v1" class="tab-content block space-y-6">
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-navy-card p-6 rounded-2xl border border-white/10">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs px-2.5 py-0.5 rounded-full badge-gold font-bold">VARIATION 1</span>
+            <span class="text-xs text-gold-light">Recommended for High-Budget Meta Ads Scaling</span>
+          </div>
+          <h2 class="text-2xl font-bold text-white">Direct-to-Offer + ₹399 Order Bump + ₹2,999 One-Click Upsell</h2>
+          <p class="text-sm text-white/70 max-w-2xl mt-1">
+            Cold traffic ko sirf ₹1,499 bechne ke bajaye, checkout pe <b>₹399 Order Bump</b> aur post-purchase <b>₹2,999 Upsell (OTO)</b> lagakar Average Order Value (AOV) ko ₹1,499 se <b>₹2,150+</b> jump karana.
+          </p>
+        </div>
+        <button onclick="openCheckoutModal()" class="px-5 py-3 rounded-xl bg-gold hover:bg-gold-light text-navy-deep font-bold text-sm shadow-lg shadow-gold/20 flex items-center gap-2 transition transform hover:scale-105">
+          <span>⚡ Launch Live Checkout Simulator</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </div>
+
+      <!-- Funnel Breakdown Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="funnel-card p-5 rounded-xl">
+          <div class="text-xs font-bold text-gold uppercase tracking-wider mb-1">Step 1: Traffic</div>
+          <h3 class="font-bold text-white text-base mb-2">Meta Video Ads (Reels)</h3>
+          <p class="text-xs text-white/60 mb-3">Hooking finance professionals on late-night month-end frustration.</p>
+          <div class="text-xs bg-black/40 p-2.5 rounded border border-white/5 font-mono text-amber-200">
+            "Watch Claude reconcile 500 bank transactions in 45 seconds..."
+          </div>
+        </div>
+
+        <div class="funnel-card p-5 rounded-xl">
+          <div class="text-xs font-bold text-gold uppercase tracking-wider mb-1">Step 2: Sales Page</div>
+          <h3 class="font-bold text-white text-base mb-2">Long-Form Story Page</h3>
+          <p class="text-xs text-white/60 mb-3">CA Varsha's Big 4 credentials + Day 5 close proof + Salary chart.</p>
+          <div class="text-xs bg-black/40 p-2.5 rounded border border-white/5 text-emerald-300">
+            Current conversion: ~2.8% on qualified CA/Accountant cold traffic.
+          </div>
+        </div>
+
+        <div class="funnel-card p-5 rounded-xl border-amber-500/40 bg-amber-950/20">
+          <div class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1">Step 3: Missing Key</div>
+          <h3 class="font-bold text-white text-base mb-2">+ ₹399 Order Bump</h3>
+          <p class="text-xs text-white/60 mb-3">Checkbox right above UPI button: "50+ Ready Prompts &amp; Excel Sheets".</p>
+          <div class="text-xs bg-black/40 p-2.5 rounded border border-white/5 text-amber-300">
+            Expected Take Rate: <b>38% - 45%</b> (Adds pure ₹150+ margin per sale).
+          </div>
+        </div>
+
+        <div class="funnel-card p-5 rounded-xl border-purple-500/40 bg-purple-950/20">
+          <div class="text-xs font-bold text-purple-400 uppercase tracking-wider mb-1">Step 4: Profit Engine</div>
+          <h3 class="font-bold text-white text-base mb-2">₹2,999 OTO Upsell</h3>
+          <p class="text-xs text-white/60 mb-3">Post-payment pop-up offering 4-Week Saturday Live Cohort &amp; Doubt Clearing.</p>
+          <div class="text-xs bg-black/40 p-2.5 rounded border border-white/5 text-purple-300">
+            Expected Take Rate: <b>12% - 15%</b> (Lifts AOV to ₹2,150+).
+          </div>
+        </div>
+      </div>
+
+      <!-- Comparison: Old vs Optimized -->
+      <div class="bg-navy-card p-6 rounded-2xl border border-white/10">
+        <h3 class="text-lg font-bold text-white mb-4">Financial Impact: Current Model vs Stacked Funnel</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="p-5 rounded-xl bg-white/5 border border-white/10">
+            <div class="text-xs font-bold text-red-400 uppercase tracking-wider mb-2">Current SuperProfile Funnel (Raw Link)</div>
+            <ul class="text-sm space-y-2 text-white/80">
+              <li class="flex justify-between border-b border-white/5 pb-1">
+                <span>Product Price:</span>
+                <span class="font-mono text-white">₹1,499</span>
+              </li>
+              <li class="flex justify-between border-b border-white/5 pb-1">
+                <span>Order Bump:</span>
+                <span class="font-mono text-red-400">None (₹0)</span>
+              </li>
+              <li class="flex justify-between border-b border-white/5 pb-1">
+                <span>Post-purchase Upsell:</span>
+                <span class="font-mono text-red-400">None (₹0)</span>
+              </li>
+              <li class="flex justify-between border-b border-white/5 pb-1 font-bold">
+                <span>Average Order Value (AOV):</span>
+                <span class="font-mono text-amber-300">₹1,499</span>
+              </li>
+              <li class="flex justify-between font-bold text-xs pt-1 text-white/60">
+                <span>Max allowable CAC for 2x ROAS:</span>
+                <span class="font-mono text-white">₹750</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="p-5 rounded-xl bg-gold/10 border border-gold/30">
+            <div class="text-xs font-bold text-gold-light uppercase tracking-wider mb-2">Optimized Variation 1 Funnel (With Stacks)</div>
+            <ul class="text-sm space-y-2 text-white/80">
+              <li class="flex justify-between border-b border-white/5 pb-1">
+                <span>Base Course:</span>
+                <span class="font-mono text-white">₹1,499</span>
+              </li>
+              <li class="flex justify-between border-b border-white/5 pb-1">
+                <span>Order Bump (₹399 @ 40% take):</span>
+                <span class="font-mono text-emerald-400">+ ₹160/buyer</span>
+              </li>
+              <li class="flex justify-between border-b border-white/5 pb-1">
+                <span>Upsell (₹2,999 @ 15% take):</span>
+                <span class="font-mono text-emerald-400">+ ₹450/buyer</span>
+              </li>
+              <li class="flex justify-between border-b border-white/5 pb-1 font-bold">
+                <span>New Average Order Value (AOV):</span>
+                <span class="font-mono text-emerald-300 font-bold text-base">₹2,109 (+40.7%)</span>
+              </li>
+              <li class="flex justify-between font-bold text-xs pt-1 text-emerald-200">
+                <span>Max allowable CAC for 2x ROAS:</span>
+                <span class="font-mono text-emerald-300 font-bold">₹1,054 (Allows much higher ad bids!)</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= VARIATION 2: FREE LEAD MAGNET + WHATSAPP ================= -->
+    <section id="tab-v2" class="tab-content hidden space-y-6">
+      <div class="bg-navy-card p-6 rounded-2xl border border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs px-2.5 py-0.5 rounded-full badge-green font-bold">VARIATION 2</span>
+            <span class="text-xs text-emerald-400">Highest Volume · 90%+ Open Rates</span>
+          </div>
+          <h2 class="text-2xl font-bold text-white">Free Lead Magnet + Automated WhatsApp Drip Nurture</h2>
+          <p class="text-sm text-white/70 max-w-2xl mt-1">
+            Cold audience direct course buy karne se hesitate karti hai. Unhe pehle <b>50+ Claude Accounting Prompts PDF</b> free mein do, fir 4-din ke WhatsApp drip se course mein convert karo.
+          </p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="simulateNextWAMsg()" class="px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs flex items-center gap-1.5 transition">
+            <span>Next WhatsApp Drip Step</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+          </button>
+          <button onclick="resetWAChat()" class="px-3 py-2.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/70 text-xs transition">
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- WhatsApp Phone Mockup -->
+        <div class="lg:col-span-5">
+          <div class="phone-mockup">
+            <div class="wa-header">
+              <div class="w-10 h-10 rounded-full bg-gold/30 border border-gold/50 flex items-center justify-center font-bold text-sm text-gold-light">
+                VV
+              </div>
+              <div>
+                <div class="font-bold text-sm text-white flex items-center gap-1.5">
+                  CA Varsha Varyani
+                  <svg class="w-3.5 h-3.5 text-blue-400 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="text-[11px] text-emerald-400">AI Accounting Engineer Official</div>
+              </div>
+            </div>
+
+            <!-- WhatsApp Message Stream -->
+            <div class="wa-chat-area" id="waChatArea">
+              <!-- Initial message injected via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Strategy Details -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="bg-navy-card p-5 rounded-xl border border-white/10">
+            <h3 class="text-base font-bold text-white mb-2 flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">1</span>
+              The 4-Day Drip Blueprint
+            </h3>
+            <div class="space-y-3 text-xs text-white/80">
+              <div class="p-3 rounded-lg bg-black/30 border border-white/5">
+                <div class="font-bold text-emerald-400 mb-0.5">Day 0 (Instant Opt-in): Immediate Gratification</div>
+                <div>PDF Playbook deliver hoti hai + 90-sec video note explaining how to run the first GST prompt on Claude.</div>
+              </div>
+              <div class="p-3 rounded-lg bg-black/30 border border-white/5">
+                <div class="font-bold text-amber-300 mb-0.5">Day 1: The Case Study (Value &amp; Proof)</div>
+                <div>"How an audit manager in Bangalore cut month-end close from 11 days to 4 days using GL tie-out prompts."</div>
+              </div>
+              <div class="p-3 rounded-lg bg-black/30 border border-white/5">
+                <div class="font-bold text-blue-300 mb-0.5">Day 2: Objection Busting ("Is AI safe for confidential accounts?")</div>
+                <div>Claude Enterprise vs Local sanitization SOPs explaining why client books never get exposed or leaked.</div>
+              </div>
+              <div class="p-3 rounded-lg bg-black/30 border border-white/5">
+                <div class="font-bold text-red-300 mb-0.5">Day 3: The Scarcity &amp; Flash Offer</div>
+                <div>₹1,499 Founding Cohort rate ending in 12 hours + 5 downloadable Excel bonus packs.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-navy-card p-4 rounded-xl border border-white/10">
+              <div class="text-xs text-white/60 mb-1">Opt-in to Sale Conversion</div>
+              <div class="text-2xl font-bold text-emerald-400">8.4%</div>
+              <p class="text-[11px] text-white/50 mt-1">Average conversion over 7 days</p>
+            </div>
+            <div class="bg-navy-card p-4 rounded-xl border border-white/10">
+              <div class="text-xs text-white/60 mb-1">Blended Acquisition Cost</div>
+              <div class="text-2xl font-bold text-gold">₹340 / sale</div>
+              <p class="text-[11px] text-white/50 mt-1">Lead cost ₹28 × 12 leads per sale</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= VARIATION 3: ₹99 LIVE WORKSHOP ================= -->
+    <section id="tab-v3" class="tab-content hidden space-y-6">
+      <div class="bg-navy-card p-6 rounded-2xl border border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs px-2.5 py-0.5 rounded-full badge-blue font-bold">VARIATION 3</span>
+            <span class="text-xs text-blue-400">Show-up Rate: 60%+ · In-Webinar Conversion: 22%</span>
+          </div>
+          <h2 class="text-2xl font-bold text-white">₹99 - ₹199 Paid 2-Hour Sunday Live Workshop Funnel</h2>
+          <p class="text-sm text-white/70 max-w-2xl mt-1">
+            Free webinar mein koi show-up nahi karta. ₹99 micro-commitment lene se <b>60%+ serious finance professionals</b> Sunday 11 AM zoom call pe aate hain, jahan live prompt run dekh kar 20-30% log full bundle buy karte hain.
+          </p>
+        </div>
+      </div>
+
+      <!-- Workshop Landing Page Mockup Card -->
+      <div class="bg-gradient-to-b from-navy-card to-black/60 p-6 rounded-2xl border border-blue-500/30">
+        <div class="max-w-3xl mx-auto space-y-6 text-center">
+          <span class="text-xs px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 font-semibold border border-blue-500/30">
+            THIS SUNDAY · 11:00 AM - 1:00 PM IST · LIVE ON ZOOM
+          </span>
+          <h3 class="text-3xl font-extrabold text-white leading-tight">
+            Close Your Month-End Books in 5 Days: <br>
+            <span class="text-blue-400">Live Hands-On Claude Masterclass with CA Varsha Varyani</span>
+          </h3>
+          <p class="text-sm text-white/70 max-w-xl mx-auto">
+            Live screen share pe dekho kaise 1000+ invoices ko 5 minutes mein auto-reconcile kiya jata hai without writing a single line of code.
+          </p>
+
+          <div class="flex flex-wrap justify-center gap-4 py-2">
+            <div class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-xs">
+              <span class="block text-white/50">Ticket Price</span>
+              <span class="text-base font-bold text-emerald-400">₹99 <span class="text-xs line-through text-white/40">₹999</span></span>
+            </div>
+            <div class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-xs">
+              <span class="block text-white/50">Seats Remaining</span>
+              <span class="text-base font-bold text-amber-400" id="workshopSeats">17 Seats</span>
+            </div>
+            <div class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-xs">
+              <span class="block text-white/50">Bonus Included</span>
+              <span class="text-base font-bold text-blue-300">GST 2A/2B Prompt Sheet</span>
+            </div>
+          </div>
+
+          <button onclick="generateWorkshopPass()" class="px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-lg shadow-blue-600/30 transition transform hover:scale-105">
+            🎟️ Generate Simulated ₹99 Zoom Ticket
+          </button>
+        </div>
+
+        <!-- Generated Pass Container -->
+        <div id="passContainer" class="hidden mt-8 max-w-md mx-auto p-5 rounded-xl bg-blue-950/40 border border-blue-500/50 text-left">
+          <div class="flex justify-between items-center border-b border-blue-500/30 pb-3 mb-3">
+            <div>
+              <div class="text-[10px] uppercase tracking-wider text-blue-400 font-bold">Confirmed Zoom Pass</div>
+              <div class="text-sm font-bold text-white">AI Accounting Live Masterclass</div>
+            </div>
+            <span class="text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold">PAID ₹99</span>
+          </div>
+          <div class="text-xs space-y-1.5 text-white/80 font-mono">
+            <div>Attendee: <span class="text-white">Manak Sehgal</span></div>
+            <div>Date: <span class="text-amber-300">Upcoming Sunday · 11:00 AM IST</span></div>
+            <div>Zoom Passcode: <span class="text-blue-300">AIAUTO2026</span></div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-white/10 text-[11px] text-white/60">
+            ⚡ Automated WhatsApp reminder dispatched with calendar invite link.
+          </div>
+        </div>
+      </div>
+
+      <!-- Webinar Pitch Breakdown -->
+      <div class="bg-navy-card p-5 rounded-xl border border-white/10">
+        <h4 class="font-bold text-sm text-white mb-3">The 120-Minute Webinar Conversion Script</h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-white/80">
+          <div class="p-3 rounded-lg bg-black/30 border border-white/5">
+            <div class="font-bold text-blue-400 mb-1">00:00 - 00:20 (Belief Breaking)</div>
+            <div>Show why traditional Excel VLOOKUP &amp; pivot tables are slowing down accountants, and why LLMs represent an architectural shift.</div>
+          </div>
+          <div class="p-3 rounded-lg bg-black/30 border border-white/5">
+            <div class="font-bold text-emerald-400 mb-1">00:20 - 01:20 (Pure Demonstration)</div>
+            <div>Live screen: Take messy sample bank data and run 3 workflows (Bank Rec, GST Mismatch filter, Journal entries). Zero sales pitch.</div>
+          </div>
+          <div class="p-3 rounded-lg bg-black/30 border border-white/5">
+            <div class="font-bold text-gold mb-1">01:20 - 02:00 (The Offer Stack &amp; Q&amp;A)</div>
+            <div>Pitch the ₹1,499 recorded system + ₹4,999 4-week cohort. "Those who enroll in next 15 mins get 1-on-1 workflow audit."</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= VARIATION 4: LINKEDIN ORGANIC ================= -->
+    <section id="tab-v4" class="tab-content hidden space-y-6">
+      <div class="bg-navy-card p-6 rounded-2xl border border-white/10">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-xs px-2.5 py-0.5 rounded-full badge-purple font-bold">VARIATION 4</span>
+          <span class="text-xs text-purple-400">Zero Ad Spend · B2B Corporate Leads</span>
+        </div>
+        <h2 class="text-2xl font-bold text-white">LinkedIn Organic Thought-Leadership &amp; Comment-to-DM Engine</h2>
+        <p class="text-sm text-white/70 max-w-2xl mt-1">
+          Indian Chartered Accountants and Finance Controllers are hyper-active on LinkedIn. Teardowns, benchmark carousels, aur "Comment for Prompts" strategy se bina ₹1 ad spend kiye leads aati hain.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Interactive Carousel Post Preview -->
+        <div class="lg:col-span-6 bg-navy-card p-5 rounded-xl border border-white/10">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-gold/20 border border-gold/40 flex items-center justify-center font-bold text-gold text-sm">
+              VV
+            </div>
+            <div>
+              <div class="text-sm font-bold text-white">CA Varsha Varyani · 1st</div>
+              <div class="text-[11px] text-white/50">Ex-EY, KPMG | Transforming Finance with AI | 18k followers</div>
+            </div>
+          </div>
+
+          <!-- Carousel Slides Simulation -->
+          <div class="p-6 rounded-xl bg-navy-deep border border-gold/30 min-h-[260px] flex flex-col justify-between" id="carouselSlideBox">
+            <div id="carouselSlideContent">
+              <span class="text-[10px] font-bold text-gold uppercase tracking-wider">Slide 1 of 4</span>
+              <h4 class="text-xl font-bold text-white mt-2">Why 80% of CAs are drowning in Month-End Closes (and how AI changes it)</h4>
+              <p class="text-xs text-white/70 mt-2">Swipe left to see the exact 5-step Claude prompt breakdown that reduced our team's close cycle from 12 days to 5 days.</p>
+            </div>
+            <div class="flex justify-between items-center pt-4 border-t border-white/10 text-xs">
+              <span class="text-white/40">aiaccountingengineer.com</span>
+              <div class="flex gap-2">
+                <button onclick="prevSlide()" class="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 text-white">‹ Prev</button>
+                <button onclick="nextSlide()" class="px-2.5 py-1 rounded bg-gold text-navy-deep font-bold hover:bg-gold-light">Next ›</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comment-to-DM Simulation -->
+          <div class="mt-4 p-4 rounded-xl bg-black/40 border border-white/5">
+            <div class="text-xs font-bold text-purple-300 mb-1">Interactive Comment-to-DM Trigger</div>
+            <p class="text-[11px] text-white/60 mb-2">Type "PROMPTS" below to trigger the ManyChat / LinkedIn Automation bot:</p>
+            <div class="flex gap-2">
+              <input type="text" id="commentInput" placeholder="Type PROMPTS..." class="bg-navy-deep border border-white/20 rounded-lg px-3 py-1.5 text-xs text-white flex-1 focus:outline-none focus:border-gold">
+              <button onclick="triggerLinkedInBot()" class="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-medium text-xs">Post Comment</button>
+            </div>
+            <div id="botResponse" class="hidden mt-3 p-2.5 rounded bg-purple-950/40 border border-purple-500/30 text-[11px] text-purple-200 font-mono">
+              ⚡ Bot triggered: DM sent to user with instant access link to Module 1 + Special ₹1,499 coupon!
+            </div>
+          </div>
+        </div>
+
+        <!-- Strategy Pillars -->
+        <div class="lg:col-span-6 space-y-4">
+          <div class="bg-navy-card p-5 rounded-xl border border-white/10">
+            <h4 class="text-sm font-bold text-white mb-2">3 High-Performing Content Pillars for CAs</h4>
+            <div class="space-y-3 text-xs text-white/80">
+              <div class="p-3 rounded-lg bg-white/5 border border-white/5">
+                <div class="font-bold text-gold mb-0.5">1. The "Before vs After" Workflow Breakdown</div>
+                <div>Showing side-by-side: The old 4-hour manual GST matching process vs the 3-minute Claude prompt that flags exceptions.</div>
+              </div>
+              <div class="p-3 rounded-lg bg-white/5 border border-white/5">
+                <div class="font-bold text-emerald-400 mb-0.5">2. Salary &amp; Market Insights</div>
+                <div>Why CFOs are offering ₹35–45L+ for AI-Native finance talent while traditional entry jobs are stagnating at ₹6–10L.</div>
+              </div>
+              <div class="p-3 rounded-lg bg-white/5 border border-white/5">
+                <div class="font-bold text-blue-400 mb-0.5">3. Client Confidentiality Protocols</div>
+                <div>How to sanitize PAN, GSTIN, and company names before feeding data into generative AI engines.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= VARIATION 5: B2B CA FIRM LICENSE ================= -->
+    <section id="tab-v5" class="tab-content hidden space-y-6">
+      <div class="bg-navy-card p-6 rounded-2xl border border-white/10">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-xs px-2.5 py-0.5 rounded-full badge-gold font-bold">VARIATION 5</span>
+          <span class="text-xs text-gold-light">High-Ticket B2B · ₹10k - ₹50k Order Value</span>
+        </div>
+        <h2 class="text-2xl font-bold text-white">CA Firm &amp; Corporate Finance Team License Engine</h2>
+        <p class="text-sm text-white/70 max-w-2xl mt-1">
+          CA Firms mein senior partners articles aur junior staff ki speed badhana chahte hain. Individual ₹1,499 bechne ke bajaye **Team Bundles (5 to 25 seats)** becho.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Interactive Team Calculator -->
+        <div class="lg:col-span-7 bg-navy-card p-6 rounded-2xl border border-white/10 space-y-6">
+          <h3 class="text-base font-bold text-white">Interactive Firm License &amp; ROI Calculator</h3>
+          
+          <div>
+            <div class="flex justify-between text-xs mb-2">
+              <span class="text-white/70">Number of Accountants / Articles in Firm:</span>
+              <span class="font-bold text-gold text-sm" id="seatCount">10 Seats</span>
+            </div>
+            <input type="range" id="seatSlider" min="3" max="50" value="10" step="1" class="w-full h-2 bg-navy-deep rounded-lg cursor-pointer" oninput="updateB2BCalculation()">
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+              <div class="text-xs text-white/60 mb-1">Monthly Hours Saved (Firm)</div>
+              <div class="text-2xl font-bold text-emerald-400" id="hoursSaved">160 hrs</div>
+              <p class="text-[11px] text-white/40 mt-1">~16 hours per accountant/mo</p>
+            </div>
+            <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+              <div class="text-xs text-white/60 mb-1">Estimated Monthly Cost Savings</div>
+              <div class="text-2xl font-bold text-emerald-300" id="costSavings">₹56,000 / mo</div>
+              <p class="text-[11px] text-white/40 mt-1">Based on ₹350/hr billable rate</p>
+            </div>
+          </div>
+
+          <div class="p-5 rounded-xl bg-gold/10 border border-gold/30 flex justify-between items-center">
+            <div>
+              <div class="text-xs text-gold uppercase tracking-wider font-bold">Recommended Firm Bundle</div>
+              <div class="text-xl font-bold text-white" id="bundleName">Pro Firm Pack (10 Seats)</div>
+              <div class="text-xs text-white/60">Includes team admin dashboard + SOP repository</div>
+            </div>
+            <div class="text-right">
+              <div class="text-2xl font-extrabold text-gold-light" id="bundlePrice">₹14,999</div>
+              <div class="text-[11px] text-emerald-400 font-bold">Instant ROI in &lt; 10 Days</div>
+            </div>
+          </div>
+
+          <button onclick="alert('B2B Quote Generated: ₹' + document.getElementById('bundlePrice').innerText + ' for ' + document.getElementById('seatCount').innerText)" class="w-full py-3 rounded-xl bg-gold hover:bg-gold-light text-navy-deep font-bold text-sm transition">
+            📄 Generate Custom Firm Proposal PDF
+          </button>
+        </div>
+
+        <!-- B2B Pitch Angle -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="bg-navy-card p-5 rounded-xl border border-white/10">
+            <h4 class="text-sm font-bold text-white mb-2">Why CA Firm Partners Buy Instantly:</h4>
+            <ul class="text-xs space-y-2.5 text-white/80">
+              <li class="flex items-start gap-2">
+                <span class="text-gold font-bold">✓</span>
+                <span><b>Solve High Article Attrition:</b> Articles rote work se bore hokar quit nahi karte jab workflows AI se automate hote hain.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-gold font-bold">✓</span>
+                <span><b>Handle 2x More Clients:</b> Same team size ke sath month-end compliance load double karne ki capacity.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-gold font-bold">✓</span>
+                <span><b>Zero Tax/Audit Errors:</b> Claude exception checks reduce human copy-paste blunders in GSTR-2B matching.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CALCULATOR: UNIT ECONOMICS & ROAS ================= -->
+    <section id="tab-calculator" class="tab-content hidden space-y-6">
+      <div class="bg-navy-card p-6 rounded-2xl border border-white/10">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-xs px-2.5 py-0.5 rounded-full badge-green font-bold">UNIT ECONOMICS ENGINE</span>
+          <span class="text-xs text-emerald-400">Live Formulaic Simulator</span>
+        </div>
+        <h2 class="text-2xl font-bold text-white">Full Funnel Unit Economics &amp; ROAS Calculator</h2>
+        <p class="text-sm text-white/70 max-w-2xl mt-1">
+          Adjust the sliders to simulate live traffic, conversion rates, order bump take rates, and upsells to see projected revenue, profit, and ROAS.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Sliders Column -->
+        <div class="lg:col-span-6 bg-navy-card p-6 rounded-2xl border border-white/10 space-y-5">
+          <h3 class="text-base font-bold text-white border-b border-white/10 pb-2">Traffic &amp; Conversion Inputs</h3>
+
+          <div>
+            <div class="flex justify-between text-xs mb-1.5">
+              <span class="text-white/70">Monthly Ad Budget (₹):</span>
+              <span class="font-bold text-gold text-sm" id="calcSpendText">₹1,00,000</span>
+            </div>
+            <input type="range" id="calcSpend" min="20000" max="500000" value="100000" step="10000" class="w-full h-2 bg-navy-deep rounded-lg" oninput="runFullCalculation()">
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs mb-1.5">
+              <span class="text-white/70">Average Cost Per Click (CPC ₹):</span>
+              <span class="font-bold text-white text-sm" id="calcCpcText">₹22</span>
+            </div>
+            <input type="range" id="calcCpc" min="10" max="50" value="22" step="1" class="w-full h-2 bg-navy-deep rounded-lg" oninput="runFullCalculation()">
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs mb-1.5">
+              <span class="text-white/70">Landing Page Conversion Rate (%):</span>
+              <span class="font-bold text-white text-sm" id="calcCvrText">2.5%</span>
+            </div>
+            <input type="range" id="calcCvr" min="1.0" max="6.0" value="2.5" step="0.1" class="w-full h-2 bg-navy-deep rounded-lg" oninput="runFullCalculation()">
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs mb-1.5">
+              <span class="text-white/70">₹399 Order Bump Take Rate (%):</span>
+              <span class="font-bold text-emerald-400 text-sm" id="calcBumpText">38%</span>
+            </div>
+            <input type="range" id="calcBump" min="10" max="60" value="38" step="1" class="w-full h-2 bg-navy-deep rounded-lg" oninput="runFullCalculation()">
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs mb-1.5">
+              <span class="text-white/70">₹2,999 One-Click Upsell Take Rate (%):</span>
+              <span class="font-bold text-purple-400 text-sm" id="calcUpsellText">12%</span>
+            </div>
+            <input type="range" id="calcUpsell" min="0" max="30" value="12" step="1" class="w-full h-2 bg-navy-deep rounded-lg" oninput="runFullCalculation()">
+          </div>
+        </div>
+
+        <!-- Real-Time Metrics Output Column -->
+        <div class="lg:col-span-6 bg-navy-card p-6 rounded-2xl border border-white/10 flex flex-col justify-between space-y-6">
+          <h3 class="text-base font-bold text-white border-b border-white/10 pb-2">Projected Monthly Performance</h3>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="p-4 rounded-xl bg-navy-deep border border-white/5">
+              <div class="text-[11px] text-white/50 uppercase">Total Visitors</div>
+              <div class="text-xl font-bold text-white mt-1" id="resVisitors">4,545</div>
+            </div>
+            <div class="p-4 rounded-xl bg-navy-deep border border-white/5">
+              <div class="text-[11px] text-white/50 uppercase">Total Buyers</div>
+              <div class="text-xl font-bold text-emerald-400 mt-1" id="resBuyers">114</div>
+            </div>
+            <div class="p-4 rounded-xl bg-navy-deep border border-white/5">
+              <div class="text-[11px] text-white/50 uppercase">Blended AOV</div>
+              <div class="text-xl font-bold text-gold-light mt-1" id="resAov">₹2,010</div>
+            </div>
+            <div class="p-4 rounded-xl bg-navy-deep border border-white/5">
+              <div class="text-[11px] text-white/50 uppercase">Customer Acquisition Cost (CAC)</div>
+              <div class="text-xl font-bold text-amber-300 mt-1" id="resCac">₹877</div>
+            </div>
+          </div>
+
+          <div class="p-5 rounded-xl bg-black/40 border border-emerald-500/30">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs text-white/60">Gross Revenue:</span>
+              <span class="text-xl font-extrabold text-white" id="resGrossRev">₹2,29,140</span>
+            </div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs text-white/60">Ad Spend:</span>
+              <span class="text-sm font-mono text-red-400" id="resSpend">- ₹1,00,000</span>
+            </div>
+            <div class="border-t border-white/10 pt-2 flex justify-between items-center">
+              <div>
+                <span class="text-xs text-emerald-400 font-bold uppercase">Net Profit:</span>
+                <div class="text-2xl font-extrabold text-emerald-300" id="resNetProfit">₹1,29,140</div>
+              </div>
+              <div class="text-right">
+                <span class="text-xs text-gold uppercase font-bold">ROAS:</span>
+                <div class="text-2xl font-extrabold text-gold-light" id="resRoas">2.29x</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= MATRIX: ARCHITECTURE MAP ================= -->
+    <section id="tab-matrix" class="tab-content hidden space-y-6">
+      <div class="bg-navy-card p-6 rounded-2xl border border-white/10">
+        <h2 class="text-2xl font-bold text-white mb-2">Funnel Architecture Comparison Matrix</h2>
+        <p class="text-sm text-white/70">5 alag-alag variations ka comprehensive comparison across effort, ad spend, and scalability.</p>
+      </div>
+
+      <div class="overflow-x-auto bg-navy-card rounded-2xl border border-white/10">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="border-b border-white/10 bg-white/5 text-white/80 uppercase">
+              <th class="p-4">Funnel Variation</th>
+              <th class="p-4">Primary Traffic</th>
+              <th class="p-4">Entry Price</th>
+              <th class="p-4">Avg Order Value (AOV)</th>
+              <th class="p-4">Estimated CAC</th>
+              <th class="p-4">Expected ROAS</th>
+              <th class="p-4">Best For</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/5 text-white/70">
+            <tr class="hover:bg-white/5 transition">
+              <td class="p-4 font-bold text-white flex items-center gap-1.5">
+                <span class="text-gold">1.</span> Direct Scale + Order Bump
+              </td>
+              <td class="p-4">Meta Video Ads (Reels)</td>
+              <td class="p-4 font-mono text-white">₹1,499</td>
+              <td class="p-4 font-mono text-emerald-400 font-bold">₹2,100+</td>
+              <td class="p-4 font-mono">₹700 - ₹900</td>
+              <td class="p-4 font-bold text-gold">2.5x - 3.2x</td>
+              <td class="p-4">High Ad Budgets &amp; Fast Scale</td>
+            </tr>
+            <tr class="hover:bg-white/5 transition">
+              <td class="p-4 font-bold text-white flex items-center gap-1.5">
+                <span class="text-emerald-400">2.</span> Free Lead Magnet + WhatsApp
+              </td>
+              <td class="p-4">Meta Leads + IG Comments</td>
+              <td class="p-4 font-mono text-emerald-300">Free (₹0)</td>
+              <td class="p-4 font-mono text-white">₹1,499</td>
+              <td class="p-4 font-mono text-emerald-400">₹300 - ₹450</td>
+              <td class="p-4 font-bold text-emerald-400">4.0x - 5.0x</td>
+              <td class="p-4">Long-term list asset &amp; low risk</td>
+            </tr>
+            <tr class="hover:bg-white/5 transition">
+              <td class="p-4 font-bold text-white flex items-center gap-1.5">
+                <span class="text-blue-400">3.</span> ₹99 Sunday Live Workshop
+              </td>
+              <td class="p-4">Meta Workshop Ads</td>
+              <td class="p-4 font-mono text-blue-300">₹99 / ₹199</td>
+              <td class="p-4 font-mono text-emerald-400 font-bold">₹1,850</td>
+              <td class="p-4 font-mono">₹400 - ₹600</td>
+              <td class="p-4 font-bold text-blue-400">3.5x - 4.2x</td>
+              <td class="p-4">High trust &amp; selling higher tickets</td>
+            </tr>
+            <tr class="hover:bg-white/5 transition">
+              <td class="p-4 font-bold text-white flex items-center gap-1.5">
+                <span class="text-purple-400">4.</span> LinkedIn Organic Engine
+              </td>
+              <td class="p-4">Founder Carousels / Teardowns</td>
+              <td class="p-4 font-mono">₹1,499</td>
+              <td class="p-4 font-mono text-white">₹1,499</td>
+              <td class="p-4 font-mono text-emerald-400">₹0 (Zero Ad Spend)</td>
+              <td class="p-4 font-bold text-purple-400">Infinite</td>
+              <td class="p-4">Brand equity &amp; corporate inquiries</td>
+            </tr>
+            <tr class="hover:bg-white/5 transition">
+              <td class="p-4 font-bold text-white flex items-center gap-1.5">
+                <span class="text-amber-400">5.</span> B2B CA Firm Team License
+              </td>
+              <td class="p-4">LinkedIn / CA WhatsApp Groups</td>
+              <td class="p-4 font-mono text-amber-300 font-bold">₹9,999 - ₹24,999</td>
+              <td class="p-4 font-mono text-amber-300 font-bold">₹16,500</td>
+              <td class="p-4 font-mono">₹2,000 - ₹3,500</td>
+              <td class="p-4 font-bold text-amber-400">5.0x - 7.0x</td>
+              <td class="p-4">High margin &amp; bulk enterprise sales</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ================= VAULT: AD CREATIVES & COPY ================= -->
+    <section id="tab-vault" class="tab-content hidden space-y-6">
+      <div class="bg-navy-card p-6 rounded-2xl border border-white/10">
+        <h2 class="text-2xl font-bold text-white mb-2">Ad Creatives, Video Scripts &amp; WhatsApp Templates Vault</h2>
+        <p class="text-sm text-white/70">Copy-paste ready ad hooks, reel scripts, and WhatsApp messages crafted specifically for Indian finance professionals.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Reel Script 1 -->
+        <div class="funnel-card p-5 rounded-xl space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-xs px-2 py-0.5 rounded badge-gold font-bold">REEL SCRIPT 1</span>
+            <span class="text-xs text-white/50">Angle: The Month-End Frustration</span>
+          </div>
+          <h4 class="font-bold text-white text-sm">"Close books on Day 5, not Day 15"</h4>
+          <div class="text-xs bg-black/40 p-3 rounded-lg border border-white/5 space-y-2 text-white/80 font-mono">
+            <div><b class="text-amber-300">[Hook - 0-3s]:</b> (Camera points at clock showing 10:30 PM). "Agar aap CA ya accountant ho aur month-end close ke time office mein aisi late nights bita rahe ho, you are doing it the 2018 way."</div>
+            <div><b class="text-blue-300">[Problem - 3-15s]:</b> "GSTR-2A vs 2B matching mein pura din nikal jata hai, aur bank reconciliation ke pending tie-outs headache dete hain."</div>
+            <div><b class="text-emerald-300">[Solution - 15-40s]:</b> "Ek saal pehle maine apne workflows Claude AI pe daal diye. Day 12 ka close ab Day 5 mein hota hai. No coding, no tech background needed."</div>
+            <div><b class="text-purple-300">[CTA - 40-50s]:</b> "Check out the AI Accounting Engineer program — link in bio / comment 'CLOSE' below."</div>
+          </div>
+        </div>
+
+        <!-- Reel Script 2 -->
+        <div class="funnel-card p-5 rounded-xl space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-xs px-2 py-0.5 rounded badge-green font-bold">REEL SCRIPT 2</span>
+            <span class="text-xs text-white/50">Angle: Salary &amp; Career Arbitrage</span>
+          </div>
+          <h4 class="font-bold text-white text-sm">"Traditional Accountant vs AI Accounting Engineer"</h4>
+          <div class="text-xs bg-black/40 p-3 rounded-lg border border-white/5 space-y-2 text-white/80 font-mono">
+            <div><b class="text-amber-300">[Hook - 0-3s]:</b> "AI accountants ko replace karega ya nahi? Let me show you what the job market is actually paying."</div>
+            <div><b class="text-blue-300">[Proof - 3-20s]:</b> "Traditional senior accountant: ₹15-20 LPA. Lekin finance professionals who can orchestrate AI accounting workflows: ₹35-45 LPA+."</div>
+            <div><b class="text-emerald-300">[Breakdown - 20-40s]:</b> "Companies speed aur judgment ke liye pay karti hain, data-entry ke liye nahi."</div>
+            <div><b class="text-purple-300">[CTA - 40-50s]:</b> "Click the link to learn the 5 exact workflows I teach in the AI Accounting Engineer cohort."</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= INTERACTIVE CHECKOUT MODAL (FOR VARIATION 1) ================= -->
+  <div id="checkoutModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+    <div class="bg-navy-card w-full max-w-lg rounded-2xl border border-gold/40 shadow-2xl p-6 space-y-5 text-left transform transition-all">
+      <div class="flex justify-between items-center border-b border-white/10 pb-3">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-gold">Checkout Simulation</span>
+          <h3 class="text-lg font-bold text-white">AI Accounting Engineer Enrollment</h3>
+        </div>
+        <button onclick="closeCheckoutModal()" class="text-white/50 hover:text-white text-xl">✕</button>
+      </div>
+
+      <!-- Base Product Item -->
+      <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 flex justify-between items-center">
+        <div>
+          <div class="font-bold text-sm text-white">5-Module AI in Accounting Program</div>
+          <div class="text-xs text-white/60">By CA Varsha Varyani · Lifetime Access</div>
+        </div>
+        <div class="font-bold text-base text-gold font-mono">₹1,499</div>
+      </div>
+
+      <!-- ORDER BUMP BOX -->
+      <div class="p-4 rounded-xl bg-amber-950/30 border-2 border-dashed border-amber-500/60 space-y-2">
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input type="checkbox" id="orderBumpCheck" class="mt-1 w-4 h-4 rounded text-gold focus:ring-gold" onchange="toggleOrderBump()">
+          <div>
+            <span class="text-xs font-bold text-amber-300 uppercase tracking-wider block">One-Time Special Order Bump (+ ₹399)</span>
+            <div class="text-xs text-white/90 font-medium">Add "50+ Copy-Ready Claude Accounting Prompts &amp; Excel Reconciler SOPs"</div>
+            <p class="text-[11px] text-white/60 mt-0.5">Instant plug-and-play templates for GST 2A/2B, TDS, bank rec and journal narrations.</p>
+          </div>
+        </label>
+      </div>
+
+      <!-- Total Price Bar -->
+      <div class="border-t border-white/10 pt-3 flex justify-between items-center">
+        <div>
+          <span class="text-xs text-white/50">Total Payable:</span>
+          <div class="text-2xl font-black text-emerald-400 font-mono" id="modalTotalPayable">₹1,499</div>
+        </div>
+        <button onclick="simulateOrderSuccess()" class="px-6 py-3 rounded-xl bg-gold hover:bg-gold-light text-navy-deep font-bold text-sm shadow-lg shadow-gold/20 transition">
+          Pay via UPI / Card →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= POST-PURCHASE ONE-CLICK UPSELL (OTO) MODAL ================= -->
+  <div id="upsellModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+    <div class="bg-navy-card w-full max-w-lg rounded-2xl border border-purple-500/50 shadow-2xl p-6 space-y-4 text-center transform transition-all">
+      <span class="text-[10px] px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 font-bold border border-purple-500/40">
+        WAIT! SPECIAL 1-TIME FOUNDING MEMBER OFFER
+      </span>
+      <h3 class="text-xl font-extrabold text-white">Upgrade to the 4-Week Live Implementation Cohort</h3>
+      <p class="text-xs text-white/70 max-w-md mx-auto">
+        Don't just watch videos. Join CA Varsha every Saturday for live workflow building, personal doubt solving, and your firm's custom automation audit.
+      </p>
+
+      <div class="p-4 rounded-xl bg-purple-950/40 border border-purple-500/30 text-left space-y-1.5 text-xs text-white/80">
+        <div class="flex items-center gap-2">✓ 4 Live 90-Minute Saturday Interactive Workshops (₹5,000 value)</div>
+        <div class="flex items-center gap-2">✓ Direct 1-on-1 WhatsApp doubt clearing channel (₹2,500 value)</div>
+        <div class="flex items-center gap-2">✓ Live audit of your company's actual bank/GST sheets (₹3,000 value)</div>
+      </div>
+
+      <div class="py-2">
+        <span class="text-xs text-white/50 line-through">Regular Price: ₹7,500</span>
+        <div class="text-2xl font-black text-purple-300 font-mono">Special One-Time Upgrade: ₹2,999</div>
+      </div>
+
+      <div class="space-y-2">
+        <button onclick="acceptUpsell()" class="w-full py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm shadow-lg shadow-purple-600/30 transition">
+          Yes! Upgrade My Order for ₹2,999
+        </button>
+        <button onclick="declineUpsell()" class="text-xs text-white/50 hover:text-white transition">
+          No thanks, I will learn from the recorded videos on my own
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/10 py-6 text-center text-xs text-white/40 bg-navy/60">
+    <div class="max-w-7xl mx-auto px-4">
+      AI Accounting Engineer — Full-Stack Funnel &amp; Growth Engine · Designed for Manak Sehgal
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
