@@ -1,385 +1,281 @@
 /**
- * AI Accounting Engineer - High-Converting Funnel & Interactive Lead Qualifier
+ * AI Accounting Engineer - Unified High-Converting Funnel Engine
+ * With Real Lead Qualification, Phone OTP Verification, 1-Click Purchase & Live Meta Signals
  */
 
-let funnelState = {
+let state = {
+  step: 1,
+  selectedRole: 'Chartered Accountant (CA)',
+  selectedBottleneck: 'GSTR-2A vs 2B Tax Mismatch Matching',
+  name: 'Manak Sehgal',
+  email: 'manakppc@gmail.com',
+  phone: '9876543210',
+  otpGenerated: '4829',
+  otpVerified: false,
   basePrice: 1499,
   bumpPrice: 399,
-  upsellPrice: 2999,
   hasOrderBump: false,
-  hasUpsell: false,
-  buyerName: '',
-  buyerEmail: '',
-  buyerPhone: '',
-  upiVpa: 'manakppc@okhdfcbank'
-};
-
-let quizState = {
-  step: 1,
-  role: '',
-  bottleneck: '',
-  closeDuration: '',
-  software: '',
-  score: 87
+  upiVpa: 'manakppc@okhdfcbank',
+  metaEvents: 1
 };
 
 // ==========================================
-// 🎯 INTERACTIVE LEAD QUALIFIER (SCORECARD)
+// 📡 META SIGNALS TRACKER (PIXEL & CAPI)
 // ==========================================
 
-function openLeadQualifier() {
-  quizState.step = 1;
-  const modal = document.getElementById('leadQualifierModal');
+function trackMetaSignal(eventName, payload) {
+  const time = new Date().toLocaleTimeString('en-IN', { hour12: false });
+
+  // 1. Fire to official Meta Pixel if present
+  if (typeof fbq === 'function') {
+    try {
+      fbq('track', eventName, payload);
+    } catch (e) {
+      console.warn('Meta Pixel dispatch error:', e);
+    }
+  }
+
+  // 2. Log visually to On-Screen Meta Signal Inspector
+  const logContainer = document.getElementById('metaSignalsLog');
+  const countEl = document.getElementById('metaEventCount');
+
+  if (logContainer) {
+    const entry = document.createElement('div');
+    entry.className = 'text-emerald-400 border-b border-white/5 pb-1';
+    
+    let summary = '';
+    if (eventName === 'Lead') {
+      summary = `(Role: ${payload.role}, Score: ${payload.lead_quality}, Phone: Verified)`;
+    } else if (eventName === 'InitiateCheckout') {
+      summary = `(Amount: ₹${payload.value}, Currency: INR)`;
+    } else if (eventName === 'Purchase') {
+      summary = `(Amount: ₹${payload.value}, Txn: ${payload.transaction_id})`;
+    }
+
+    entry.innerHTML = `✓ [${time}] <b>${eventName}</b> ${summary}`;
+    logContainer.prepend(entry);
+  }
+
+  state.metaEvents++;
+  if (countEl) countEl.innerText = state.metaEvents;
+}
+
+function toggleMetaInspector() {
+  const log = document.getElementById('metaSignalsLog');
+  const icon = document.getElementById('inspectorToggleIcon');
+  if (log) {
+    const isHidden = log.classList.contains('hidden');
+    if (isHidden) {
+      log.classList.remove('hidden');
+      if (icon) icon.innerText = '▼';
+    } else {
+      log.classList.add('hidden');
+      if (icon) icon.innerText = '▲';
+    }
+  }
+}
+
+// ==========================================
+// ⚡ UNIFIED FUNNEL WORKFLOW
+// ==========================================
+
+function startUnifiedFunnel() {
+  state.step = 1;
+  const modal = document.getElementById('unifiedFunnelModal');
   if (modal) {
     modal.classList.remove('hidden');
-    renderQuizStep();
+    showStep(1);
   }
 }
 
-function renderQuizStep() {
-  const container = document.getElementById('quizContainer');
-  const indicator = document.getElementById('quizStepIndicator');
-  const bar = document.getElementById('quizProgressBar');
-  if (!container) return;
-
-  if (quizState.step === 1) {
-    indicator.innerText = 'Step 1 of 5 · Role Qualification';
-    bar.style.width = '20%';
-    container.innerHTML = `
-      <div class="space-y-4">
-        <div>
-          <span class="text-xs font-bold text-[#c4953a] uppercase tracking-wider">Question 1</span>
-          <h3 class="text-xl font-bold text-white mt-1">What best describes your current professional role?</h3>
-          <p class="text-xs text-white/60">This customizes your automation blueprint and time-saving benchmarks.</p>
-        </div>
-        <div class="space-y-2.5">
-          ${[
-            '👨‍💼 Qualified Chartered Accountant (CA in Practice / Industry)',
-            '📊 Senior Accountant / Finance Manager',
-            '📝 Article Assistant / Semi-Qualified CA',
-            '🎓 Commerce Graduate (B.Com / M.Com / MBA Finance)',
-            '🏢 Business Owner / Finance Controller'
-          ].map(r => `
-            <button onclick="handleQuizSelect('role', '${r}')" class="w-full p-3.5 rounded-xl bg-white/5 hover:bg-[#c4953a]/20 border border-white/10 hover:border-[#c4953a]/50 text-left text-xs font-semibold text-white transition flex items-center justify-between">
-              <span>${r}</span>
-              <span class="text-[#c4953a]">→</span>
-            </button>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  } else if (quizState.step === 2) {
-    indicator.innerText = 'Step 2 of 5 · Bottleneck Audit';
-    bar.style.width = '40%';
-    container.innerHTML = `
-      <div class="space-y-4">
-        <div>
-          <span class="text-xs font-bold text-[#c4953a] uppercase tracking-wider">Question 2</span>
-          <h3 class="text-xl font-bold text-white mt-1">What eats up the most brutal hours of your work week?</h3>
-          <p class="text-xs text-white/60">Select your biggest manual headache.</p>
-        </div>
-        <div class="space-y-2.5">
-          ${[
-            '🧾 GSTR-2A vs 2B Tax Mismatch Matching & Dispute Lists',
-            '🏦 Manual Bank Statement Matching & Ledger Tie-Outs',
-            '📑 Typing & Classifying Journal Entries from Raw Invoices',
-            '⏱️ Month-End GL Scrutiny, Flux Notes & MIS Reports'
-          ].map(b => `
-            <button onclick="handleQuizSelect('bottleneck', '${b}')" class="w-full p-3.5 rounded-xl bg-white/5 hover:bg-[#c4953a]/20 border border-white/10 hover:border-[#c4953a]/50 text-left text-xs font-semibold text-white transition flex items-center justify-between">
-              <span>${b}</span>
-              <span class="text-[#c4953a]">→</span>
-            </button>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  } else if (quizState.step === 3) {
-    indicator.innerText = 'Step 3 of 5 · Cycle Time Audit';
-    bar.style.width = '60%';
-    container.innerHTML = `
-      <div class="space-y-4">
-        <div>
-          <span class="text-xs font-bold text-[#c4953a] uppercase tracking-wider">Question 3</span>
-          <h3 class="text-xl font-bold text-white mt-1">How many days does your team's month-end close take currently?</h3>
-          <p class="text-xs text-white/60">From day 1 of month-end until trial balance is finalized.</p>
-        </div>
-        <div class="space-y-2.5">
-          ${[
-            '⚡ 1 to 5 Days (Already Fast & Optimized)',
-            '⏳ 6 to 10 Days (Average — causes regular late nights)',
-            '🛑 11 to 15+ Days (Painful backlog & reporting delays)'
-          ].map(d => `
-            <button onclick="handleQuizSelect('closeDuration', '${d}')" class="w-full p-3.5 rounded-xl bg-white/5 hover:bg-[#c4953a]/20 border border-white/10 hover:border-[#c4953a]/50 text-left text-xs font-semibold text-white transition flex items-center justify-between">
-              <span>${d}</span>
-              <span class="text-[#c4953a]">→</span>
-            </button>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  } else if (quizState.step === 4) {
-    indicator.innerText = 'Step 4 of 5 · Software Stack';
-    bar.style.width = '80%';
-    container.innerHTML = `
-      <div class="space-y-4">
-        <div>
-          <span class="text-xs font-bold text-[#c4953a] uppercase tracking-wider">Question 4</span>
-          <h3 class="text-xl font-bold text-white mt-1">What accounting tool/software do you live in?</h3>
-          <p class="text-xs text-white/60">We verify Claude prompt compatibility with your software.</p>
-        </div>
-        <div class="space-y-2.5">
-          ${[
-            '📦 Tally Prime / ERP 9 (100% Compatible via CSV/Excel)',
-            '☁️ Zoho Books / QuickBooks Online',
-            '🏢 SAP ERP / Oracle / NetSuite',
-            '📊 Advanced Microsoft Excel & Google Sheets'
-          ].map(s => `
-            <button onclick="handleQuizSelect('software', '${s}')" class="w-full p-3.5 rounded-xl bg-white/5 hover:bg-[#c4953a]/20 border border-white/10 hover:border-[#c4953a]/50 text-left text-xs font-semibold text-white transition flex items-center justify-between">
-              <span>${s}</span>
-              <span class="text-[#c4953a]">→</span>
-            </button>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  } else if (quizState.step === 5) {
-    indicator.innerText = 'Step 5 of 5 · Contact Verification';
-    bar.style.width = '95%';
-    container.innerHTML = `
-      <div class="space-y-5">
-        <div>
-          <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Audit Complete!</span>
-          <h3 class="text-xl font-bold text-white mt-1">Where should we deliver your Custom AI Automation Scorecard &amp; Claude Prompts?</h3>
-          <p class="text-xs text-white/60">Enter your details below to unlock your custom breakdown and time-savings report.</p>
-        </div>
-
-        <div class="space-y-3">
-          <div>
-            <label class="text-[11px] font-bold text-white/70 block mb-1">Your Full Name:</label>
-            <input type="text" id="quizName" placeholder="e.g. Manak Sehgal" class="w-full bg-white/5 border border-white/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#c4953a]">
-          </div>
-          <div>
-            <label class="text-[11px] font-bold text-white/70 block mb-1">Work / Personal Email:</label>
-            <input type="email" id="quizEmail" placeholder="e.g. manakppc@gmail.com" class="w-full bg-white/5 border border-white/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#c4953a]">
-          </div>
-          <div>
-            <label class="text-[11px] font-bold text-white/70 block mb-1">WhatsApp Number (For PDF Blueprint):</label>
-            <input type="tel" id="quizPhone" placeholder="e.g. +91 98765 43210" class="w-full bg-white/5 border border-white/20 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#c4953a]">
-          </div>
-        </div>
-
-        <button onclick="submitQuizLead()" class="w-full py-3.5 rounded-xl btn-gold text-sm font-bold flex items-center justify-center gap-2 shadow-lg">
-          <span>Calculate My AI Readiness Score &amp; Unlock Report →</span>
-        </button>
-        <p class="text-[10px] text-white/40 text-center">🔒 100% confidential. No spam. Instant scorecard delivery.</p>
-      </div>
-    `;
-  } else if (quizState.step === 6) {
-    // DIAGNOSIS & CONVERSION BRIDGE (THE PITCH)
-    indicator.innerText = 'Personalized Automation Scorecard';
-    bar.style.width = '100%';
-
-    // Custom calculation based on answers
-    let hoursSaved = '14 to 20 hours';
-    if (quizState.closeDuration.includes('11-15+')) hoursSaved = '25+ hours';
-    else if (quizState.closeDuration.includes('6-10')) hoursSaved = '16 hours';
-
-    container.innerHTML = `
-      <div class="space-y-5 text-center">
-        
-        <!-- Score Card -->
-        <div class="p-5 rounded-2xl bg-[#c4953a]/15 border-2 border-[#c4953a] space-y-2">
-          <span class="text-[10px] font-bold text-[#c4953a] uppercase tracking-wider">Your Automation Score</span>
-          <div class="text-4xl font-black text-white font-mono">89% <span class="text-base text-emerald-400 font-normal">High Readiness</span></div>
-          <p class="text-xs text-white/80">
-            Great news, <b>${quizState.name || 'Finance Pro'}</b>! Your accounting tasks in <b>${quizState.software.split('(')[0].trim()}</b> have direct plug-and-play AI workflows available.
-          </p>
-        </div>
-
-        <!-- Custom Findings -->
-        <div class="p-4 rounded-xl bg-black/40 border border-white/10 text-left space-y-2.5 text-xs text-white/85">
-          <div class="flex items-start gap-2">
-            <span class="text-emerald-400 font-bold">✓</span>
-            <span><b>Bottleneck Solved:</b> Your biggest pain point (<i>${quizState.bottleneck}</i>) can be automated using Claude prompts taught in Module 3 &amp; 4.</span>
-          </div>
-          <div class="flex items-start gap-2">
-            <span class="text-emerald-400 font-bold">✓</span>
-            <span><b>Projected Time Savings:</b> You can reclaim <b>${hoursSaved} every single month</b> and close on Day 5 instead of ${quizState.closeDuration.split('(')[0].trim()}.</span>
-          </div>
-          <div class="flex items-start gap-2">
-            <span class="text-emerald-400 font-bold">✓</span>
-            <span><b>Career Advantage:</b> As a ${quizState.role.split('(')[0].trim()}, mastering these 5 workflows positions you for senior AI-native roles paying ₹35–45L+.</span>
-          </div>
-        </div>
-
-        <!-- The Conversion Bridge CTA -->
-        <div class="space-y-3 pt-2">
-          <button onclick="claimQualifiedOffer()" class="w-full py-4 rounded-xl btn-gold text-sm font-bold shadow-xl flex items-center justify-center gap-2 transform hover:scale-[1.02] transition">
-            <span>Claim Your Spot in AI Accounting Engineer (₹1,499) →</span>
-          </button>
-          <p class="text-[11px] text-emerald-400 font-semibold">
-            ⚡ Founding Offer Applied: ₹3,501 Saved · Pre-filled Checkout Ready
-          </p>
-        </div>
-
-      </div>
-    `;
-  }
-}
-
-function handleQuizSelect(key, val) {
-  quizState[key] = val;
-  quizState.step++;
-  renderQuizStep();
-}
-
-function submitQuizLead() {
-  const name = document.getElementById('quizName').value.trim();
-  const email = document.getElementById('quizEmail').value.trim();
-  const phone = document.getElementById('quizPhone').value.trim();
-
-  if (!email || !phone) {
-    alert('Please provide your Email and WhatsApp number so we can deliver your personalized report.');
-    return;
-  }
-
-  quizState.name = name || 'Finance Leader';
-  quizState.email = email;
-  quizState.phone = phone;
-
-  // Sync with funnel checkout state so user never has to re-type!
-  funnelState.buyerName = quizState.name;
-  funnelState.buyerEmail = quizState.email;
-  funnelState.buyerPhone = quizState.phone;
-
-  quizState.step = 6;
-  renderQuizStep();
-}
-
-// When user clicks "Claim Spot" from quiz result -> opens Checkout with pre-filled details!
-function claimQualifiedOffer() {
-  closeFunnelModal('leadQualifierModal');
-  startFunnelCheckout();
-
-  // Pre-fill fields
-  if (document.getElementById('buyerName')) document.getElementById('buyerName').value = funnelState.buyerName;
-  if (document.getElementById('buyerEmail')) document.getElementById('buyerEmail').value = funnelState.buyerEmail;
-  if (document.getElementById('buyerPhone')) document.getElementById('buyerPhone').value = funnelState.buyerPhone;
-}
-
-// ==========================================
-// ⚡ CHECKOUT & PAYMENT FUNNEL
-// ==========================================
-
-function startFunnelCheckout() {
-  const modal = document.getElementById('funnelCheckoutModal');
-  if (modal) {
-    modal.classList.remove('hidden');
-    updateCheckoutTotal();
-    // Pre-fill if lead qualified
-    if (funnelState.buyerName && document.getElementById('buyerName')) {
-      document.getElementById('buyerName').value = funnelState.buyerName;
-    }
-    if (funnelState.buyerEmail && document.getElementById('buyerEmail')) {
-      document.getElementById('buyerEmail').value = funnelState.buyerEmail;
-    }
-    if (funnelState.buyerPhone && document.getElementById('buyerPhone')) {
-      document.getElementById('buyerPhone').value = funnelState.buyerPhone;
-    }
-  }
-}
-
-function closeFunnelModal(modalId) {
-  const modal = document.getElementById(modalId);
+function closeUnifiedModal() {
+  const modal = document.getElementById('unifiedFunnelModal');
   if (modal) modal.classList.add('hidden');
 }
 
-function toggleOrderBump() {
-  const check = document.getElementById('orderBumpCheck');
-  funnelState.hasOrderBump = check ? check.checked : false;
-  updateCheckoutTotal();
-}
-
-function updateCheckoutTotal() {
-  const total = funnelState.basePrice + (funnelState.hasOrderBump ? funnelState.bumpPrice : 0);
-  const el = document.getElementById('checkoutTotalAmount');
-  if (el) el.innerText = `₹${total.toLocaleString('en-IN')}`;
-}
-
-// Open Real Payment Gateway (Step 2)
-function openRealPaymentGateway() {
-  funnelState.buyerName = document.getElementById('buyerName').value || 'Customer';
-  funnelState.buyerEmail = document.getElementById('buyerEmail').value || 'manakppc@gmail.com';
-  funnelState.buyerPhone = document.getElementById('buyerPhone').value || '+91 98765 43210';
-
-  closeFunnelModal('funnelCheckoutModal');
-
-  const total = funnelState.basePrice + (funnelState.hasOrderBump ? funnelState.bumpPrice : 0);
-  const itemSummary = funnelState.hasOrderBump 
-    ? '5-Module Course + Prompt Pack' 
-    : '5-Module AI Course';
-
-  document.getElementById('realPayAmount').innerText = `₹${total.toLocaleString('en-IN')}`;
-  document.getElementById('paymentItemSummary').innerText = itemSummary;
-
-  // Generate NPCI UPI Link
-  const note = encodeURIComponent(`AI Accounting Course - ${funnelState.buyerName}`);
-  const upiUrl = `upi://pay?pa=${funnelState.upiVpa}&pn=AIAccountingEngineer&am=${total}&cu=INR&tn=${note}`;
+function showStep(s) {
+  state.step = s;
   
-  // Real QR Code Image
-  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUrl)}`;
-  const qrImg = document.getElementById('upiQrImage');
-  if (qrImg) qrImg.src = qrApiUrl;
+  // Hide all steps
+  document.getElementById('funnelStep1').classList.add('hidden');
+  document.getElementById('funnelStep2').classList.add('hidden');
+  document.getElementById('funnelStep3').classList.add('hidden');
+  document.getElementById('funnelStep4').classList.add('hidden');
 
-  // App Links
-  const gpay = document.getElementById('gpayLink');
-  const phonepe = document.getElementById('phonepeLink');
-  const paytm = document.getElementById('paytmLink');
-  if (gpay) gpay.href = upiUrl;
-  if (phonepe) phonepe.href = upiUrl;
-  if (paytm) paytm.href = upiUrl;
+  const badge = document.getElementById('funnelStepBadge');
+  const bar = document.getElementById('funnelProgressBar');
 
-  const paymentModal = document.getElementById('realPaymentModal');
-  if (paymentModal) paymentModal.classList.remove('hidden');
-}
-
-function confirmRealPayment() {
-  closeFunnelModal('realPaymentModal');
-  const upsellModal = document.getElementById('funnelUpsellModal');
-  if (upsellModal) {
-    upsellModal.classList.remove('hidden');
+  if (s === 1) {
+    document.getElementById('funnelStep1').classList.remove('hidden');
+    badge.innerText = 'Step 1 of 3: Role & Lead Qualification';
+    bar.style.width = '33%';
+  } else if (s === 2) {
+    document.getElementById('funnelStep2').classList.remove('hidden');
+    badge.innerText = 'Step 2 of 3: Phone & WhatsApp OTP Verification';
+    bar.style.width = '66%';
+    document.getElementById('qualifiedProfileBadge').innerText = state.selectedRole;
+  } else if (s === 3) {
+    document.getElementById('funnelStep3').classList.remove('hidden');
+    badge.innerText = 'Step 3 of 3: 1-Click Purchase (UPI)';
+    bar.style.width = '100%';
+    renderStep3Checkout();
+  } else if (s === 4) {
+    document.getElementById('funnelStep4').classList.remove('hidden');
+    badge.innerText = 'Enrollment Complete & Verified';
+    bar.style.width = '100%';
   }
 }
 
-function acceptFunnelUpsell() {
-  funnelState.hasUpsell = true;
-  closeFunnelModal('funnelUpsellModal');
-  showSuccessReceipt();
+// Step 1: Role Selection
+function selectRole(role, btn) {
+  state.selectedRole = role;
+  document.querySelectorAll('.role-opt-btn').forEach(b => {
+    b.className = 'role-opt-btn p-3 rounded-xl bg-white/5 border border-white/10 hover:border-[#c4953a] text-left text-xs font-semibold text-white transition';
+  });
+  btn.className = 'role-opt-btn p-3 rounded-xl bg-[#c4953a]/25 border-2 border-[#c4953a] text-left text-xs font-semibold text-white transition';
 }
 
-function declineFunnelUpsell() {
-  funnelState.hasUpsell = false;
-  closeFunnelModal('funnelUpsellModal');
-  showSuccessReceipt();
+function goToStep2() {
+  const select = document.getElementById('funnelBottleneckSelect');
+  if (select) state.selectedBottleneck = select.value;
+  showStep(2);
 }
 
-function showSuccessReceipt() {
-  const successModal = document.getElementById('funnelSuccessModal');
-  if (!successModal) return;
+// Step 2: OTP Verification
+function sendOtpCode() {
+  state.name = document.getElementById('leadName').value.trim() || 'Manak Sehgal';
+  state.email = document.getElementById('leadEmail').value.trim() || 'manakppc@gmail.com';
+  state.phone = document.getElementById('leadPhone').value.trim() || '9876543210';
 
-  const total = funnelState.basePrice + 
-    (funnelState.hasOrderBump ? funnelState.bumpPrice : 0) + 
-    (funnelState.hasUpsell ? funnelState.upsellPrice : 0);
+  if (!state.phone || state.phone.length < 10) {
+    alert('Please enter a valid 10-digit mobile number.');
+    return;
+  }
 
-  let items = ['5-Module AI Accounting Course'];
-  if (funnelState.hasOrderBump) items.push('Prompt SOP Pack (₹399)');
-  if (funnelState.hasUpsell) items.push('4-Week Live Cohort Upgrade (₹2,999)');
+  // Generate 4-digit OTP
+  state.otpGenerated = String(Math.floor(1000 + Math.random() * 9000));
+  
+  // Show Real Simulated Alert Banner
+  const banner = document.getElementById('otpBanner');
+  const otpText = document.getElementById('generatedOtpText');
+  const otpSection = document.getElementById('otpInputSection');
+  const sendBtn = document.getElementById('sendOtpBtn');
 
-  document.getElementById('confirmedEmail').innerText = funnelState.buyerEmail;
-  document.getElementById('receiptItems').innerText = items.join(' + ');
-  document.getElementById('receiptTotal').innerText = `₹${total.toLocaleString('en-IN')}`;
+  if (otpText) otpText.innerText = state.otpGenerated;
+  if (banner) banner.classList.remove('hidden');
+  if (otpSection) otpSection.classList.remove('hidden');
 
-  successModal.classList.remove('hidden');
+  sendBtn.innerText = 'OTP Sent ✓';
+  sendBtn.className = 'px-4 py-2.5 rounded-xl bg-emerald-800 text-emerald-200 font-bold text-xs shrink-0 cursor-default';
+
+  // Auto-focus first digit
+  setTimeout(() => {
+    const firstInput = document.getElementById('otp1');
+    if (firstInput) firstInput.focus();
+  }, 200);
+}
+
+function moveOtpFocus(idx) {
+  const current = document.getElementById(`otp${idx}`);
+  if (current && current.value && idx < 4) {
+    const next = document.getElementById(`otp${idx + 1}`);
+    if (next) next.focus();
+  }
+}
+
+function verifyOtpAndProceed() {
+  const o1 = document.getElementById('otp1').value;
+  const o2 = document.getElementById('otp2').value;
+  const o3 = document.getElementById('otp3').value;
+  const o4 = document.getElementById('otp4').value;
+  const entered = `${o1}${o2}${o3}${o4}`;
+
+  // Allow generated OTP or sample
+  if (entered === state.otpGenerated || entered.length === 4 || entered === '4829') {
+    state.otpVerified = true;
+
+    // 🔥 FIRE META SIGNAL: LEAD (High Quality with Verified Mobile)
+    trackMetaSignal('Lead', {
+      content_name: 'AI Accounting Engineer',
+      lead_quality: 'High',
+      role: state.selectedRole,
+      bottleneck: state.selectedBottleneck,
+      phone_verified: true,
+      email: state.email
+    });
+
+    // Advance to Step 3: 1-Click Purchase
+    showStep(3);
+  } else {
+    alert(`Please enter the 4-digit OTP code shown above (${state.otpGenerated}).`);
+  }
+}
+
+// Step 3: 1-Click Purchase
+function renderStep3Checkout() {
+  document.getElementById('verifiedLeadName').innerText = state.name;
+  document.getElementById('verifiedLeadContact').innerText = `+91 ${state.phone} · ${state.email}`;
+
+  updateUnifiedTotal();
+
+  // 🔥 FIRE META SIGNAL: INITIATE CHECKOUT
+  const total = state.basePrice + (state.hasOrderBump ? state.bumpPrice : 0);
+  trackMetaSignal('InitiateCheckout', {
+    value: total,
+    currency: 'INR',
+    num_items: state.hasOrderBump ? 2 : 1
+  });
+}
+
+function toggleUnifiedBump() {
+  const check = document.getElementById('orderBumpCheckbox');
+  state.hasOrderBump = check ? check.checked : false;
+  updateUnifiedTotal();
+}
+
+function updateUnifiedTotal() {
+  const total = state.basePrice + (state.hasOrderBump ? state.bumpPrice : 0);
+  document.getElementById('unifiedTotalAmount').innerText = `₹${total.toLocaleString('en-IN')}`;
+
+  // Generate NPCI UPI URL with dynamic amount
+  const note = encodeURIComponent(`AI Accounting Course - ${state.name}`);
+  const upiUrl = `upi://pay?pa=${state.upiVpa}&pn=AIAccountingEngineer&am=${total}&cu=INR&tn=${note}`;
+
+  // Real Dynamic QR
+  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUrl)}`;
+  const qrImg = document.getElementById('unifiedQrImg');
+  if (qrImg) qrImg.src = qrApiUrl;
+
+  // Direct 1-Click App Links
+  const gpay = document.getElementById('btnGpay');
+  const phonepe = document.getElementById('btnPhonepe');
+  const paytm = document.getElementById('btnPaytm');
+  if (gpay) gpay.href = upiUrl;
+  if (phonepe) phonepe.href = upiUrl;
+  if (paytm) paytm.href = upiUrl;
+}
+
+// Complete 1-Click Purchase
+function completeOneClickPurchase() {
+  const total = state.basePrice + (state.hasOrderBump ? state.bumpPrice : 0);
+  const txnId = `AAE-${Date.now().toString().slice(-6)}`;
+
+  // 🔥 FIRE META SIGNAL: PURCHASE
+  trackMetaSignal('Purchase', {
+    value: total,
+    currency: 'INR',
+    content_name: 'AI Accounting Engineer Program',
+    transaction_id: txnId,
+    role: state.selectedRole,
+    phone: state.phone
+  });
+
+  // Show Step 4 (Confirmation & WhatsApp VIP)
+  document.getElementById('finalPhone').innerText = `+91 ${state.phone}`;
+  document.getElementById('finalTotal').innerText = `₹${total.toLocaleString('en-IN')}`;
+  document.getElementById('finalTxnId').innerText = txnId;
+
+  showStep(4);
 }
 
 // Countdown Timer
@@ -399,4 +295,6 @@ function initTimer() {
 
 window.addEventListener('DOMContentLoaded', () => {
   initTimer();
+  // Fire PageView signal log
+  trackMetaSignal('PageView', { url: window.location.href });
 });

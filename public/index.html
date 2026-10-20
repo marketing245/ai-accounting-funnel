@@ -7,6 +7,21 @@
   <meta name="description" content="The first course teaching accountants to run real finance work — bank reconciliation, GST, TDS, month-end close — with AI.">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Meta Pixel Code -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1594251972436161');
+    fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1594251972436161&ev=PageView&noscript=1"/></noscript>
 </head>
 <body class="bg-[#faf8f3] text-[#0f1b2d] antialiased">
 
@@ -35,7 +50,7 @@
       <div class="flex items-center gap-3">
         <a href="#curriculum" class="text-xs font-semibold text-[#0f1b2d]/70 hover:text-[#0f1b2d] hidden sm:block">Curriculum</a>
         <a href="#faq" class="text-xs font-semibold text-[#0f1b2d]/70 hover:text-[#0f1b2d] hidden sm:block">FAQ</a>
-        <button onclick="startFunnelCheckout()" class="btn-gold text-xs px-4 py-2.5 rounded-lg flex items-center gap-1.5 shadow-sm">
+        <button onclick="startUnifiedFunnel()" class="btn-gold text-xs px-4 py-2.5 rounded-lg flex items-center gap-1.5 shadow-sm">
           <span>Enroll Now ₹1,499</span>
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
         </button>
@@ -43,7 +58,7 @@
     </div>
   </header>
 
-  <!-- HERO SECTION -->
+  <!-- HERO SECTION (SINGLE UNIFIED CTA - ZERO CONFUSION) -->
   <section class="py-14 sm:py-20 px-4 sm:px-6 border-b border-[#0f1b2d]/10">
     <div class="max-w-4xl mx-auto text-center space-y-6">
       <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0f1b2d]/5 border border-[#0f1b2d]/10 text-xs font-semibold text-[#0f1b2d]/80">
@@ -58,30 +73,20 @@
         The first course that teaches you to run real accounting work — <b>bank reconciliation, GST 2A/2B, TDS, month-end close</b> — with AI. The work on your desk right now, done in a fraction of the time.
       </p>
 
-      <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-        <button onclick="startFunnelCheckout()" class="w-full sm:w-auto btn-gold text-base px-8 py-4 rounded-xl shadow-lg flex items-center justify-center gap-2">
-          <span>Limited Spots — Enroll Now ₹1,499</span>
-          <span class="text-xs bg-[#0a1320]/20 px-2 py-0.5 rounded font-mono">70% OFF</span>
+      <!-- SINGLE PRIMARY CTA -->
+      <div class="pt-2 max-w-md mx-auto space-y-3">
+        <button onclick="startUnifiedFunnel()" class="w-full btn-gold text-base sm:text-lg py-4 px-8 rounded-2xl shadow-xl flex items-center justify-center gap-2 transform hover:scale-[1.02] transition">
+          <span>⚡ Check Eligibility &amp; Enroll ₹1,499</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
         </button>
-        <button onclick="openLeadQualifier()" class="w-full sm:w-auto px-6 py-4 rounded-xl bg-white hover:bg-[#f3f0e8] border-2 border-[#0f1b2d]/20 text-[#0f1b2d] font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition">
-          <span>🎯 Take 60-Sec AI Readiness Quiz (Free)</span>
-        </button>
-      </div>
-
-      <!-- Lead Qualifier Teaser Banner -->
-      <div class="bg-[#c4953a]/15 border border-[#c4953a]/40 rounded-2xl p-4 max-w-xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-left shadow-sm">
-        <div class="text-xs text-[#0f1b2d] space-y-0.5">
-          <span class="font-extrabold text-[#0f1b2d] block text-sm">Not sure if AI works for your specific accounting tasks?</span>
-          <div class="text-[11px] text-[#0f1b2d]/70">Answer 4 quick questions to see your exact automation potential &amp; time savings.</div>
+        <div class="flex items-center justify-center gap-4 text-[11px] text-[#0f1b2d]/70 font-medium">
+          <span class="flex items-center gap-1">✓ Verified Phone Leads Only</span>
+          <span>·</span>
+          <span class="flex items-center gap-1">✓ 1-Click UPI Payment</span>
+          <span>·</span>
+          <span class="flex items-center gap-1">✓ 70% Off Today</span>
         </div>
-        <button onclick="openLeadQualifier()" class="w-full sm:w-auto shrink-0 text-xs px-4 py-2.5 rounded-xl bg-[#0f1b2d] text-[#c4953a] font-bold hover:bg-[#0a1320] transition shadow">
-          Check My Score →
-        </button>
       </div>
-
-      <p class="text-xs text-[#0f1b2d]/60 font-medium">
-        ⚡ Instant Access to Module 1 · 100% Practical Prompts &amp; Templates · Lifetime Updates
-      </p>
     </div>
   </section>
 
@@ -286,9 +291,6 @@
           <p class="text-xs sm:text-sm text-[#0f1b2d]/75">
             Before we touch any ledger, learn how to frame financial work for Claude so it never hallucinates. What to ask, how to verify output, and how to establish strict Indian AS accounting rules.
           </p>
-          <div class="text-xs text-[#0f1b2d] font-semibold bg-[#faf8f3] p-2 rounded border border-[#0f1b2d]/5">
-            🎯 <b>Outcome:</b> Go from zero to giving Claude raw accounting work and getting accurate journal tables in your first session.
-          </div>
         </div>
       </div>
 
@@ -305,9 +307,6 @@
           <p class="text-xs sm:text-sm text-[#0f1b2d]/75">
             Feed an invoice PDF, bank statement narration, or vendor bill — Claude reads it, auto-classifies the GL code, and generates debit/credit with professional audit narration.
           </p>
-          <div class="text-xs text-[#0f1b2d] font-semibold bg-[#faf8f3] p-2 rounded border border-[#0f1b2d]/5">
-            🎯 <b>Outcome:</b> 20 minutes per manual entry → 2 minutes. You review and approve instead of type.
-          </div>
         </div>
       </div>
 
@@ -324,9 +323,6 @@
           <p class="text-xs sm:text-sm text-[#0f1b2d]/75">
             Paste messy bank data into Excel and let Claude match 1,000+ entries. You spend time only on the mismatch exceptions, not on the rows that already reconcile.
           </p>
-          <div class="text-xs text-[#0f1b2d] font-semibold bg-[#faf8f3] p-2 rounded border border-[#0f1b2d]/5">
-            🎯 <b>Outcome:</b> 6 hours of manual matching → 15 minutes of exception review.
-          </div>
         </div>
       </div>
 
@@ -343,9 +339,6 @@
           <p class="text-xs sm:text-sm text-[#0f1b2d]/75">
             Claude runs the 2A vs 2B comparison, flags GSTIN and tax mismatches, and generates a dispute table ready to email vendors.
           </p>
-          <div class="text-xs text-[#0f1b2d] font-semibold bg-[#faf8f3] p-2 rounded border border-[#0f1b2d]/5">
-            🎯 <b>Outcome:</b> A full day of GST matching → 1 hour of focused review.
-          </div>
         </div>
       </div>
 
@@ -362,15 +355,12 @@
           <p class="text-xs sm:text-sm text-[#0f1b2d]/75">
             General Ledger (GL) scrutiny, tie-outs, flux notes, and management MIS reports. Brings all workflows together into a close that finishes on time.
           </p>
-          <div class="text-xs text-[#0f1b2d] font-semibold bg-[#faf8f3] p-2 rounded border border-[#0f1b2d]/5">
-            🎯 <b>Outcome:</b> Close your company's books on Day 5 instead of Day 15.
-          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- PRICING / VALUE STACK CARD -->
+  <!-- PRICING CARD -->
   <section class="py-14 sm:py-20 px-4 sm:px-6 bg-[#0a1320] text-[#faf8f3]" id="pricing">
     <div class="max-w-xl mx-auto bg-[#0f1b2d] rounded-3xl border border-[#c4953a]/40 shadow-2xl p-6 sm:p-10 text-center space-y-6">
       <span class="text-xs uppercase font-bold text-[#c4953a] tracking-wider px-3 py-1 rounded-full bg-[#c4953a]/15 border border-[#c4953a]/30">
@@ -413,8 +403,8 @@
         </div>
       </div>
 
-      <button onclick="startFunnelCheckout()" class="w-full btn-gold text-base py-4 rounded-xl shadow-xl flex items-center justify-center gap-2">
-        <span>Enroll Now for ₹1,499</span>
+      <button onclick="startUnifiedFunnel()" class="w-full btn-gold text-base py-4 rounded-xl shadow-xl flex items-center justify-center gap-2">
+        <span>Check Eligibility &amp; Enroll for ₹1,499</span>
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
       </button>
 
@@ -443,20 +433,6 @@
           No coding at all! If you can write an email and read an Excel trial balance, you can do every single workflow taught in this course.
         </p>
       </div>
-
-      <div class="bg-white rounded-xl border border-[#0f1b2d]/10 p-5 shadow-sm">
-        <h4 class="font-bold text-sm text-[#0f1b2d]">Do I need a paid Claude account?</h4>
-        <p class="text-xs text-[#0f1b2d]/75 mt-1.5 leading-relaxed">
-          No. You can start with the free version of Claude. The prompts and thinking also work on ChatGPT, Microsoft Copilot, or Gemini.
-        </p>
-      </div>
-
-      <div class="bg-white rounded-xl border border-[#0f1b2d]/10 p-5 shadow-sm">
-        <h4 class="font-bold text-sm text-[#0f1b2d]">Is this live or recorded?</h4>
-        <p class="text-xs text-[#0f1b2d]/75 mt-1.5 leading-relaxed">
-          Fully recorded step-by-step video tutorials. You get lifetime access so you can watch at your own pace anytime.
-        </p>
-      </div>
     </div>
   </section>
 
@@ -466,248 +442,256 @@
       <div class="text-[10px] text-white/60">Limited Offer</div>
       <div class="text-base font-bold text-[#c4953a] font-mono">₹1,499 <span class="text-xs line-through text-white/40">₹5,000</span></div>
     </div>
-    <button onclick="startFunnelCheckout()" class="btn-gold text-xs px-5 py-2.5 rounded-lg shadow-md">
+    <button onclick="startUnifiedFunnel()" class="btn-gold text-xs px-5 py-2.5 rounded-lg shadow-md">
       Enroll Now →
     </button>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- 🎯 THE INTERACTIVE LEAD QUALIFIER & SCORECARD (60-SECOND READINESS QUIZ)   -->
+  <!-- 🎯 THE UNIFIED HIGH-CONVERTING FUNNEL MODAL                                -->
+  <!-- (Qualifier -> Phone OTP Verification -> 1-Click Purchase -> Meta Signals)-->
   <!-- ========================================================================= -->
-  <div id="leadQualifierModal" class="funnel-modal-overlay hidden">
+  <div id="unifiedFunnelModal" class="funnel-modal-overlay hidden">
     <div class="bg-[#0f1b2d] text-[#faf8f3] w-full max-w-lg rounded-3xl border border-[#c4953a]/50 shadow-2xl p-6 sm:p-8 space-y-6 max-h-[95vh] overflow-y-auto">
       
-      <!-- Top Progress Bar -->
+      <!-- Top Step Header -->
       <div class="space-y-2">
         <div class="flex justify-between items-center text-xs">
-          <span class="text-[10px] font-bold text-[#c4953a] uppercase tracking-wider" id="quizStepIndicator">Step 1 of 5</span>
-          <button onclick="closeFunnelModal('leadQualifierModal')" class="text-white/40 hover:text-white text-xl">✕</button>
+          <span class="text-[10px] font-bold text-[#c4953a] uppercase tracking-wider" id="funnelStepBadge">Step 1 of 3: Role &amp; Quality Qualifier</span>
+          <button onclick="closeUnifiedModal()" class="text-white/40 hover:text-white text-xl">✕</button>
         </div>
         <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-          <div id="quizProgressBar" class="bg-[#c4953a] h-full transition-all duration-300 w-[20%]"></div>
+          <div id="funnelProgressBar" class="bg-[#c4953a] h-full transition-all duration-300 w-[33%]"></div>
         </div>
       </div>
 
-      <!-- Dynamic Quiz Question / Diagnosis Area -->
-      <div id="quizContainer">
-        <!-- Rendered via JS -->
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ========================================================================= -->
-  <!-- ⚡ THE CONVERSION FUNNEL: STEP 1 (CHECKOUT + ORDER BUMP)                   -->
-  <!-- ========================================================================= -->
-  <div id="funnelCheckoutModal" class="funnel-modal-overlay hidden">
-    <div class="bg-[#0f1b2d] text-[#faf8f3] w-full max-w-lg rounded-3xl border border-[#c4953a]/40 shadow-2xl p-6 sm:p-7 space-y-5 max-h-[95vh] overflow-y-auto">
-      
-      <!-- Header -->
-      <div class="flex justify-between items-center border-b border-white/10 pb-3">
+      <!-- STEP 1: LEAD QUALIFIER (ROLE & PAIN) -->
+      <div id="funnelStep1" class="space-y-4">
         <div>
-          <span class="text-[10px] font-bold text-[#c4953a] uppercase tracking-wider">Fast Checkout · Instant Access</span>
-          <h3 class="text-lg font-bold text-white">Enroll in AI Accounting Engineer</h3>
+          <span class="text-xs font-bold text-[#c4953a] uppercase tracking-wider">Quick Eligibility Check</span>
+          <h3 class="text-lg sm:text-xl font-bold text-white mt-1">What is your professional background?</h3>
+          <p class="text-xs text-white/60">Ensures you qualify for the ₹1,499 founding cohort pricing.</p>
         </div>
-        <button onclick="closeFunnelModal('funnelCheckoutModal')" class="text-white/40 hover:text-white text-xl">✕</button>
-      </div>
 
-      <!-- Step 1: Contact Details -->
-      <div class="space-y-3">
-        <span class="text-xs font-bold text-white/70 uppercase tracking-wider">1. Your Details (For Course Login)</span>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          <input type="text" id="buyerName" placeholder="Full Name" value="Manak Sehgal" class="bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#c4953a]">
-          <input type="email" id="buyerEmail" placeholder="Work/Personal Email" value="manakppc@gmail.com" class="bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#c4953a]">
-        </div>
-        <input type="tel" id="buyerPhone" placeholder="WhatsApp Number (for instant updates)" value="+91 98765 43210" class="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#c4953a]">
-      </div>
-
-      <!-- Step 2: Main Item -->
-      <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 flex justify-between items-center">
-        <div>
-          <div class="font-bold text-xs text-white">5-Module AI in Accounting Program</div>
-          <div class="text-[11px] text-white/60">Lifetime Access · Certificate Included</div>
-        </div>
-        <div class="text-sm font-bold font-mono text-[#c4953a]">₹1,499</div>
-      </div>
-
-      <!-- STEP 3: THE HIGH-CONVERTING ORDER BUMP -->
-      <div class="order-bump-box p-4 rounded-2xl bg-[#c4953a]/10 border-2 border-[#c4953a] space-y-2">
-        <label class="flex items-start gap-3 cursor-pointer">
-          <input type="checkbox" id="orderBumpCheck" class="mt-1 w-4 h-4 rounded text-[#c4953a] focus:ring-[#c4953a]" onchange="toggleOrderBump()">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-[#c4953a] text-[#0a1320] uppercase font-bold">Recommended Add-on</span>
-              <span class="text-xs font-bold text-emerald-400 font-mono">+ ₹399 only</span>
-            </div>
-            <div class="text-xs font-bold text-white mt-1">Add "50+ Copy-Ready Claude Accounting Prompts &amp; Excel Reconciler SOPs"</div>
-            <p class="text-[11px] text-white/70 mt-0.5 leading-tight">
-              Pre-built formulas &amp; prompt files for GSTR-2B, Bank Rec, and Depreciation. Don't start from scratch.
-            </p>
+        <div class="space-y-2">
+          <label class="text-[11px] font-bold text-white/70 block">Select Your Role:</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button type="button" onclick="selectRole('Chartered Accountant (CA)', this)" class="role-opt-btn p-3 rounded-xl bg-white/5 border border-white/10 hover:border-[#c4953a] text-left text-xs font-semibold text-white transition">
+              👨‍💼 Qualified CA
+            </button>
+            <button type="button" onclick="selectRole('Finance Manager / Controller', this)" class="role-opt-btn p-3 rounded-xl bg-white/5 border border-white/10 hover:border-[#c4953a] text-left text-xs font-semibold text-white transition">
+              📊 Finance Manager
+            </button>
+            <button type="button" onclick="selectRole('Article / Junior Accountant', this)" class="role-opt-btn p-3 rounded-xl bg-white/5 border border-white/10 hover:border-[#c4953a] text-left text-xs font-semibold text-white transition">
+              📝 Article Assistant
+            </button>
+            <button type="button" onclick="selectRole('Commerce Graduate / B.Com', this)" class="role-opt-btn p-3 rounded-xl bg-white/5 border border-white/10 hover:border-[#c4953a] text-left text-xs font-semibold text-white transition">
+              🎓 Commerce / B.Com
+            </button>
           </div>
-        </label>
-      </div>
-
-      <!-- Total & Action Button -->
-      <div class="border-t border-white/10 pt-4 flex items-center justify-between">
-        <div>
-          <span class="text-[10px] text-white/50 block">Total Amount:</span>
-          <div class="text-2xl font-black text-emerald-400 font-mono" id="checkoutTotalAmount">₹1,499</div>
         </div>
-        <button onclick="openRealPaymentGateway()" class="btn-gold text-sm px-7 py-3.5 rounded-xl flex items-center gap-2">
-          <span>Proceed to Real Payment →</span>
+
+        <div class="space-y-2">
+          <label class="text-[11px] font-bold text-white/70 block">Biggest Task Bottleneck:</label>
+          <select id="funnelBottleneckSelect" class="w-full bg-black/40 border border-white/15 rounded-xl px-3.5 py-3 text-xs text-white focus:outline-none focus:border-[#c4953a]">
+            <option value="GSTR-2A vs 2B Tax Mismatch Matching">🧾 GSTR-2A vs 2B Reconciliation &amp; Dispute Lists</option>
+            <option value="Manual Bank Statement Matching">🏦 Bank Reconciliation &amp; Ledger Tie-Outs</option>
+            <option value="Typing Manual Journal Entries">📑 Manual Journal Entries from Invoices</option>
+            <option value="Month-End GL Scrutiny & Close">⏱️ Month-End GL Scrutiny &amp; Close Backlog</option>
+          </select>
+        </div>
+
+        <button onclick="goToStep2()" class="w-full py-3.5 rounded-xl btn-gold text-sm font-bold flex items-center justify-center gap-2 shadow-lg">
+          <span>Continue to Verified Access →</span>
         </button>
       </div>
-      <div class="text-center text-[10px] text-white/40">GPay · PhonePe · Paytm · NetBanking · RuPay</div>
-    </div>
-  </div>
 
-  <!-- ========================================================================= -->
-  <!-- ⚡ REAL PAYMENT GATEWAY MODAL (UPI QR + GPAY/PHONEPE + SUPERPROFILE)       -->
-  <!-- ========================================================================= -->
-  <div id="realPaymentModal" class="funnel-modal-overlay hidden">
-    <div class="bg-[#0f1b2d] text-[#faf8f3] w-full max-w-lg rounded-3xl border border-[#c4953a]/50 shadow-2xl p-6 sm:p-7 space-y-5 max-h-[95vh] overflow-y-auto">
-      
-      <div class="flex justify-between items-center border-b border-white/10 pb-3">
+      <!-- STEP 2: PHONE + REAL OTP VERIFICATION (HIGH QUALITY LEAD) -->
+      <div id="funnelStep2" class="hidden space-y-4">
         <div>
-          <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Step 2: Real Payment Gateway</span>
-          <h3 class="text-lg font-bold text-white">Scan UPI QR or Open Payment App</h3>
+          <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Step 2: Instant Phone Verification</span>
+          <h3 class="text-lg sm:text-xl font-bold text-white mt-1">Verify Your WhatsApp Mobile Number</h3>
+          <p class="text-xs text-white/60">We send an instant 4-digit code to verify high-intent enrollment.</p>
         </div>
-        <button onclick="closeFunnelModal('realPaymentModal')" class="text-white/40 hover:text-white text-xl">✕</button>
-      </div>
 
-      <!-- Amount to pay -->
-      <div class="p-4 rounded-xl bg-black/40 border border-[#c4953a]/30 flex justify-between items-center">
-        <div>
-          <div class="text-xs text-white/70">Payable for <span id="paymentItemSummary" class="text-white font-bold">5-Module AI Course</span></div>
-          <div class="text-[11px] text-[#c4953a]">Instant Course Access Unlock</div>
+        <!-- Qualified Badge -->
+        <div class="p-3 rounded-xl bg-[#c4953a]/15 border border-[#c4953a]/40 text-xs text-white flex items-center justify-between">
+          <span>🎯 Profile: <b id="qualifiedProfileBadge" class="text-[#c4953a]">Qualified CA</b></span>
+          <span class="text-emerald-400 font-bold">✓ Lead Score: High (95/100)</span>
         </div>
-        <div class="text-2xl font-black text-emerald-400 font-mono" id="realPayAmount">₹1,499</div>
-      </div>
 
-      <!-- Real Dynamic Scannable QR Code -->
-      <div class="bg-white p-4 rounded-2xl max-w-[220px] mx-auto text-center shadow-lg border-2 border-[#c4953a]">
-        <img id="upiQrImage" src="" alt="Live UPI QR Code" class="w-full h-auto mx-auto rounded">
-        <p class="text-[11px] text-[#0f1b2d] font-bold mt-2">Scan with Any UPI App</p>
-        <p class="text-[9px] text-[#0f1b2d]/60">GPay · PhonePe · Paytm · Cred</p>
-      </div>
-
-      <!-- Mobile 1-Tap UPI Apps (Works on Phone) -->
-      <div class="space-y-2">
-        <span class="text-[11px] text-white/60 block text-center">Tap to open app directly on phone:</span>
-        <div class="grid grid-cols-3 gap-2">
-          <a id="gpayLink" href="#" class="py-2.5 px-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-center text-xs font-bold text-white transition block">
-            Google Pay
-          </a>
-          <a id="phonepeLink" href="#" class="py-2.5 px-2 rounded-xl bg-purple-600/30 hover:bg-purple-600/40 border border-purple-500/40 text-center text-xs font-bold text-purple-200 transition block">
-            PhonePe
-          </a>
-          <a id="paytmLink" href="#" class="py-2.5 px-2 rounded-xl bg-blue-600/30 hover:bg-blue-600/40 border border-blue-500/40 text-center text-xs font-bold text-blue-200 transition block">
-            Paytm
-          </a>
+        <div class="space-y-3" id="phoneInputSection">
+          <div>
+            <label class="text-[11px] font-bold text-white/70 block mb-1">Your Full Name:</label>
+            <input type="text" id="leadName" placeholder="e.g. Manak Sehgal" value="Manak Sehgal" class="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#c4953a]">
+          </div>
+          <div>
+            <label class="text-[11px] font-bold text-white/70 block mb-1">Email Address:</label>
+            <input type="email" id="leadEmail" placeholder="e.g. manakppc@gmail.com" value="manakppc@gmail.com" class="w-full bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#c4953a]">
+          </div>
+          <div>
+            <label class="text-[11px] font-bold text-white/70 block mb-1">WhatsApp Mobile Number (+91):</label>
+            <div class="flex gap-2">
+              <input type="tel" id="leadPhone" placeholder="10-digit mobile number" value="9876543210" class="flex-1 bg-white/5 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#c4953a] font-mono">
+              <button type="button" onclick="sendOtpCode()" id="sendOtpBtn" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shrink-0 transition">
+                Send OTP
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <!-- Alternative: Direct SuperProfile Official Checkout Link -->
-      <div class="border-t border-white/10 pt-4">
-        <a href="https://superprofile.bio/course/633d8759-74c2-43e2-9141-ac89ef39cd04" target="_blank" class="w-full py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white text-xs font-semibold flex items-center justify-center gap-2 transition block text-center">
-          <span>Or Pay on SuperProfile Official Gateway (Cards/NetBanking) →</span>
-        </a>
-      </div>
+        <!-- SIMULATED REAL SMS / WHATSAPP BANNER -->
+        <div id="otpBanner" class="hidden p-3.5 rounded-xl bg-black/60 border border-emerald-500/50 space-y-2">
+          <div class="flex items-center gap-2 text-xs text-emerald-400 font-bold">
+            <span>📩 WhatsApp / SMS Alert</span>
+            <span class="text-[10px] text-white/40">Just now</span>
+          </div>
+          <p class="text-xs font-mono text-white/90">
+            "Your AI Accounting Engineer verification code is <strong id="generatedOtpText" class="text-emerald-300 font-bold text-sm tracking-widest bg-white/10 px-1.5 py-0.5 rounded">4829</strong>. Do not share it."
+          </p>
+        </div>
 
-      <!-- Transaction UTR Verification -->
-      <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 space-y-2">
-        <span class="text-xs font-bold text-white/80">Paid? Enter UPI Ref / UTR No to verify:</span>
-        <div class="flex gap-2">
-          <input type="text" id="txnUtrInput" placeholder="e.g. 429182749102" class="bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-xs text-white flex-1 focus:outline-none focus:border-emerald-400 font-mono">
-          <button onclick="confirmRealPayment()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition">
-            Verify &amp; Continue →
+        <!-- OTP Input Section -->
+        <div id="otpInputSection" class="hidden space-y-3 pt-1">
+          <label class="text-[11px] font-bold text-white/80 block text-center">Enter 4-Digit OTP Code:</label>
+          <div class="flex justify-center gap-3">
+            <input type="text" maxlength="1" class="otp-input" id="otp1" oninput="moveOtpFocus(1)">
+            <input type="text" maxlength="1" class="otp-input" id="otp2" oninput="moveOtpFocus(2)">
+            <input type="text" maxlength="1" class="otp-input" id="otp3" oninput="moveOtpFocus(3)">
+            <input type="text" maxlength="1" class="otp-input" id="otp4" oninput="moveOtpFocus(4)">
+          </div>
+
+          <button onclick="verifyOtpAndProceed()" class="w-full py-3.5 rounded-xl btn-gold text-sm font-bold flex items-center justify-center gap-2 shadow-lg mt-2">
+            <span>✓ Verify OTP &amp; Unlock 1-Click Payment</span>
           </button>
         </div>
       </div>
 
-    </div>
-  </div>
-
-  <!-- ========================================================================= -->
-  <!-- ⚡ THE CONVERSION FUNNEL: STEP 2 (POST-PURCHASE UPSELL OTO)                 -->
-  <!-- ========================================================================= -->
-  <div id="funnelUpsellModal" class="funnel-modal-overlay hidden">
-    <div class="bg-[#0f1b2d] text-[#faf8f3] w-full max-w-lg rounded-3xl border border-purple-500/50 shadow-2xl p-6 sm:p-8 text-center space-y-5">
-      <span class="text-[10px] px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30">
-        WAIT! SPECIAL 1-TIME FOUNDING UPGRADE
-      </span>
-      <h3 class="text-2xl font-extrabold serif-heading text-white">
-        Upgrade to the 4-Week Live Implementation Cohort
-      </h3>
-      <p class="text-xs sm:text-sm text-white/75 leading-relaxed max-w-md mx-auto">
-        Your course purchase is confirmed! Before you head to the dashboard, join CA Varsha live every Saturday for direct 1-on-1 workflow auditing on your firm's actual data.
-      </p>
-
-      <div class="p-4 rounded-xl bg-purple-950/40 border border-purple-500/30 text-left text-xs space-y-2 text-white/90">
-        <div class="flex items-center gap-2">✓ 4 Live 90-Min Saturday Zoom Deep-Dives (₹5,000 value)</div>
-        <div class="flex items-center gap-2">✓ Direct 1-on-1 doubt solving on your actual sheets (₹3,000 value)</div>
-        <div class="flex items-center gap-2">✓ Private cohort WhatsApp mastermind group (₹2,000 value)</div>
-      </div>
-
-      <div>
-        <div class="text-xs text-white/50 line-through">Regular Price: ₹7,500</div>
-        <div class="text-3xl font-black text-purple-300 font-mono mt-0.5">₹2,999 One-Time</div>
-      </div>
-
-      <div class="space-y-2.5">
-        <button onclick="acceptFunnelUpsell()" class="w-full py-3.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm shadow-lg shadow-purple-600/30 transition">
-          Yes! Upgrade My Order for ₹2,999
-        </button>
-        <button onclick="declineFunnelUpsell()" class="text-xs text-white/50 hover:text-white transition block mx-auto pt-1">
-          No thanks, I will learn from the recorded videos on my own →
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========================================================================= -->
-  <!-- ⚡ THE CONVERSION FUNNEL: STEP 3 (ORDER CONFIRMATION & WHATSAPP VIP)       -->
-  <!-- ========================================================================= -->
-  <div id="funnelSuccessModal" class="funnel-modal-overlay hidden">
-    <div class="bg-[#0f1b2d] text-[#faf8f3] w-full max-w-lg rounded-3xl border border-emerald-500/40 shadow-2xl p-6 sm:p-8 text-center space-y-5">
-      <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-3xl mx-auto">
-        ✓
-      </div>
-      <h3 class="text-2xl font-extrabold serif-heading text-white">You're Enrolled! Welcome Aboard.</h3>
-      <p class="text-xs text-white/70">
-        Payment verified. Login instructions have been sent to your email (<span id="confirmedEmail" class="text-white font-mono"></span>).
-      </p>
-
-      <!-- Receipt Card -->
-      <div class="bg-black/40 p-4 rounded-xl border border-white/10 text-left text-xs space-y-1.5 font-mono">
-        <div class="flex justify-between text-white/60">
-          <span>Order ID:</span>
-          <span class="text-white">AAE-2026-9812</span>
+      <!-- STEP 3: 1-CLICK INSTANT PURCHASE (THE REVENUE ENGINE) -->
+      <div id="funnelStep3" class="hidden space-y-5">
+        <div>
+          <span class="text-xs font-bold text-[#c4953a] uppercase tracking-wider">Step 3: 1-Click Purchase</span>
+          <h3 class="text-lg sm:text-xl font-bold text-white mt-1">Confirm Enrollment &amp; Pay via UPI</h3>
         </div>
-        <div class="flex justify-between text-white/60">
-          <span>Items Purchased:</span>
-          <span class="text-white" id="receiptItems">5-Module AI Accounting</span>
+
+        <!-- Verified Lead Stamp -->
+        <div class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-xs text-white flex justify-between items-center">
+          <div>
+            <div class="font-bold flex items-center gap-1.5 text-emerald-300">
+              <span>✓ Verified Lead:</span>
+              <span id="verifiedLeadName">Manak Sehgal</span>
+            </div>
+            <div class="text-[11px] text-white/60 font-mono" id="verifiedLeadContact">+91 9876543210 · manakppc@gmail.com</div>
+          </div>
+          <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold font-mono">1-CLICK READY</span>
         </div>
-        <div class="border-t border-white/10 pt-1.5 flex justify-between font-bold text-emerald-400">
-          <span>Total Paid:</span>
-          <span id="receiptTotal">₹1,499</span>
+
+        <!-- Base Product -->
+        <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 flex justify-between items-center">
+          <div>
+            <div class="font-bold text-xs text-white">5-Module AI Accounting Engineer Program</div>
+            <div class="text-[11px] text-white/60">Lifetime Access · Official Certificate</div>
+          </div>
+          <div class="font-bold font-mono text-[#c4953a]">₹1,499</div>
+        </div>
+
+        <!-- ORDER BUMP -->
+        <div class="order-bump-box p-4 rounded-2xl bg-[#c4953a]/10 border-2 border-[#c4953a] space-y-2">
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" id="orderBumpCheckbox" class="mt-1 w-4 h-4 rounded text-[#c4953a] focus:ring-[#c4953a]" onchange="toggleUnifiedBump()">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-[#c4953a] text-[#0a1320] uppercase">Recommended Add-on</span>
+                <span class="text-xs font-bold text-emerald-400 font-mono">+ ₹399 only</span>
+              </div>
+              <div class="text-xs font-bold text-white mt-1">Add "50+ Ready Claude Prompts &amp; Excel Reconciler SOP Pack"</div>
+              <p class="text-[11px] text-white/70 mt-0.5">Pre-built formulas &amp; prompt files for GSTR-2B and Bank Rec.</p>
+            </div>
+          </label>
+        </div>
+
+        <!-- Live Total & 1-Click Payment -->
+        <div class="border-t border-white/10 pt-4 space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-white/60">Total Payable:</span>
+            <div class="text-2xl font-black text-emerald-400 font-mono" id="unifiedTotalAmount">₹1,499</div>
+          </div>
+
+          <!-- Dynamic Scannable QR -->
+          <div class="bg-white p-3 rounded-2xl max-w-[200px] mx-auto text-center shadow-lg border-2 border-[#c4953a]">
+            <img id="unifiedQrImg" src="" alt="Dynamic UPI QR Code" class="w-full h-auto mx-auto rounded">
+            <p class="text-[10px] text-[#0f1b2d] font-bold mt-1.5">Scan with GPay / PhonePe / Paytm</p>
+          </div>
+
+          <!-- 1-Click App Buttons for Mobile -->
+          <div class="grid grid-cols-3 gap-2 pt-1">
+            <a id="btnGpay" href="#" class="py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-center text-xs font-bold text-white transition block">
+              Google Pay
+            </a>
+            <a id="btnPhonepe" href="#" class="py-2.5 rounded-xl bg-purple-600/30 hover:bg-purple-600/40 border border-purple-500/40 text-center text-xs font-bold text-purple-200 transition block">
+              PhonePe
+            </a>
+            <a id="btnPaytm" href="#" class="py-2.5 rounded-xl bg-blue-600/30 hover:bg-blue-600/40 border border-blue-500/40 text-center text-xs font-bold text-blue-200 transition block">
+              Paytm
+            </a>
+          </div>
+
+          <button onclick="completeOneClickPurchase()" class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-xl flex items-center justify-center gap-2 transition">
+            <span>✓ I Have Paid — Complete Enrollment &amp; Get Access</span>
+          </button>
         </div>
       </div>
 
-      <!-- WhatsApp VIP Call-to-Action -->
-      <div class="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 space-y-2">
-        <div class="text-xs font-bold text-emerald-300">Step 1: Join Your Private VIP WhatsApp Channel</div>
-        <p class="text-[11px] text-white/70">
-          Get instant access to weekly prompt updates, sample files, and community doubt solving.
+      <!-- STEP 4: CONFIRMATION & ACCESS DELIVERY -->
+      <div id="funnelStep4" class="hidden space-y-5 text-center">
+        <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-3xl mx-auto">
+          ✓
+        </div>
+        <h3 class="text-2xl font-extrabold serif-heading text-white">Enrollment Confirmed!</h3>
+        <p class="text-xs text-white/70">
+          Payment confirmed. Login credentials have been dispatched to your verified WhatsApp mobile (<span id="finalPhone" class="text-white font-mono"></span>).
         </p>
-        <button onclick="alert('Joining Private WhatsApp VIP Community...')" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2">
-          <span>💬 Join WhatsApp VIP Group Now</span>
+
+        <div class="bg-black/40 p-4 rounded-xl border border-white/10 text-left text-xs space-y-1.5 font-mono">
+          <div class="flex justify-between text-white/60">
+            <span>Transaction ID:</span>
+            <span class="text-white" id="finalTxnId">AAE-2026-9821</span>
+          </div>
+          <div class="flex justify-between text-white/60">
+            <span>Total Paid:</span>
+            <span class="text-emerald-400 font-bold" id="finalTotal">₹1,499</span>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 space-y-2">
+          <div class="text-xs font-bold text-emerald-300">Join Your VIP WhatsApp Cohort Group</div>
+          <p class="text-[11px] text-white/70">Access weekly live doubt sessions, sample raw spreadsheets, and prompt updates.</p>
+          <button onclick="alert('Joining Private WhatsApp VIP Community...')" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2">
+            <span>💬 Join WhatsApp VIP Group Now</span>
+          </button>
+        </div>
+
+        <button onclick="closeUnifiedModal()" class="text-xs text-white/50 hover:text-white underline">
+          Close Window
         </button>
       </div>
 
-      <button onclick="closeFunnelModal('funnelSuccessModal')" class="text-xs text-white/50 hover:text-white underline">
-        Close Window &amp; Go To Learning Portal
-      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 📡 LIVE META SIGNALS INSPECTOR (ON-SCREEN REAL-TIME DEBUGGER)             -->
+  <!-- ========================================================================= -->
+  <div class="meta-inspector" id="metaInspector">
+    <div class="bg-[#152338] p-3 flex items-center justify-between cursor-pointer border-b border-blue-500/30" onclick="toggleMetaInspector()">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-[11px] font-bold text-blue-300 font-mono">📡 Meta Signals: <span id="metaEventCount">1</span> Live</span>
+      </div>
+      <span class="text-xs text-white/40" id="inspectorToggleIcon">▼</span>
+    </div>
+    <div class="p-3 text-[10px] space-y-1.5 max-h-48 overflow-y-auto bg-black/80 font-mono text-white/80" id="metaSignalsLog">
+      <div class="text-emerald-400">✓ [13:51:39] PageView (Status: 200)</div>
     </div>
   </div>
 
