@@ -4,6 +4,8 @@ const store = require('./store');
 const auth = require('./auth');
 
 async function fulfil(order, paymentId, source) {
+  const { paymentMode } = require('./config');
+  if (order.gateway === 'test' && paymentMode() !== 'test') throw Object.assign(new Error('Test orders cannot be fulfilled in live mode.'), { status: 400 });
   const now = new Date().toISOString();
   if (order.status !== 'paid') {
     order.status = 'paid'; order.paidAt = now; order.paymentId = paymentId; order.paidVia = source;

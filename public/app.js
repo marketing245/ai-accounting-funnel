@@ -91,9 +91,16 @@ async function submitCheckout(ev) {
 
   setBusy(true);
   var data;
+  var payload = function () { return JSON.stringify({ name: name, email: email, phone: phone, website: ($('custWebsite') && $('custWebsite').value) || '', formToken: CHECKOUT && CHECKOUT.formToken, attribution: window.aaeAttribution ? aaeAttribution() : null }); };
   try {
-    var r = await fetch('/api/checkout/create-order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, phone: phone, attribution: window.aaeAttribution ? aaeAttribution() : null }) });
+    var r = await fetch('/api/checkout/create-order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload() });
     data = await r.json();
+    if (data && data.code === 'FORM_TOKEN') { // token stale (page open for hours) → refresh it once and retry
+      await loadCheckoutConfig();
+      if (data.reason === 'too_fast') await new Promise(function (res) { setTimeout(res, 3200); });
+      r = await fetch('/api/checkout/create-order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload() });
+      data = await r.json();
+    }
   } catch (e) { data = { ok: false, error: 'Network error. Please check your connection and try again.' }; }
   if (!data || !data.ok) { setBusy(false); showError(data && data.error); return false; }
 
@@ -173,11 +180,11 @@ function submitBookingInquiry(e) {
   if (!name || !email || !phone) return false;
 
   // Send the inquiry to the server (stored under inquiries/, shown in /admin → Inquiries)
-  fetch('/api/inquiry', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: name, email: email, phone: phone, type: type, notes: notes, attribution: window.aaeAttribution ? aaeAttribution() : null })
-  }).catch(function () {});
+  var inqBody = function () { return JSON.stringify({ name: name, email: email, phone: phone, type: type, notes: notes, website: ($('bookWebsite') && $('bookWebsite').value) || '', formToken: CHECKOUT && CHECKOUT.formToken, attribution: window.aaeAttribution ? aaeAttribution() : null }); };
+  fetch('/api/inquiry', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: inqBody() })
+    .then(function (r) { return r.json(); })
+    .then(function (d) { if (d && d.code === 'FORM_TOKEN') return loadCheckoutConfig().then(function () { return fetch('/api/inquiry', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: inqBody() }); }); })
+    .catch(function () {});
   if (window.aaeTrack) aaeTrack('generate_lead', { lead_type: type });
 
   // Show success confirmation

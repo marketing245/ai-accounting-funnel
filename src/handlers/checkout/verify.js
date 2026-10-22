@@ -4,9 +4,11 @@ const store = require('../../lib/store');
 const auth = require('../../lib/auth');
 const rzp = require('../../lib/razorpay');
 const { fulfil } = require('../../lib/fulfil');
+const { paymentMode } = require('../../lib/config');
 
 module.exports = wrap(async (req, res) => {
   if (!allow(req, res, ['POST'])) return;
+  if (!auth.sameOrigin(req, res)) return;
   const body = await readJson(req);
   const orderId = String(body.orderId || body.razorpay_order_id || '').trim();
   if (!/^order_[A-Za-z0-9_]{6,64}$/.test(orderId)) return fail(res, 400, 'Invalid order reference.');
@@ -27,6 +29,7 @@ module.exports = wrap(async (req, res) => {
       return fail(res, 400, 'Payment details do not match this order.');
     }
   } else if (order.gateway === 'test') {
+    if (paymentMode() !== 'test') return fail(res, 400, 'Test orders cannot be completed on the live site. Please start a new checkout.');
     if (!auth.verifyTestPayment(orderId, String(body.testToken || ''))) return fail(res, 400, 'Invalid test payment token.');
     paymentId = `pay_test_${orderId.slice(-8)}`;
   } else {

@@ -6,9 +6,7 @@ const cert = require('../../lib/certificate');
 
 module.exports = wrap(async (req, res) => {
   if (!allow(req, res, ['GET'])) return;
-  const session = auth.requireSession(req, res); if (!session) return;
-  const user = await auth.getUser(session.email);
-  if (!user || !user.purchases || user.purchases.length === 0) return fail(res, 403, 'No active course purchase on this account.');
+  const user = await auth.loadSessionUser(req, res); if (!user) return;
   const c = await cert.ensureCertificate(user);
   if (!c) return fail(res, 409, 'Complete all modules to unlock your certificate.');
   const pdf = await cert.buildPdf({ id: c.id, name: user.name, issuedAt: c.issuedAt });

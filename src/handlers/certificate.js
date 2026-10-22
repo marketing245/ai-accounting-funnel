@@ -7,9 +7,7 @@ const { CURRICULUM } = require('../lib/course');
 
 module.exports = wrap(async (req, res) => {
   if (!allow(req, res, ['GET'])) return;
-  const session = auth.requireSession(req, res); if (!session) return;
-  const user = await auth.getUser(session.email);
-  if (!user || !user.purchases || user.purchases.length === 0) return fail(res, 403, 'No active course purchase on this account.');
+  const user = await auth.loadSessionUser(req, res); if (!user) return;
   const total = CURRICULUM.length, left = cert.remaining(user);
   if (left > 0 && !(user.certificate && user.certificate.id)) {
     return send(res, 200, { ok: true, ready: false, completed: total - left, total, remaining: left });

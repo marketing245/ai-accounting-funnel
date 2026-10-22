@@ -5,14 +5,13 @@ const { CURRICULUM } = require('../../lib/course');
 
 module.exports = wrap(async (req, res) => {
   if (!allow(req, res, ['POST'])) return;
-  const session = auth.requireSession(req, res); if (!session) return;
+  if (!auth.sameOrigin(req, res)) return;
+  const user = await auth.loadSessionUser(req, res); if (!user) return;
   const body = await readJson(req);
   const valid = new Set(CURRICULUM.map((m) => m.id));
   const completed = Array.isArray(body.completed) ? [...new Set(body.completed.map(Number).filter((n) => valid.has(n)))] : null;
   if (!completed) return fail(res, 400, 'completed must be an array of module ids.');
   const lastModule = Number(body.lastModule) || null;
-  const user = await auth.getUser(session.email);
-  if (!user) return fail(res, 401, 'Session expired.');
   const prev = user.progress || {};
   const modules = Object.assign({}, prev.modules || {});
   const now = new Date().toISOString();

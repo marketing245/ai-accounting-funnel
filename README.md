@@ -65,6 +65,7 @@ students with progress and certificates, and **where every order came from**: UT
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | live | from Razorpay dashboard → Account & Settings → API keys |
 | `RAZORPAY_WEBHOOK_SECRET` | live | set when creating the webhook `https://<domain>/api/checkout/webhook` |
 | `ADMIN_PASSWORD` | yes | password for `/admin` |
+| `ACCESS_ALLOWLIST` | optional | comma-separated emails that keep portal access in live mode without a real purchase (instructor/demo) |
 | `META_PIXEL_ID`, `META_CAPI_TOKEN` | ads | Meta Conversions API (Events Manager → Settings → Generate access token); `META_TEST_EVENT_CODE` optional |
 | `GOOGLE_OFFLINE_CONVERSION_NAME` | optional | conversion action name in the Google Ads offline CSV |
 | `SITE_URL` | recommended | canonical URL, e.g. `https://course.aiaccountingengineer.com` |
@@ -76,6 +77,13 @@ students with progress and certificates, and **where every order came from**: UT
 | `SUPPORT_EMAIL` | optional | defaults to hello@aiaccountingengineer.com |
 
 Public tags (GA4, Google Ads conversion label, Meta pixel) live in `public/site-config.js`.
+
+## Access control (what keeps non-payers out)
+- Every portal/certificate/progress API loads the user from storage and checks **`hasAccess`**: in `PAYMENT_MODE=test` any purchase counts (demo); in live mode **only purchases with a real gateway count** — test orders can never be verified or fulfilled, and accounts that only ever had test purchases lose access automatically. `ACCESS_ALLOWLIST=email1,email2` keeps named demo accounts (instructor, team) working in live mode.
+- Sessions: HMAC-signed HttpOnly cookie (`AUTH_SECRET`), 30 days, carries a password version — changing the password logs out every other device. Login lockout 6 fails / 15 min per account; admin lockout 10 fails / 15 min.
+- Public POSTs (checkout, inquiry) need a signed form token from `/api/checkout/config` (≥3 s old, ≤6 h) and an empty honeypot field; all POSTs reject foreign `Origin`.
+- Videos: ids only in `src/lib/course.js` / Bunny; embed URLs signed per request (6 h), Bunny token auth ON, direct CDN URLs 403, embeds restricted to the site's hostname (Bunny allowed referrers).
+- Before go-live run `node scripts/purge-test-data.js --yes` to delete test orders/users/certificates.
 
 ## Go-live checklist
 - [ ] Custom domain on Vercel (e.g. `course.aiaccountingengineer.com`) and `SITE_URL` updated

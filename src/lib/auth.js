@@ -17,7 +17,8 @@ const b64u = (buf) => Buffer.from(buf).toString('base64url');
 const hmac = (data, salt = '') => crypto.createHmac('sha256', secret() + salt).update(data).digest();
 
 function signToken(payload, ttlSeconds) {
-  const body = b64u(JSON.stringify({ ...payload, exp: Math.floor(Date.now() / 1000) + ttlSeconds }));
+  const now = Math.floor(Date.now() / 1000);
+  const body = b64u(JSON.stringify({ ...payload, iat: now, exp: now + ttlSeconds }));
   return `${body}.${b64u(hmac(body))}`;
 }
 
@@ -56,7 +57,7 @@ async function getUser(email) { return store.readJson(`users/${userKey(email)}.j
 async function saveUser(user) { await store.writeJson(`users/${userKey(user.email)}.json`, user); }
 
 function setSession(res, req, user) {
-  const token = signToken({ sub: userKey(user.email), email: user.email, name: user.name }, SESSION_DAYS * 86400);
+  const token = signToken({ sub: userKey(user.email), email: user.email, name: user.name, pv: user.passwordSetAt ? Date.parse(user.passwordSetAt) : 0 }, SESSION_DAYS * 86400);
   setCookie(res, COOKIE, token, { maxAge: SESSION_DAYS * 86400, secure: isHttps(req) });
 }
 function clearSession(res, req) { setCookie(res, COOKIE, '', { maxAge: 0, secure: isHttps(req) }); }
@@ -70,6 +71,55 @@ function requireSession(req, res) {
   return s;
 }
 
+// Does this account currently have course access? In LIVE mode only real (non-test) purchases count,
+// unless the email is on ACCESS_ALLOWLIST (comma-separated, for the instructor / team demos).
+function hasAccess(user) {
+  if (!user || !Array.isArray(user.purchases) || !user.purchases.length) return false;
+  const { paymentMode } = require('./config');
+  if (paymentMode() === 'test') return true;
+  const allow = String(process.env.ACCESS_ALLOWLIST || '').split(',').map((e) => normalizeEmail(e)).filter(Boolean);
+  if (allow.includes(normalizeEmail(user.email))) return true;
+  return user.purchases.some((p) => p.gateway && p.gateway !== 'test');
+}
+
+// Session + fresh user record in one go. Sends 401/403 itself and returns null when the caller must stop.
+// A password change invalidates sessions issued before it (token.pv vs user.passwordSetAt).
+async function loadSessionUser(req, res, { requireAccess = true } = {}) {
+  const s = getSession(req);
+  if (!s) { fail(res, 401, 'Please log in to continue.', { code: 'UNAUTHENTICATED' }); return null; }
+  const user = await getUser(s.email);
+  if (!user) { clearSession(res, req); fail(res, 401, 'Session expired.', { code: 'UNAUTHENTICATED' }); return null; }
+  const pv = user.passwordSetAt ? Date.parse(user.passwordSetAt) : 0;
+  if (pv && (s.pv || 0) < pv - 2000) { clearSession(res, req); fail(res, 401, 'Your password was changed. Please log in again.', { code: 'UNAUTHENTICATED' }); return null; }
+  if (requireAccess && !hasAccess(user)) { fail(res, 403, 'No active course purchase on this account.', { code: 'NO_ACCESS' }); return null; }
+  return user;
+}
+
+// Defence in depth against cross-site POSTs (cookies are SameSite=Lax already): a present Origin must be ours.
+function sameOrigin(req, res) {
+  const origin = req.headers.origin;
+  if (!origin || req.method === 'GET') return true;
+  const host = (req.headers['x-forwarded-host'] || req.headers.host || '').split(',')[0].trim().toLowerCase();
+  let oh = '';
+  try { oh = new URL(origin).host.toLowerCase(); } catch { oh = ''; }
+  if (oh && host && oh === host) return true;
+  fail(res, 403, 'Cross-site request blocked.', { code: 'BAD_ORIGIN' });
+  return false;
+}
+
+// Signed, time-boxed form token for public POSTs (checkout, inquiry): must be ≥3 s and ≤6 h old. Cheap bot filter.
+function issueFormToken() { const t = Date.now(); return `${t}.${b64u(hmac(`form|${t}`, '|form'))}`; }
+function checkFormToken(token) {
+  const [t, sig] = String(token || '').split('.');
+  if (!/^\d{10,16}$/.test(t || '') || !sig) return 'missing';
+  const expected = b64u(hmac(`form|${t}`, '|form'));
+  if (sig.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return 'invalid';
+  const age = Date.now() - Number(t);
+  if (age < 3000) return 'too_fast';
+  if (age > 6 * 3600 * 1000) return 'expired';
+  return null;
+}
+
 // Signed one-off tokens for the test gateway (no real money).
 function signTestPayment(orderId) { return b64u(hmac(`test-payment|${orderId}`, '|test')); }
 function verifyTestPayment(orderId, token) {
@@ -78,4 +128,4 @@ function verifyTestPayment(orderId, token) {
 }
 
 module.exports = { signToken, verifyToken, hashPassword, verifyPassword, normalizeEmail, userKey, getUser, saveUser,
-  setSession, clearSession, getSession, requireSession, signTestPayment, verifyTestPayment, COOKIE };
+  setSession, clearSession, getSession, requireSession, loadSessionUser, hasAccess, sameOrigin, issueFormToken, checkFormToken, signTestPayment, verifyTestPayment, COOKIE };

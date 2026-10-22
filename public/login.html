@@ -37,6 +37,7 @@
     </div>
   <script>
     (function () {
+      var esc = function (x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); };
       var form = document.getElementById('loginForm'), err = document.getElementById('err'), btn = document.getElementById('btn');
       var next = new URLSearchParams(location.search).get('next') || '/portal';
       if (!/^\/[a-z0-9\-\/]*$/i.test(next)) next = '/portal';
@@ -49,7 +50,7 @@
           data = await r.json();
         } catch (e2) { data = { ok: false, error: 'Network error. Please try again.' }; }
         if (data.ok) { location.replace(next); return; }
-        err.textContent = data.error || 'Could not log in.'; err.classList.add('show');
+        err.textContent = data.error || 'Could not log in.'; if (data.code === 'NO_ACCESS') err.innerHTML = esc(data.error) + ' <a href="/?open=checkout" style="color:#dfb35a;text-decoration:underline">Enroll in the course</a>'; err.classList.add('show');
         btn.disabled = false; btn.textContent = 'Log in to the portal';
       });
     })();

@@ -9,6 +9,7 @@ module.exports = wrap(async (req, res) => {
   send(res, 200, {
     ok: true,
     mode,
+    formToken: require('../../lib/auth').issueFormToken(),
     keyId: mode === 'razorpay' ? rzp.keyId() : null,
     pricing: PRICING,
     product: { id: PRODUCT.id, name: PRODUCT.name, supportEmail: PRODUCT.supportEmail },

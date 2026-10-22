@@ -10,7 +10,11 @@ const PHONE_RE = /^[6-9]\d{9}$/;
 
 module.exports = wrap(async (req, res) => {
   if (!allow(req, res, ['POST'])) return;
+  if (!auth.sameOrigin(req, res)) return;
   const body = await readJson(req);
+  if (String(body.website || '').trim()) return fail(res, 400, 'Spam check failed.');
+  const ft = auth.checkFormToken(body.formToken);
+  if (ft) return fail(res, 400, ft === 'too_fast' ? 'Please take a moment and try again.' : 'Your form session expired — please refresh the page and try again.', { code: 'FORM_TOKEN', reason: ft });
   const name = String(body.name || '').trim().replace(/\s+/g, ' ').slice(0, 80);
   const email = auth.normalizeEmail(body.email);
   const phone = String(body.phone || '').replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '');

@@ -13,7 +13,7 @@ function check(name, cond, extra) {
   if (!cond) failures++;
 }
 async function call(method, path, body, opts = {}) {
-  const headers = { 'Content-Type': 'application/json' };
+  const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
   if (cookie && !opts.noCookie) headers.Cookie = cookie;
   const r = await fetch(BASE + path, { method, headers, body: body ? JSON.stringify(body) : undefined, redirect: 'manual' });
   const sc = r.headers.get('set-cookie');
@@ -31,13 +31,23 @@ async function call(method, path, body, opts = {}) {
   if (r.data?.paymentMode !== 'test') { console.log('Server is not in test payment mode; cannot run the paid-flow checks.'); process.exit(1); }
 
   r = await call('GET', '/api/checkout/config');
-  check('checkout config', r.status === 200 && r.data.amount.total === 1769 && !('amounts' in r.data), JSON.stringify(r.data.amount));
+  check('checkout config', r.status === 200 && r.data.amount.total === 1769 && !('amounts' in r.data) && !!r.data.formToken, JSON.stringify(r.data.amount));
+  const formToken = r.data.formToken;
+  r = await call('POST', '/api/checkout/create-order', { name: 'Smoke Tester', email, phone: '9876543210', formToken });
+  check('create-order rejects a form token younger than 3 s', r.status === 400 && r.data.code === 'FORM_TOKEN');
+  r = await call('POST', '/api/checkout/create-order', { name: 'Smoke Tester', email, phone: '9876543210' });
+  check('create-order rejects a missing form token', r.status === 400 && r.data.code === 'FORM_TOKEN');
+  r = await call('POST', '/api/checkout/create-order', { name: 'Smoke Tester', email, phone: '9876543210', formToken, website: 'http://spam.example' });
+  check('create-order rejects honeypot', r.status === 400);
+  await new Promise((res) => setTimeout(res, 3300));
+  r = await call('POST', '/api/checkout/create-order', { name: 'CSRF Probe', email, phone: '9876543210', formToken }, { headers: { Origin: 'https://evil.example' } });
+  check('create-order rejects foreign Origin', r.status === 403 && r.data.code === 'BAD_ORIGIN');
 
-  r = await call('POST', '/api/checkout/create-order', { name: 'Smoke Tester', email, phone: '9876543210', bump: true /* must be ignored */, attribution: { first: { source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'x', landing: '/?utm_source=google' }, last: { source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'TeSt.gclid', landing: '/?utm_source=google' }, touches: [{ source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'TeSt.gclid', at: new Date().toISOString(), landing: '/' }], page: 'http://x/', screen: '1x1', vid: 'smokevid', sessions: 2, pageviews: 5 } });
+  r = await call('POST', '/api/checkout/create-order', { name: 'Smoke Tester', email, phone: '9876543210', formToken, bump: true /* must be ignored */, attribution: { first: { source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'x', landing: '/?utm_source=google' }, last: { source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'TeSt.gclid', landing: '/?utm_source=google' }, touches: [{ source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'TeSt.gclid', at: new Date().toISOString(), landing: '/' }], page: 'http://x/', screen: '1x1', vid: 'smokevid', sessions: 2, pageviews: 5 } });
   check('create order (test gateway)', r.status === 200 && r.data.gateway === 'test' && r.data.testToken, r.data?.orderId);
   const order = r.data;
 
-  r = await call('POST', '/api/checkout/create-order', { name: 'X', email: 'bad', phone: '123' });
+  r = await call('POST', '/api/checkout/create-order', { name: 'X', email: 'bad', phone: '123', formToken });
   check('create order rejects bad input', r.status === 400, r.data?.error);
 
   r = await call('POST', '/api/checkout/verify', { orderId: order.orderId, testToken: 'forged' });
@@ -101,8 +111,12 @@ async function call(method, path, body, opts = {}) {
 
   r = await call('POST', '/api/auth/set-password', { password: 'short' });
   check('set-password rejects short', r.status === 400);
+  const oldCookie = cookie;
   r = await call('POST', '/api/auth/set-password', { password });
-  check('set-password', r.status === 200 && r.data.ok);
+  check('set-password (re-issues session)', r.status === 200 && r.data.ok && cookie !== oldCookie);
+  { const o = await fetch(BASE + '/api/auth/me', { headers: { Cookie: oldCookie } }); check('session from before the password change is rejected', o.status === 401); }
+  r = await call('GET', '/api/auth/me');
+  check('new session works', r.status === 200);
 
   r = await call('POST', '/api/auth/logout');
   check('logout clears cookie', r.status === 200 && /aae_session=;?$/.test(cookie) || cookie === 'aae_session=');
@@ -124,9 +138,9 @@ async function call(method, path, body, opts = {}) {
   check('change password needs current password', r.status === 400);
 
   // inquiries (1:1 / workshops form) must NOT create orders
-  r = await call('POST', '/api/inquiry', { name: 'Smoke Inquirer', email: 'inq+' + Date.now() + '@example.com', phone: '9876543210', type: 'Corporate Webinar / Team Workshop', notes: 'team of 12', attribution: { last: { source: 'linkedin', medium: 'social', campaign: 'inq_test', landing: '/workshops' } } }, { noCookie: true });
+  r = await call('POST', '/api/inquiry', { name: 'Smoke Inquirer', email: 'inq+' + Date.now() + '@example.com', phone: '9876543210', type: 'Corporate Webinar / Team Workshop', notes: 'team of 12', formToken, attribution: { last: { source: 'linkedin', medium: 'social', campaign: 'inq_test', landing: '/workshops' } } }, { noCookie: true });
   check('inquiry stored', r.status === 200 && r.data.ok && /^inq_/.test(r.data.id));
-  r = await call('POST', '/api/inquiry', { name: 'x', email: 'bad', phone: '1' }, { noCookie: true });
+  r = await call('POST', '/api/inquiry', { name: 'x', email: 'bad', phone: '1', formToken }, { noCookie: true });
   check('inquiry validates', r.status === 400);
 
   // admin panel
@@ -165,6 +179,12 @@ async function call(method, path, body, opts = {}) {
     check('meta offline events csv', m.status === 200 && mText.includes('event_name') && mText.includes('Purchase'));
     r = await call('POST', '/api/admin/logout');
     cookie = '';
+    if (/localhost|127\.0\.0\.1/.test(BASE)) {
+      let last = null; for (let i = 0; i < 11; i++) { last = await call('POST', '/api/admin/login', { password: 'wrong-' + i }, { noCookie: true }); if (last.status === 429) break; }
+      check('admin lockout after repeated failures', last.status === 429);
+      const fsx = require('fs'); const lockFile = require('path').join(process.cwd(), '.data', 'dev', 'admin', 'lockout.json'); if (fsx.existsSync(lockFile)) fsx.unlinkSync(lockFile);
+      try { const { del, list } = require('@vercel/blob'); const pg = await list({ prefix: 'dev/admin/' }); if (pg.blobs.length) await del(pg.blobs.map((b) => b.url)); } catch {}
+    }
   } else console.log('skip  admin login checks (ADMIN_PASSWORD not in env)');
 
   // static pages

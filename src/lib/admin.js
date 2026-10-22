@@ -126,7 +126,7 @@ function studentRow(u, certByHash) {
     name: u.name, email: u.email, phone: u.phone, purchasedAt: last.at, paid: u.purchases.reduce((n, x) => n + (x.amount || 0), 0), orders: u.purchases.length,
     completed, total: CURRICULUM.length, completionPct: Math.round((completed / CURRICULUM.length) * 100), viewed: perModule.filter((m) => m.views > 0).length,
     watchMin, activeMin, lastActive, lastLoginAt: u.lastLoginAt || null, firstLoginAt: u.firstLoginAt || null, loginCount: u.loginCount || 0, failedLogins: u.failedLogins || 0, lockedUntil: u.lockedUntil || null,
-    hasPassword: !!u.passwordHash, passwordSetAt: u.passwordSetAt || null, certificate: (u.certificate && u.certificate.id) || (certByHash.get(auth.userKey(u.email)) || {}).id || null, certificateAt: u.certificate && u.certificate.issuedAt,
+    hasPassword: !!u.passwordHash, passwordSetAt: u.passwordSetAt || null, hasAccess: auth.hasAccess(u), testOnly: (u.purchases || []).every((p) => p.gateway === 'test'), certificate: (u.certificate && u.certificate.id) || (certByHash.get(auth.userKey(u.email)) || {}).id || null, certificateAt: u.certificate && u.certificate.issuedAt,
     createdAt: u.createdAt, lastModule: p.lastModule || null, perModule,
     status: !u.passwordHash ? 'no password' : completed === CURRICULUM.length ? 'completed' : lastActive && Date.now() - new Date(lastActive) < 7 * 86400000 ? 'active' : lastActive && Date.now() - new Date(lastActive) < 30 * 86400000 ? 'idle' : 'inactive',
   };
@@ -179,6 +179,7 @@ function settingsHealth() {
     googleOfflineConversionName: process.env.GOOGLE_OFFLINE_CONVERSION_NAME || 'Course Purchase',
     bunnyTokenAuth: env('BUNNY_TOKEN_AUTH_KEY'), bunnyStreamKey: env('BUNNY_STREAM_API_KEY'), whatsappGroup: env('WHATSAPP_GROUP_URL'),
     siteUrl: PRODUCT.siteUrl, storage: store.hasBlob ? 'vercel-blob' : 'local', blobPrefix: store.PREFIX, adminPassword: env('ADMIN_PASSWORD'), authSecret: env('AUTH_SECRET') && process.env.AUTH_SECRET.length >= 24,
+    accessAllowlist: String(process.env.ACCESS_ALLOWLIST || '').split(',').map((e) => e.trim()).filter(Boolean),
   };
 }
 

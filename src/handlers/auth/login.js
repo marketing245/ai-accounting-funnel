@@ -6,6 +6,7 @@ const MAX_ATTEMPTS = 6, LOCK_MINUTES = 15;
 
 module.exports = wrap(async (req, res) => {
   if (!allow(req, res, ['POST'])) return;
+  if (!auth.sameOrigin(req, res)) return;
   const body = await readJson(req);
   const email = auth.normalizeEmail(body.email);
   const password = String(body.password || '');
@@ -22,7 +23,7 @@ module.exports = wrap(async (req, res) => {
     await auth.saveUser(user);
     return generic();
   }
-  if (!user.purchases || user.purchases.length === 0) return fail(res, 403, 'No active course purchase on this account.');
+  if (!auth.hasAccess(user)) return fail(res, 403, 'No active course purchase on this account.', { code: 'NO_ACCESS' });
   const now = new Date().toISOString();
   user.failedLogins = 0; user.lockedUntil = null;
   user.loginCount = (user.loginCount || 0) + 1; user.lastLoginAt = now; user.firstLoginAt = user.firstLoginAt || now;

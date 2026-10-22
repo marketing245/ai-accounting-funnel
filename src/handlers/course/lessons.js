@@ -8,9 +8,7 @@ const { PRODUCT } = require('../../lib/config');
 // Everything the portal needs, in one authenticated call. Video embed URLs are generated per request (signed when enabled).
 module.exports = wrap(async (req, res) => {
   if (!allow(req, res, ['GET'])) return;
-  const session = auth.requireSession(req, res); if (!session) return;
-  const user = await auth.getUser(session.email);
-  if (!user || !user.purchases || user.purchases.length === 0) return fail(res, 403, 'No active course purchase on this account.', { code: 'NO_ACCESS' });
+  const user = await auth.loadSessionUser(req, res); if (!user) return;
 
   const videos = await bunny.resolveVideos(CURRICULUM);
   const modules = publicCurriculum().map((m) => {
