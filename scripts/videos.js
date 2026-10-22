@@ -9,6 +9,9 @@
  *   node scripts/videos.js wait                         wait until every module's video has finished encoding
  *   node scripts/videos.js protect on|off               toggle embed-token authentication on the library
  *   node scripts/videos.js delete <videoId>             delete a video from the library (asks for --yes)
+ *   node scripts/videos.js setup --account-key <key> [--library <id or name>]
+ *                                                       switch to another Bunny account (e.g. the instructor's): finds the Stream
+ *                                                       library, writes the 4 BUNNY_* vars to .env.local + Vercel, turns token auth on
  *
  * Needs BUNNY_STREAM_API_KEY (and BUNNY_API_KEY for `protect`) in .env.local or the environment.
  * The portal picks videos up by itself within 5 minutes — no deploy needed after an upload.
@@ -100,8 +103,36 @@ async function protect(on) {
   if (on) console.log('   make sure BUNNY_TOKEN_AUTH_KEY (= the ZoneSecurityKey of the library\'s pull zone, GET https://api.bunny.net/pullzone/<PullZoneId>) is set on Vercel and redeployed, otherwise the portal player is blocked.');
 }
 
+async function setup() {
+  const { execFileSync } = require('child_process');
+  const acctKey = flag('account-key') || process.env.BUNNY_API_KEY; if (!acctKey) die('usage: setup --account-key <Bunny account API key> [--library <id or name>]');
+  const H = { AccessKey: acctKey, Accept: 'application/json', 'Content-Type': 'application/json' };
+  let r = await fetch('https://api.bunny.net/videolibrary?page=1&perPage=100', { headers: H }); if (!r.ok) die(`account key rejected (${r.status})`);
+  const libs = ((await r.json()).Items || []);
+  if (!libs.length) die('this Bunny account has no Stream library yet — create one in the dashboard (Stream → Add Video Library) and run setup again');
+  const want = flag('library');
+  const lib = want ? libs.find((l) => String(l.Id) === String(want) || l.Name.toLowerCase() === String(want).toLowerCase()) : (libs.length === 1 ? libs[0] : null);
+  if (!lib) die('choose a library with --library <id|name>: ' + libs.map((l) => `${l.Id} "${l.Name}"`).join(', '));
+  r = await fetch(`https://api.bunny.net/pullzone/${lib.PullZoneId}`, { headers: H }); if (!r.ok) die(`pull zone lookup failed (${r.status})`);
+  const zone = await r.json();
+  r = await fetch(`https://api.bunny.net/videolibrary/${lib.Id}`, { method: 'POST', headers: H, body: JSON.stringify({ PlayerTokenAuthenticationEnabled: true }) }); if (!r.ok) die(`could not enable token auth (${r.status})`);
+  const vars = { BUNNY_API_KEY: acctKey, BUNNY_STREAM_API_KEY: lib.ApiKey, BUNNY_LIBRARY_ID: String(lib.Id), BUNNY_TOKEN_AUTH_KEY: zone.ZoneSecurityKey };
+  // .env.local
+  let env = fs.existsSync(envFile) ? fs.readFileSync(envFile, 'utf8') : '';
+  for (const [k, v] of Object.entries(vars)) { env = env.replace(new RegExp(`^${k}=.*$`, 'm'), ''); env += `\n${k}=${v}`; }
+  fs.writeFileSync(envFile, env.replace(/\n{2,}/g, '\n').replace(/^\n/, '') + '\n', { mode: 0o600 });
+  // Vercel (all environments): remove old, add new
+  for (const [k, v] of Object.entries(vars)) for (const e of ['production', 'preview', 'development']) {
+    try { execFileSync('vercel', ['env', 'rm', k, e, '--yes'], { cwd: ROOT, stdio: 'ignore' }); } catch {}
+    execFileSync('vercel', ['env', 'add', k, e], { cwd: ROOT, input: v, stdio: ['pipe', 'ignore', 'inherit'] });
+  }
+  console.log(`✔ switched to library ${lib.Id} "${lib.Name}" (${lib.VideoCount} videos), token auth ON, 4 vars written to .env.local and Vercel`);
+  console.log('  next: vercel --prod   (so the new keys go live), then upload the lessons with upload-folder');
+}
+
 (async () => {
   switch (cmd) {
+    case 'setup': await setup(); break;
     case 'status': await status(); break;
     case 'upload': { const f = args[1]; const m = flag('module') || moduleFromFilename(f || ''); if (!f || !m) die('usage: upload <file> --module N'); await upload(f, m, flag('title')); if (!has('no-wait')) await wait(); await status(); break; }
     case 'upload-folder': {

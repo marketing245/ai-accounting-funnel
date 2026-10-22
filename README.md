@@ -36,6 +36,9 @@ node scripts/videos.js protect on                      # embed-token authenticat
 ```
 Varsha can also upload in the Bunny dashboard: title the video `M03: …` and the portal picks it up within 5 minutes.
 
+**Moving to the instructor's own Bunny account** (the current one is a demo): she creates a Bunny account + one Stream library and shares the account API key; then
+`node scripts/videos.js setup --account-key <key>` → `vercel --prod` → `node scripts/videos.js upload-folder <videos>`. Nothing else changes.
+
 ## Environment variables (Vercel → Settings → Environment Variables)
 | Name | Required | Notes |
 |---|---|---|
