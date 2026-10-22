@@ -1,1079 +1,738 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Accounting Engineer — Close Books in 5 Days Instead of 15 | CA Varsha Varyani</title>
-  <meta name="description" content="Master production-grade AI accounting workflows with CA Varsha Varyani (Ex-EY, Hitachi Energy). Automate bank reconciliation, GSTR-2A vs 2B, and month-end closes with Claude.">
-  <link rel="stylesheet" href="style.css">
+  <title>AIAccountingEngineer — Become the finance professional your company can't afford to lose</title>
+  <meta name="description" content="The first course teaching accountants to run real finance work with AI. For CAs, accountants, MBAs, B.Com graduates, and finance professionals.">
+  <meta property="og:title" content="AIAccountingEngineer — AI skills for finance professionals">
+  <meta property="og:description" content="The first course that teaches you to run real accounting work — bank reconciliation, GST, TDS — with AI.">
+  <meta property="og:type" content="website">
+
+  <!-- Fontshare Sentient & General Sans Fonts (Exact Official Typography) -->
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link href="https://api.fontshare.com/v2/css?f[]=sentient@400,500,600,700&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS for utility grids inside modals -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Meta Pixel Code -->
   <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1594251972436161');
-    fbq('track', 'PageView');
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brandNavy: '#0f1b2d',
+            brandNavyDeep: '#0a1320',
+            brandGold: '#c4953a',
+            brandCream: '#faf8f3',
+            brandCream2: '#f3f0e8'
+          }
+        }
+      }
+    }
   </script>
-  <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1594251972436161&ev=PageView&noscript=1"/></noscript>
+
+  <!-- Official Brand Stylesheet -->
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-[#070c14] text-[#f8fafc] antialiased selection:bg-[#d4af37] selection:text-[#070c14] overflow-x-hidden">
+<body>
 
-  <!-- AMBIENT BACKGROUND GLOWS -->
-  <div class="gold-aura w-[500px] h-[500px] -top-40 -left-40"></div>
-  <div class="blue-aura w-[600px] h-[600px] top-60 -right-40"></div>
-
-  <!-- TOP URGENCY STRIP -->
-  <div class="bg-[#04080e] text-[#f8fafc] border-b border-white/10 py-2.5 px-4 text-center text-xs font-medium sticky top-0 z-40 backdrop-blur-md bg-opacity-90">
-    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-      <span class="text-[#d4af37] font-extrabold uppercase tracking-wider flex items-center gap-1.5">
-        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-        ⚡ Founding Cohort Special
-      </span>
-      <span>— Regular <span class="line-through opacity-50">₹5,000</span> → <span class="text-[#d4af37] font-bold text-sm">₹1,499</span></span>
-      <span class="opacity-30">|</span>
-      <span class="text-white/70">Offer expires in:</span>
-      <span class="mono bg-white/10 px-2 py-0.5 rounded text-[#d4af37] font-bold" id="countdownTimer">14 : 32 : 18</span>
-      <span class="bg-red-500/20 text-red-300 text-[10px] px-2 py-0.5 rounded-full font-bold border border-red-500/30">70% OFF</span>
+  <!-- ── 1. URGENCY STRIP ── -->
+  <div class="urgency-strip">
+    <div class="urgency-inner">
+      <span>Long Weekend Offer — ₹5,000 → ₹1,499 — ends in</span>
+      <div class="countdown">
+        <span class="unit" id="cd-h">47</span><span class="sep">:</span>
+        <span class="unit" id="cd-m">59</span><span class="sep">:</span>
+        <span class="unit" id="cd-s">32</span>
+      </div>
+      <span>— <strong>70% off founding seats</strong></span>
     </div>
   </div>
 
-  <!-- LUXURY NAVIGATION -->
-  <header class="border-b border-white/10 bg-[#070c14]/85 backdrop-blur-xl sticky top-[37px] z-30">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-      
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#d4af37] to-[#aa8620] text-[#070c14] font-black flex items-center justify-center text-sm shadow-lg shadow-[#d4af37]/20">
-          AI
-        </div>
+  <!-- ── 2. STICKY NAV ── -->
+  <nav>
+    <div class="wrap nav-inner">
+      <a href="#top" class="brand"><span class="ai">AI</span>AccountingEngineer</a>
+      <button onclick="startUnifiedFunnel()" class="nav-cta">Enroll Now ₹1,499</button>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ── 3. HERO SECTION (WITH LARGE & COMMANDING VARSHA MA'AM PORTRAIT) ── -->
+    <header class="hero" id="top">
+      <div class="wrap hero-inner">
+        
+        <!-- Left: Copy & Value Prop -->
         <div>
-          <span class="font-extrabold text-base tracking-tight text-white">AI Accounting<span class="text-[#d4af37]">Engineer</span></span>
-          <span class="hidden sm:inline-block text-[10px] text-white/50 font-medium ml-2 border-l border-white/15 pl-2">by CA Varsha Varyani</span>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-4">
-        <a href="#curriculum" class="text-xs font-semibold text-white/70 hover:text-white hidden md:block transition">Curriculum</a>
-        <a href="#instructor" class="text-xs font-semibold text-white/70 hover:text-white hidden md:block transition">Instructor</a>
-        <a href="#testimonials" class="text-xs font-semibold text-white/70 hover:text-white hidden sm:block transition">Reviews</a>
-        <a href="#faq" class="text-xs font-semibold text-white/70 hover:text-white hidden lg:block transition">FAQ</a>
-        <a href="/portal" class="text-xs font-bold text-[#d4af37] hover:text-[#f3cf65] flex items-center gap-1 border border-[#d4af37]/35 px-3 py-1.5 rounded-xl bg-[#d4af37]/10 transition">
-          <span>Student Portal ➔</span>
-        </a>
-        <button onclick="startUnifiedFunnel()" class="btn-gold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-lg">
-          <span>Enroll ₹1,499</span>
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-        </button>
-      </div>
-
-    </div>
-  </header>
-
-  <!-- ========================================================================= -->
-  <!-- 🌟 HERO SECTION (18-YR EXP DESIGNER MASTERPIECE)                          -->
-  <!-- ========================================================================= -->
-  <section class="relative pt-12 pb-20 sm:pt-20 sm:pb-28 px-4 sm:px-6 border-b border-white/10">
-    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center relative z-10">
-      
-      <!-- LEFT HERO COLUMN (HEADLINE + CREDENTIALS + PRIMARY CTA) -->
-      <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
-        
-        <!-- Trust Pill -->
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/15 text-xs font-bold text-white/90 backdrop-blur-md">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>MASTERCLASS BY CA VARSHA VARYANI (EX-EY &amp; HITACHI)</span>
-        </div>
-
-        <!-- Masterclass Main Hook -->
-        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12] text-white">
-          Close the books in <br class="hidden sm:inline"/>
-          <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#f5d061] via-[#d4af37] to-[#e8c14e]">
-            5 days instead of 15
-          </span> — <br class="hidden sm:inline"/>
-          <span class="text-white/90 font-extrabold italic">using AI.</span>
-        </h1>
-
-        <!-- High-Relatability Subtitle -->
-        <p class="text-sm sm:text-lg text-white/70 max-w-xl mx-auto lg:mx-0 leading-relaxed font-normal">
-          The first production-grade framework teaching Indian Chartered Accountants, Controllers &amp; Finance Teams to run messy ledgers, <b>GSTR-2A/2B reconciliations, TDS checks, and month-end closes</b> with Claude.
-        </p>
-
-        <!-- CTA & Assurance -->
-        <div class="pt-2 max-w-md mx-auto lg:mx-0 space-y-3.5">
-          <button onclick="startUnifiedFunnel()" class="w-full btn-gold text-base sm:text-lg py-4 px-8 rounded-2xl shadow-2xl flex items-center justify-center gap-2 transform hover:scale-[1.02] active:scale-[0.99] transition">
-            <span>⚡ Check Eligibility &amp; Enroll for ₹1,499</span>
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-          </button>
+          <span class="eyebrow">For Chartered Accountants, Accountants, MBAs &amp; B.Com Graduates</span>
+          <h1>Close the books in 5 days instead of 15 — <span class="em">using AI.</span></h1>
+          <p class="lede">The first course that teaches you to run real accounting work — bank reconciliation, GST, TDS, month-end close — with AI. The work on your desk right now, done in a fraction of the time.</p>
           
-          <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4 text-[11px] text-white/60 font-semibold">
-            <span class="flex items-center gap-1 text-emerald-400">✓ Instant WhatsApp OTP</span>
-            <span>·</span>
-            <span class="flex items-center gap-1 text-emerald-400">✓ 1-Click UPI Payment</span>
-            <span>·</span>
-            <span class="flex items-center gap-1 text-white/80">✓ Lifetime Portal Pass</span>
+          <div class="hero-ctas">
+            <button onclick="startUnifiedFunnel()" class="btn btn-primary cta-link">Limited Spots — Enroll Now ₹1,499</button>
           </div>
+          
+          <p class="built-for">Built for: <b>Chartered Accountants · Accountants · Finance MBAs · B.Com Graduates</b></p>
         </div>
 
-        <!-- Authority Stats Counter (Rohit Beria style) -->
-        <div class="pt-6 border-t border-white/10 grid grid-cols-3 gap-3 max-w-lg mx-auto lg:mx-0 text-center">
-          <div class="p-3.5 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md">
-            <div class="text-xl sm:text-2xl font-black text-white mono">11+ Yrs</div>
-            <div class="text-[10px] sm:text-[11px] text-white/60 font-medium mt-0.5">Big-4 &amp; MNC Exp.</div>
-          </div>
-          <div class="p-3.5 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md">
-            <div class="text-xl sm:text-2xl font-black text-white mono">10×</div>
-            <div class="text-[10px] sm:text-[11px] text-white/60 font-medium mt-0.5">Faster Entries</div>
-          </div>
-          <div class="p-3.5 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md">
-            <div class="text-xl sm:text-2xl font-black text-[#d4af37] mono">Day 5</div>
-            <div class="text-[10px] sm:text-[11px] text-white/60 font-medium mt-0.5">Month Close Record</div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- RIGHT HERO COLUMN: VARSHA'S FEATURED HIGH-RES UPRIGHT PORTRAIT -->
-      <div class="lg:col-span-5 flex justify-center">
-        <div class="relative w-full max-w-[340px] sm:max-w-[380px]">
-          
-          <!-- Ambient Gold Glow Aura -->
-          <div class="absolute -inset-3 bg-gradient-to-r from-[#d4af37]/30 to-blue-600/20 rounded-3xl blur-2xl opacity-70"></div>
-          
-          <!-- Outer Card Container -->
-          <div class="relative rounded-3xl glass-gold-card p-3 overflow-hidden">
-            
-            <!-- Instructor Real Portrait (Physically Upright Raster) -->
-            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] bg-[#070c14]">
-              <img src="varsha-hero.jpg" alt="CA Varsha Varyani — AI Accounting Engineer Masterclass Instructor" class="w-full h-full object-cover object-top transform hover:scale-105 transition duration-500">
-              
-              <!-- Subtle vignette overlay at bottom -->
-              <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#070c14] via-[#070c14]/75 to-transparent"></div>
-
-              <!-- Top Floating Badge -->
-              <div class="absolute top-3 left-3 bg-[#070c14]/90 backdrop-blur-md border border-[#d4af37]/40 px-3 py-1 rounded-full flex items-center gap-1.5 shadow-lg">
-                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                <span class="text-[10px] font-bold text-white tracking-wide uppercase">Lead Instructor</span>
+        <!-- Right: Varsha Ma'am's Large Authoritative Portrait -->
+        <div class="hero-img-col">
+          <div class="hero-photo-card">
+            <img src="varsha-hero.jpg" alt="CA Varsha Varyani — AI Accounting Engineer Mentor" loading="eager">
+            <div class="hero-photo-badge">
+              <div class="badge-name">
+                <span>CA Varsha Varyani</span>
+                <span style="display:inline-block;width:7px;height:7px;background:#34d399;border-radius:50%"></span>
               </div>
-
-              <!-- Top Right Badge -->
-              <div class="absolute top-3 right-3 bg-[#d4af37] text-[#070c14] px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-md">
-                Verified CA
-              </div>
-
-              <!-- Bottom Overlay Profile Card -->
-              <div class="absolute bottom-3 inset-x-3 text-center text-white space-y-1">
-                <div class="font-extrabold text-base tracking-tight text-white flex items-center justify-center gap-1.5">
-                  <span>CA Varsha Varyani</span>
-                  <svg class="w-4 h-4 text-[#d4af37] inline" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                </div>
-                <div class="text-[11px] text-[#d4af37] font-semibold">CA · CFA · Dip. IFRS (UK)</div>
-                <div class="text-[10px] text-white/70">Ex-Senior Manager, EY · Ex-Hitachi Energy · US Tech Startups</div>
-              </div>
-
+              <div class="badge-role">Chartered Accountant · CFA · Dip. IFRS</div>
+              <div class="badge-ex">Ex-EY Senior Manager · Hitachi Energy · 11+ Yrs Experience</div>
             </div>
+          </div>
+        </div>
 
-            <!-- Card Bottom Live Stat Pill -->
-            <div class="mt-3 bg-white/5 border border-white/10 rounded-xl p-2.5 flex items-center justify-between text-xs text-white/90">
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span class="text-[11px] font-medium text-white/80">Average Close Acceleration:</span>
-              </div>
-              <span class="mono font-bold text-[#d4af37] text-xs">15 Days ➔ 5 Days</span>
-            </div>
+      </div>
+    </header>
 
+    <!-- ── 4. OFFICIAL LOGOS MARQUEE ── -->
+    <section class="logos">
+      <div class="wrap logos-inner">
+        <p class="cap">A decade of finance experience across</p>
+        <div class="marquee-wrap">
+          <div class="marquee-track">
+            <img src="logos/ey.svg" alt="EY" height="28" width="69" loading="eager">
+            <img src="logos/kpmg.svg" alt="KPMG" height="28" width="80" loading="eager">
+            <img src="logos/hitachi.png" alt="Hitachi Energy" height="28" width="110" loading="eager">
+            <img src="logos/loco.png" alt="Loco" height="28" width="90" loading="eager">
+            <img src="logos/fivetran.svg" alt="Fivetran" height="28" width="100" loading="eager">
+            <!-- Seamless loop duplication -->
+            <img src="logos/ey.svg" alt="EY" height="28" width="69" loading="eager" aria-hidden="true">
+            <img src="logos/kpmg.svg" alt="KPMG" height="28" width="80" loading="eager" aria-hidden="true">
+            <img src="logos/hitachi.png" alt="Hitachi Energy" height="28" width="110" loading="eager" aria-hidden="true">
+            <img src="logos/loco.png" alt="Loco" height="28" width="90" loading="eager" aria-hidden="true">
+            <img src="logos/fivetran.svg" alt="Fivetran" height="28" width="100" loading="eager" aria-hidden="true">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 5. INSTRUCTOR BIO (LARGE PORTRAIT) ── -->
+    <section class="section" id="instructor">
+      <div class="wrap">
+        <div class="inst-grid">
+          
+          <div class="portrait">
+            <img src="varsha-laptop.jpg" alt="CA Varsha Varyani in studio with MacBook" loading="eager">
+          </div>
+
+          <div class="inst-body">
+            <span class="eyebrow">Your instructor</span>
+            <h2>My books close on Day 5 now. They used to close on Day 12.</h2>
+            <p>I'm Varsha Varyani — a CA with 11 years across EY, a global MNC, and US tech startups. A year ago I started running my actual work through AI — reconciliations, GST, VAT, journal entries, depreciation, the close. Two promotions came with it. Everything I changed is what I'm teaching here.</p>
+            <p class="creds">CA · CFA · DIPLOMA IN IFRS</p>
           </div>
 
         </div>
       </div>
+    </section>
 
-    </div>
-  </section>
-
-  <!-- ========================================================================= -->
-  <!-- 🏢 LOGOS STRIP (BIG 4 & GLOBAL CORPORATE PROOF)                           -->
-  <!-- ========================================================================= -->
-  <section class="py-10 bg-[#090f1a] border-b border-white/10 text-center px-4">
-    <div class="max-w-6xl mx-auto">
-      <p class="text-[11px] uppercase tracking-wider font-extrabold text-white/50 mb-6">
-        Instructor's 11+ Year Finance Experience Across Big-4 Audit, Global MNCs &amp; Unicorn Startups
-      </p>
-      <div class="flex flex-wrap justify-center items-center gap-8 sm:gap-14 font-extrabold text-white/60 text-lg sm:text-xl tracking-tight">
-        <span class="hover:text-white transition">EY (Ernst &amp; Young)</span>
-        <span class="hover:text-white transition">KPMG</span>
-        <span class="hover:text-white transition">Hitachi Energy</span>
-        <span class="hover:text-white transition">Loco Gaming</span>
-        <span class="hover:text-white transition">Fivetran</span>
-        <span class="hover:text-[#d4af37] transition text-[#d4af37]">ICAI Framework</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================================================= -->
-  <!-- 🎯 "DOES THIS SOUND LIKE YOU?" (NAGRAWAL.COM BLUEPRINT)                   -->
-  <!-- ========================================================================= -->
-  <section class="py-16 sm:py-24 px-4 sm:px-6 max-w-6xl mx-auto border-b border-white/10 relative">
-    <div class="text-center max-w-3xl mx-auto space-y-3 mb-14">
-      <span class="text-xs font-bold text-[#d4af37] uppercase tracking-wider">The Reality of Modern Finance</span>
-      <h2 class="text-2xl sm:text-4xl font-extrabold text-white">
-        Does this sound like your typical month-end?
-      </h2>
-      <p class="text-sm sm:text-base text-white/70">
-        If you work in accounting or finance in India today, you probably live through at least two of these:
-      </p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      
-      <!-- Card 1 -->
-      <div class="p-7 rounded-3xl bg-[#0d1522] border border-red-500/20 shadow-xl space-y-4 hover:border-red-500/40 transition">
-        <div class="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center text-xl font-bold">
-          🧾
+    <!-- ── 6. PROGRAM HIGHLIGHTS (4-COLUMN STRIP) ── -->
+    <section class="highlights">
+      <div class="wrap highlights-inner">
+        <div class="hl-item">
+          <span class="hl-fig">5</span>
+          <span class="hl-label">Real accounting workflows — not theory</span>
         </div>
-        <h3 class="text-lg font-bold text-white">The Weekend GSTR-2A/2B Nightmare</h3>
-        <p class="text-xs sm:text-sm text-white/70 leading-relaxed">
-          Tying out 2,500 vendor invoice lines between your portal download and ERP. One mismatch means lost Input Tax Credit (ITC) or an upcoming audit notice. You spend your Saturdays manually typing VLOOKUPs.
-        </p>
-      </div>
-
-      <!-- Card 2 -->
-      <div class="p-7 rounded-3xl bg-[#0d1522] border border-amber-500/20 shadow-xl space-y-4 hover:border-amber-500/40 transition">
-        <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-xl font-bold">
-          ⏱️
+        <div class="hl-item">
+          <span class="hl-fig">10×</span>
+          <span class="hl-label">Faster on tasks like journal entries &amp; bank rec</span>
         </div>
-        <h3 class="text-lg font-bold text-white">The Day 12 Month-End Drag</h3>
-        <p class="text-xs sm:text-sm text-white/70 leading-relaxed">
-          The CEO wants flash numbers on Day 3. But you are still chasing un-reconciled bank statements, fixed asset additions, and pending vendor provisions until Day 12. You have zero bandwidth for high-margin financial advisory.
-        </p>
-      </div>
-
-      <!-- Card 3 -->
-      <div class="p-7 rounded-3xl bg-[#0d1522] border border-blue-500/20 shadow-xl space-y-4 hover:border-blue-500/40 transition">
-        <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-xl font-bold">
-          🤖
+        <div class="hl-item">
+          <span class="hl-fig">Day 5</span>
+          <span class="hl-label">Month-end close instead of Day 15</span>
         </div>
-        <h3 class="text-lg font-bold text-white">The "Toy ChatGPT" Frustration</h3>
-        <p class="text-xs sm:text-sm text-white/70 leading-relaxed">
-          You tried ChatGPT prompts from social media influencers ("Explain debits and credits"), but when you fed an Indian bank narration or TDS Section 194J bill, it gave you hallucinations and made-up numbers.
-        </p>
-      </div>
-
-    </div>
-
-    <!-- Solution Banner -->
-    <div class="mt-10 p-6 rounded-3xl bg-gradient-to-r from-[#111c2e] to-[#0d1522] text-white border border-[#d4af37]/40 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-5 text-center sm:text-left">
-      <div>
-        <div class="text-xs font-bold text-[#d4af37] uppercase tracking-wider">The Permanent Fix</div>
-        <div class="text-base sm:text-lg font-extrabold text-white mt-0.5">
-          What if Claude did the heavy 500-row matching for you — while you kept 100% audit control?
+        <div class="hl-item">
+          <span class="hl-fig">₹1,499</span>
+          <span class="hl-label">Long weekend offer · lifetime access</span>
         </div>
       </div>
-      <button onclick="startUnifiedFunnel()" class="btn-gold text-xs px-6 py-3.5 rounded-xl whitespace-nowrap shrink-0 shadow-lg">
-        See How It Works →
-      </button>
-    </div>
-  </section>
+    </section>
 
-  <!-- ========================================================================= -->
-  <!-- 💥 "WHY GENERIC AI COURSES FAIL" (AIWITHMINAL BLUEPRINT)                  -->
-  <!-- ========================================================================= -->
-  <section class="py-16 sm:py-24 px-4 sm:px-6 bg-[#090f1a] border-b border-white/10">
-    <div class="max-w-5xl mx-auto space-y-12">
-      <div class="text-center max-w-3xl mx-auto space-y-3">
-        <span class="text-xs font-bold text-[#d4af37] uppercase tracking-wider">Built By An Accountant, Not A Marketer</span>
-        <h2 class="text-2xl sm:text-4xl font-extrabold text-white">
-          Why generic "ChatGPT Prompt" courses fail accountants on Monday morning.
-        </h2>
-        <p class="text-sm sm:text-base text-white/70">
-          Most AI courses are created by tech YouTubers who have never touched a real general ledger or signed a balance sheet.
-        </p>
+    <!-- ── 7. THE SHIFT (TRADITIONAL VS AI-NATIVE) ── -->
+    <section class="section section-alt" id="shift">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">The shift</span>
+          <h2>AI isn't coming for your job. It's quietly sorting accountants into two groups.</h2>
+          <p>Forget the headlines about robots replacing accountants. Here's what's actually happening at desks like yours: the people who learn to run their real work with AI finish faster, make fewer errors, and get handed the work that matters. This course makes you one of them.</p>
+        </div>
+
+        <div class="shift-grid">
+          <div class="shift-col then">
+            <h3>The replaceable seat</h3>
+            <ul>
+              <li><span class="m">01</span> Hours swallowed by data entry and manual tie-outs</li>
+              <li><span class="m">02</span> "I'll get to financial analysis after the close"</li>
+              <li><span class="m">03</span> Competing on pure keystroke speed against software</li>
+              <li><span class="m">04</span> Same scope, more pressure, every month-end</li>
+            </ul>
+          </div>
+          <div class="shift-col now">
+            <h3>The AI-native seat</h3>
+            <ul>
+              <li><span class="m">01</span> The grunt work runs automatically in the background</li>
+              <li><span class="m">02</span> Your hours go to strategic judgment, not data entry</li>
+              <li><span class="m">03</span> You own the workflow that the software runs inside</li>
+              <li><span class="m">04</span> Your scope — and your salary — keeps rising</li>
+            </ul>
+          </div>
+        </div>
       </div>
+    </section>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
-        <!-- Generic Course Column -->
-        <div class="bg-[#0d1522] p-7 sm:p-9 rounded-3xl border border-red-500/20 shadow-xl space-y-5">
-          <div class="flex items-center justify-between border-b border-white/10 pb-3">
+    <!-- ── 8. MARKET PROOF & PAY LADDER ── -->
+    <section class="section section-dark" id="proof">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Statement of the market</span>
+          <h2>This isn't a forecast. It's already posted.</h2>
+          <p>A few entries from corporate finance teams and hiring data — already on the books, not someday.</p>
+        </div>
+
+        <div class="stmt">
+          <div class="stmt-row">
+            <div class="fig">90%</div>
+            <div class="desc">Of finance talent will need digital and AI skills by 2030.</div>
+            <div class="src">Gartner</div>
+          </div>
+          <div class="stmt-row">
+            <div class="fig">82%</div>
+            <div class="desc">Of CFOs plan to invest more in AI and digital capabilities in the next two years.</div>
+            <div class="src">PwC</div>
+          </div>
+          <div class="stmt-row">
+            <div class="fig">2–4×</div>
+            <div class="desc">Salary premium for finance professionals with AI and automation skills vs traditional accounting roles at the same level.</div>
+            <div class="src">LinkedIn</div>
+          </div>
+          <div class="stmt-row">
+            <div class="fig">NEW ROLE</div>
+            <div class="desc"><strong>AI Accounting Engineer</strong> — a role that barely existed two years ago — now appears on job boards at startups and multinationals alike, paying well above a traditional accounting seat.</div>
+            <div class="src">Job boards</div>
+          </div>
+        </div>
+
+        <!-- Desktop Pay Ladder Chart -->
+        <div class="salary-chart salary-chart-desktop">
+          <div class="ct">The pay ladder is real</div>
+          <div class="cs">India annual compensation · INR · indicative ranges from job postings</div>
+          <svg viewBox="0 0 720 280" role="img" aria-label="Salary bar chart: Junior accountant 6-12L, Senior accountant 15-25L, AI-native senior 35-45L+" style="width:100%;height:auto;margin-top:20px" font-family="General Sans,system-ui,sans-serif">
+            <line x1="14" y1="210" x2="706" y2="210" stroke="var(--rule-on-dark)" stroke-width="1"/>
+            <rect x="40" y="170" width="140" height="40" rx="2" fill="rgba(250,248,243,.18)"/>
+            <text x="110" y="160" text-anchor="middle" font-size="12" fill="var(--muted-on-dark)" font-weight="600">₹6–12L</text>
+            <text x="110" y="228" text-anchor="middle" font-size="11" fill="var(--muted-on-dark)">Junior accountant</text>
+            <text x="110" y="243" text-anchor="middle" font-size="11" fill="var(--muted-on-dark)">(traditional)</text>
+            <rect x="280" y="120" width="140" height="90" rx="2" fill="rgba(250,248,243,.28)"/>
+            <text x="350" y="110" text-anchor="middle" font-size="12" fill="var(--muted-on-dark)" font-weight="600">₹15–25L</text>
+            <text x="350" y="228" text-anchor="middle" font-size="11" fill="var(--muted-on-dark)">Senior accountant /</text>
+            <text x="350" y="243" text-anchor="middle" font-size="11" fill="var(--muted-on-dark)">Accounting manager</text>
+            <rect x="520" y="45" width="140" height="165" rx="2" fill="var(--gold)"/>
+            <text x="590" y="33" text-anchor="middle" font-size="12" fill="var(--cream)" font-weight="600">₹35–45L+</text>
+            <text x="590" y="228" text-anchor="middle" font-size="11" fill="var(--muted-on-dark)">AI-native senior</text>
+            <text x="590" y="243" text-anchor="middle" font-size="11" fill="var(--muted-on-dark)">accountant</text>
+          </svg>
+        </div>
+
+        <!-- Mobile Pay Ladder Chart -->
+        <div class="salary-chart salary-chart-mobile">
+          <div class="ct">The pay ladder is real</div>
+          <div class="cs">India annual compensation · INR · indicative ranges</div>
+          <div style="margin-top:20px;display:flex;flex-direction:column;gap:16px">
             <div>
-              <h3 class="text-lg font-bold text-red-400">Generic "AI Guru" Courses</h3>
-              <p class="text-xs text-white/50">Surface-level prompting tips</p>
+              <div style="font-family:var(--mono);font-size:var(--text-sm);color:var(--muted-on-dark);margin-bottom:6px">Junior accountant <span style="opacity:.6">(traditional)</span></div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="height:28px;width:25%;background:rgba(250,248,243,.18);border-radius:2px"></div>
+                <span style="font-family:var(--mono);font-size:var(--text-sm);color:var(--muted-on-dark);font-weight:600">₹6–12L</span>
+              </div>
             </div>
-            <span class="text-xs bg-red-500/20 text-red-300 border border-red-500/30 px-3 py-1 rounded-full font-bold">Unusable at Work</span>
+            <div>
+              <div style="font-family:var(--mono);font-size:var(--text-sm);color:var(--muted-on-dark);margin-bottom:6px">Senior accountant / Manager</div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="height:28px;width:52%;background:rgba(250,248,243,.28);border-radius:2px"></div>
+                <span style="font-family:var(--mono);font-size:var(--text-sm);color:var(--muted-on-dark);font-weight:600">₹15–25L</span>
+              </div>
+            </div>
+            <div>
+              <div style="font-family:var(--mono);font-size:var(--text-sm);color:var(--cream);margin-bottom:6px;font-weight:500">AI-native senior accountant</div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="height:32px;width:78%;background:var(--gold);border-radius:2px"></div>
+                <span style="font-family:var(--mono);font-size:var(--text-sm);color:var(--cream);font-weight:600;white-space:nowrap">₹35–45L+</span>
+              </div>
+            </div>
           </div>
-          <ul class="space-y-4 text-xs sm:text-sm text-white/75">
-            <li class="flex items-start gap-3">
-              <span class="text-red-400 font-bold text-base leading-none">✕</span>
-              <span><b>Toy Prompts:</b> "Write an email to a vendor" or "Define working capital" — zero relevance to closing real month-end ledgers.</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── 9. CURRICULUM (5 WORKFLOW BLUEPRINTS) ── -->
+    <section class="section" id="curriculum">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">The curriculum · 5 modules</span>
+          <h2>The workflows you run every month — rebuilt around AI.</h2>
+          <p>No generic prompt tips. Every module is a real accounting workflow, taught end to end, with the exact way to run it using AI.</p>
+        </div>
+
+        <div class="curr-list">
+          <!-- M01 -->
+          <div class="module">
+            <div class="no">M01</div>
+            <div class="ic"><svg viewBox="0 0 42 42" fill="none" stroke="var(--gold)" stroke-width="1.6"><rect x="7" y="7" width="28" height="28" rx="2"/><path d="M14 21h14M14 15h8M14 27h10"/><circle cx="30" cy="13" r="4"/><path d="M29 13l1 1 2-2"/></svg></div>
+            <div class="body">
+              <h3>Claude 101 — Foundation</h3>
+              <p>Before we touch any workflow, you need to understand how to actually talk to AI — because it's nothing like a Google search. This module covers how to frame your work for Claude, what to ask, how to check what comes back, and why that skill is the foundation everything else is built on.</p>
+              <p class="module-outcome"><strong>Result:</strong> You go from "I don't know what to ask" to giving Claude work and getting usable output back — in your first session.</p>
+            </div>
+            <div class="tag">Foundation</div>
+          </div>
+
+          <!-- M02 -->
+          <div class="module">
+            <div class="no">M02</div>
+            <div class="ic"><svg viewBox="0 0 42 42" fill="none" stroke="var(--gold)" stroke-width="1.6"><path d="M9 6h16l8 8v22H9z"/><path d="M25 6v8h8"/><path d="M15 20h12M15 26h8"/></svg></div>
+            <div class="body">
+              <h3>Journal entries</h3>
+              <p>You take an invoice, a bank statement, a vendor bill — and Claude reads it and gives you the journal entry, correctly classified, with narration. You review, approve, post.</p>
+              <p class="module-outcome"><strong>Result:</strong> 20 minutes per entry → 2 minutes. You review instead of type.</p>
+            </div>
+            <div class="tag">Ledger</div>
+          </div>
+
+          <!-- M03 -->
+          <div class="module">
+            <div class="no">M03</div>
+            <div class="ic"><svg viewBox="0 0 42 42" fill="none" stroke="var(--gold)" stroke-width="1.6"><path d="M8 14h26M8 14l5-5M8 14l5 5"/><path d="M34 28H8M34 28l-5-5M34 28l-5 5"/><rect x="16" y="18" width="10" height="6" rx="1"/></svg></div>
+            <div class="body">
+              <h3>Bank reconciliation &amp; fixed asset depreciation</h3>
+              <p>Paste your bank data and let Claude do the matching. You spend your time on the items that actually don't reconcile — not the ones that do. Depreciation schedules work the same way.</p>
+              <p class="module-outcome"><strong>Result:</strong> Hours of matching → minutes. Depreciation schedules you can hand to anyone, generated in one pass.</p>
+            </div>
+            <div class="tag">Ledger</div>
+          </div>
+
+          <!-- M04 -->
+          <div class="module">
+            <div class="no">M04</div>
+            <div class="ic"><svg viewBox="0 0 42 42" fill="none" stroke="var(--gold)" stroke-width="1.6"><rect x="9" y="6" width="24" height="30" rx="2"/><path d="M15 15h12M15 21h12M15 27h7"/></svg></div>
+            <div class="body">
+              <h3>GST reconciliation</h3>
+              <p>Claude runs the 2A vs 2B comparison, flags the mismatches, and gives you a clean exception list. You know exactly what needs attention and what doesn't.</p>
+              <p class="module-outcome"><strong>Result:</strong> A full day of GST matching → one hour of focused review.</p>
+            </div>
+            <div class="tag">Compliance</div>
+          </div>
+
+          <!-- M05 -->
+          <div class="module">
+            <div class="no">M05</div>
+            <div class="ic"><svg viewBox="0 0 42 42" fill="none" stroke="var(--gold)" stroke-width="1.6"><path d="M8 34h26M8 8v26M14 20h16M14 26h10"/><circle cx="32" cy="12" r="5"/><path d="M30 12l1.5 1.5L34 10"/></svg></div>
+            <div class="body">
+              <h3>Month-end close</h3>
+              <p>GL scrutiny, tie-outs, flux notes — this module brings everything together into a close that finishes on time. The capstone where hours saved across every module compound.</p>
+              <p class="module-outcome"><strong>Result:</strong> Close on Day 5 instead of Day 15. The single biggest career unlock in this course.</p>
+            </div>
+            <div class="tag">Capstone</div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 10. FOUNDING COHORT OFFER CARD (WITH VARSHA POINTING DOWN) ── -->
+    <section class="section section-dark" id="enroll">
+      <div class="wrap">
+        
+        <div class="section-head" style="margin:0 auto 28px;text-align:center">
+          <span class="eyebrow">Founding cohort</span>
+          <h2>Join now — Long Weekend Offer.</h2>
+        </div>
+
+        <!-- Varsha Ma'am Pointing Down -->
+        <div class="offer-cta-img-wrap">
+          <img src="varsha-cta.jpg" alt="CA Varsha Varyani inviting you to enroll">
+        </div>
+
+        <!-- Pricing Card -->
+        <div class="price-card">
+          <div class="tier">Long Weekend Offer · Limited seats</div>
+          <div class="price-row">
+            <span class="price-now">₹1,499</span>
+            <span class="price-was">₹5,000</span>
+          </div>
+          <p class="price-save">You save ₹3,501 — 70% off the regular price</p>
+          
+          <hr>
+
+          <ul class="value-stack">
+            <li>
+              <span class="ck">✓</span>
+              <span class="vs-item">5 workflow modules — journal entries, bank rec, GST, depreciation &amp; month-end close</span>
+              <span class="vs-val">₹10,000 value</span>
             </li>
-            <li class="flex items-start gap-3">
-              <span class="text-red-400 font-bold text-base leading-none">✕</span>
-              <span><b>Zero Indian Tax Context:</b> Doesn't know the difference between GSTR-2A and 2B, or TDS rate under Section 194C vs 194J.</span>
+            <li>
+              <span class="ck">✓</span>
+              <span class="vs-item">Copy-ready prompts, templates and SOPs for every workflow</span>
+              <span class="vs-val">₹5,000 value</span>
             </li>
-            <li class="flex items-start gap-3">
-              <span class="text-red-400 font-bold text-base leading-none">✕</span>
-              <span><b>Hallucination Risk:</b> Blindly copies AI text into balance sheets without strict verification check scripts.</span>
+            <li>
+              <span class="ck">✓</span>
+              <span class="vs-item">Lifetime access — including every future update</span>
+              <span class="vs-val">₹3,000 value</span>
             </li>
-            <li class="flex items-start gap-3">
-              <span class="text-red-400 font-bold text-base leading-none">✕</span>
-              <span><b>Format Incompatible:</b> Leaves you with unformatted markdown that can't be imported into Tally, Zoho, or Excel.</span>
+            <li>
+              <span class="ck">✓</span>
+              <span class="vs-item">Founding-member VIP community access</span>
+              <span class="vs-val">₹2,000 value</span>
+            </li>
+            <li>
+              <span class="ck">✓</span>
+              <span class="vs-item">Verified Certificate of Completion for LinkedIn</span>
+              <span class="vs-val">₹1,000 value</span>
             </li>
           </ul>
-        </div>
 
-        <!-- AI Accounting Engineer Column -->
-        <div class="glass-gold-card p-7 sm:p-9 rounded-3xl space-y-5">
-          <div class="flex items-center justify-between border-b border-white/10 pb-3">
-            <div>
-              <h3 class="text-lg font-bold text-[#d4af37]">AI Accounting Engineer</h3>
-              <p class="text-xs text-[#d4af37]/80">Production workflows with real files</p>
-            </div>
-            <span class="text-xs bg-[#d4af37]/25 text-[#d4af37] border border-[#d4af37]/40 px-3 py-1 rounded-full font-bold">Workplace Ready</span>
+          <div class="vs-total">
+            <span>Total value: <strong>₹21,000+</strong></span>
+            <span>You pay: <strong class="vs-price">₹1,499</strong></span>
           </div>
-          <ul class="space-y-4 text-xs sm:text-sm text-white/90">
-            <li class="flex items-start gap-3">
-              <span class="text-[#d4af37] font-bold text-base leading-none">✓</span>
-              <span><b>Production Financial Work:</b> Real messy bank statements, multi-line vendor invoices, fixed asset registers &amp; depreciation.</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <span class="text-[#d4af37] font-bold text-base leading-none">✓</span>
-              <span><b>Indian Accounting Standards (Ind AS):</b> Built around actual Indian compliance, GSTIN validations, and TDS classification.</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <span class="text-[#d4af37] font-bold text-base leading-none">✓</span>
-              <span><b>Zero-Hallucination Framing:</b> Step-by-step mathematical tie-outs where Claude acts as an analytical engine, not a guessing machine.</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <span class="text-[#d4af37] font-bold text-base leading-none">✓</span>
-              <span><b>Direct Excel &amp; Tally Ready:</b> Outputs copy-paste CSVs, journal entry tables, and dispute email templates ready for vendors.</span>
-            </li>
-          </ul>
+
+          <button onclick="startUnifiedFunnel()" class="btn btn-primary cta-link">Limited Spots — Enroll Now ₹1,499</button>
+
+          <div class="price-sub">
+            <img src="secure-checkout.webp" alt="Secure checkout — UPI, RuPay, Visa, Mastercard" width="560" height="106" style="max-width:280px;height:auto;opacity:.75;margin:0 auto">
+          </div>
         </div>
 
       </div>
+    </section>
+
+    <!-- ── 11. FAQ ACCORDION ── -->
+    <section class="section" id="faq">
+      <div class="wrap" style="max-width:840px">
+        <div class="section-head">
+          <span class="eyebrow">Questions</span>
+          <h2>The things people ask before joining.</h2>
+        </div>
+
+        <div class="faq-list">
+          
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">Who is this course for?<span class="pm">+</span></button>
+            <div class="faq-a"><p>Qualified Chartered Accountants, BCom graduates, Finance MBAs, and working accounting professionals — anyone in a finance role who does journal entries, reconciliations, GST, depreciation, or month-end close. If you touch the books, this is for you.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">Is this a live course or recorded?<span class="pm">+</span></button>
+            <div class="faq-a"><p>Fully recorded. You watch at your own pace, pause, rewind, and revisit any module whenever you need to. All are step-by-step tutorials recorded by CA Varsha ma'am. With every lesson and module, you will also get sample data to download to practice on your own.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">How long will it take to complete?<span class="pm">+</span></button>
+            <div class="faq-a"><p>About 10–12 hours of effort. Most people finish it over a couple of weekends. Module 1 unlocks instantly, and Modules 2–5 drip every 5 days so you have time to apply each one before moving on. You have lifetime access, so there's no rush.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">Do I need a paid Claude subscription?<span class="pm">+</span></button>
+            <div class="faq-a"><p>No. You can start with the free plan. The course is taught on Claude, and the free tier is enough to follow along and practice every workflow. A paid plan helps with larger files and longer sessions, but it's not required.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">Can I use other AI tools like ChatGPT or Copilot?<span class="pm">+</span></button>
+            <div class="faq-a"><p>Yes. The course is taught on Claude, but the workflows and thinking apply to any AI tool. If you prefer ChatGPT, Copilot, or Gemini — the prompts and methods transfer. Use whatever tool you have or your company gives you access to.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">Will I get prompts and data sets to try my knowledge?<span class="pm">+</span></button>
+            <div class="faq-a"><p>Yes. Every module comes with copy-ready prompts and resource material alongside the video lessons. You don't need to build anything from scratch — take the prompts, plug in your data, and run the workflow.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">Will I receive a certificate after completing the course?<span class="pm">+</span></button>
+            <div class="faq-a"><p>Yes. Upon successfully completing the AI in Accounting program, you'll receive a Certificate of Completion issued by AIAccountingEngineer.com and endorsed by CA Varsha Varyani.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">Can I add the certificate to my LinkedIn profile?<span class="pm">+</span></button>
+            <div class="faq-a"><p>Absolutely. You can showcase your certificate on LinkedIn, your resume, personal website, portfolio, and other professional profiles.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">I'm not technical at all. Can I still do this?<span class="pm">+</span></button>
+            <div class="faq-a"><p>Yes. I'm also non-technical. If you can write an email and read a trial balance, you can do everything here. There's no coding. The skill is direction and judgement — telling AI what to do and checking what comes back.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">Where do I get support if I have questions?<span class="pm">+</span></button>
+            <div class="faq-a"><p>For any questions you may have, you can reach out directly at hello@aiaccountingengineer.com or message on Instagram — <a href="https://www.instagram.com/aiaccountingengineer/" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:underline">@aiaccountingengineer</a>.</p></div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 12. FINAL CALL TO ACTION ── -->
+    <section class="section final">
+      <div class="wrap">
+        <h2>Every month you close the books the old way is a month someone else does it in half the time.</h2>
+        <p>Long Weekend Offer · ₹1,499 · Lifetime access.</p>
+        <button onclick="startUnifiedFunnel()" class="btn btn-primary cta-link" style="margin-top:32px">Limited Spots — Enroll Now ₹1,499</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── 13. FOOTER ── -->
+  <footer>
+    <div class="wrap foot-inner">
+      <span class="brand"><span class="ai" style="color:var(--gold)">AI</span>AccountingEngineer</span>
+      <span>&copy; 2026 &middot; AI skills for finance professionals</span>
+      <span>hello@aiaccountingengineer.com</span>
     </div>
-  </section>
+  </footer>
 
-  <!-- ========================================================================= -->
-  <!-- 👩‍💼 MEET THE INSTRUCTOR: CA VARSHA VARYANI (11-YEAR JOURNEY)              -->
-  <!-- ========================================================================= -->
-  <section id="instructor" class="py-16 sm:py-24 px-4 sm:px-6 max-w-6xl mx-auto border-b border-white/10">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-      
-      <!-- Photo Left (Physically Upright with MacBook) -->
-      <div class="lg:col-span-5 flex justify-center">
-        <div class="relative w-full max-w-[320px] sm:max-w-[360px]">
-          <div class="rounded-3xl overflow-hidden glass-gold-card p-3 shadow-2xl">
-            <img src="varsha-laptop.jpg" alt="CA Varsha Varyani in studio with laptop" class="w-full rounded-2xl aspect-[4/5] object-cover object-top shadow-lg">
-            <div class="p-3 text-center text-white">
-              <div class="font-extrabold text-base text-white">CA Varsha Varyani</div>
-              <div class="text-xs text-[#d4af37] font-semibold mt-0.5">Chartered Accountant · CFA · Dip. IFRS</div>
-              <div class="text-[11px] text-white/60 mt-1">Ex-Senior Manager, EY · Ex-Hitachi Energy · Finance Controller</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bio Story Right -->
-      <div class="lg:col-span-7 space-y-5">
-        <span class="text-xs font-bold text-[#d4af37] uppercase tracking-wider block">Meet Your Mentor</span>
-        
-        <h2 class="text-2xl sm:text-4xl font-extrabold text-white leading-tight">
-          "My month-end closes on Day 5 now. It used to take until Day 12."
-        </h2>
-
-        <p class="text-sm sm:text-base text-white/75 leading-relaxed">
-          I'm Varsha Varyani. For over 11 years, I lived the traditional accounting hustle — starting with rigorous audit articleship at <b>Ernst &amp; Young (EY)</b>, mastering Indian &amp; global standards, and leading corporate finance teams at global MNCs like <b>Hitachi Energy</b> and high-growth VC-backed tech startups like <b>Loco</b> and <b>Fivetran</b>.
-        </p>
-
-        <p class="text-sm sm:text-base text-white/75 leading-relaxed">
-          A year ago, instead of treating AI like a cute chatbot for drafting emails, I started piping our actual month-end bottlenecks through Claude: <b>bank reconciliations, GSTR-2A vs 2B matching, fixed asset depreciation, and GL scrutiny</b>.
-        </p>
-
-        <p class="text-sm sm:text-base text-white/90 leading-relaxed font-semibold">
-          The result? Tasks that took 3 days shrank to 45 minutes. My books close on Day 5 cleanly. This course is the exact, battle-tested playbook I run on my desk every single month.
-        </p>
-
-        <!-- Career Milestones Timeline -->
-        <div class="pt-3 border-t border-white/10 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-          <div class="p-3.5 bg-white/5 rounded-2xl border border-white/10 flex items-start gap-2.5">
-            <span class="text-[#d4af37] font-black text-sm mono">01</span>
-            <div>
-              <div class="font-bold text-white">Chartered Accountant &amp; Big-4</div>
-              <div class="text-[11px] text-white/60">EY audit training &amp; corporate governance</div>
-            </div>
-          </div>
-          <div class="p-3.5 bg-white/5 rounded-2xl border border-white/10 flex items-start gap-2.5">
-            <span class="text-[#d4af37] font-black text-sm mono">02</span>
-            <div>
-              <div class="font-bold text-white">CFA Charter &amp; IFRS Diploma</div>
-              <div class="text-[11px] text-white/60">Global reporting &amp; financial analysis</div>
-            </div>
-          </div>
-          <div class="p-3.5 bg-white/5 rounded-2xl border border-white/10 flex items-start gap-2.5">
-            <span class="text-[#d4af37] font-black text-sm mono">03</span>
-            <div>
-              <div class="font-bold text-white">Hitachi Energy &amp; US Startups</div>
-              <div class="text-[11px] text-white/60">High-volume multi-entity ledgers</div>
-            </div>
-          </div>
-          <div class="p-3.5 bg-white/5 rounded-2xl border border-white/10 flex items-start gap-2.5">
-            <span class="text-[#d4af37] font-black text-sm mono">04</span>
-            <div>
-              <div class="font-bold text-white">AI Accounting Pioneer</div>
-              <div class="text-[11px] text-white/60">Closed month-end in 5 days with Claude</div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
+  <!-- ── 14. STICKY MOBILE BOTTOM CTA ── -->
+  <div class="sticky-cta" id="stickyCta">
+    <div class="sticky-cta-inner">
+      <div class="price-info">₹1,499 <span class="old">₹5,000</span></div>
+      <button onclick="startUnifiedFunnel()" class="btn btn-primary cta-link">Enroll Now ₹1,499</button>
     </div>
-  </section>
-
-  <!-- ========================================================================= -->
-  <!-- 📈 THE SALARY & MARKET SHIFT (WHY LEARN NOW)                              -->
-  <!-- ========================================================================= -->
-  <section class="py-16 sm:py-24 px-4 sm:px-6 bg-[#04080e] text-[#f8fafc] border-b border-white/10">
-    <div class="max-w-4xl mx-auto space-y-10 text-center">
-      
-      <div>
-        <span class="text-xs font-bold text-[#d4af37] uppercase tracking-wider">Market Compensation Benchmark</span>
-        <h2 class="text-2xl sm:text-4xl font-extrabold mt-2 text-white">
-          The Pay Ladder Is Quietly Rewriting Itself
-        </h2>
-        <p class="text-xs sm:text-sm text-white/60 max-w-xl mx-auto mt-2">
-          Hiring data across corporate India shows that accountants who run automated AI workflows command massive salary premiums over manual typists.
-        </p>
-      </div>
-
-      <!-- Salary Chart -->
-      <div class="space-y-5 text-left max-w-2xl mx-auto bg-white/5 p-6 sm:p-8 rounded-3xl border border-white/10 shadow-2xl">
-        
-        <!-- Level 1 -->
-        <div>
-          <div class="flex justify-between text-xs text-white/70 mb-1.5">
-            <span>Traditional Junior Accountant (Manual VLOOKUP &amp; Entry)</span>
-            <span class="font-bold mono text-white/80">₹6L – ₹12L</span>
-          </div>
-          <div class="w-full bg-white/10 h-7 rounded-xl overflow-hidden p-0.5">
-            <div class="bg-white/30 h-full w-[25%] rounded-lg"></div>
-          </div>
-        </div>
-
-        <!-- Level 2 -->
-        <div>
-          <div class="flex justify-between text-xs text-white/70 mb-1.5">
-            <span>Senior Accountant / Finance Manager (Traditional)</span>
-            <span class="font-bold mono text-white/90">₹15L – ₹25L</span>
-          </div>
-          <div class="w-full bg-white/10 h-7 rounded-xl overflow-hidden p-0.5">
-            <div class="bg-white/45 h-full w-[50%] rounded-lg"></div>
-          </div>
-        </div>
-
-        <!-- Level 3 -->
-        <div>
-          <div class="flex justify-between text-xs text-[#d4af37] font-bold mb-1.5">
-            <span>AI-Native Senior Accountant (AI Accounting Engineer)</span>
-            <span class="font-bold mono text-sm text-[#d4af37]">₹35L – ₹45L+</span>
-          </div>
-          <div class="w-full bg-white/10 h-8 rounded-xl overflow-hidden p-0.5 border border-[#d4af37]/50">
-            <div class="bg-gradient-to-r from-[#d4af37] to-[#f5d061] h-full w-[90%] rounded-lg shadow-lg shadow-[#d4af37]/40 flex items-center justify-end pr-3">
-              <span class="text-[10px] font-black text-[#070c14] uppercase tracking-wider hidden sm:inline">2.5× Higher Market Value</span>
-            </div>
-          </div>
-        </div>
-
-        <p class="text-[11px] text-white/50 text-center pt-2">
-          Source: Corporate Finance &amp; Accounting Compensation Trends (India Tech &amp; MNC Hubs 2024–2026).
-        </p>
-
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ========================================================================= -->
-  <!-- 📚 THE 5 CURRICULUM MODULES (MATCHES STREAM LIBRARY 1:1)                  -->
-  <!-- ========================================================================= -->
-  <section id="curriculum" class="py-16 sm:py-24 px-4 sm:px-6 max-w-5xl mx-auto border-b border-white/10">
-    <div class="text-center max-w-3xl mx-auto space-y-3 mb-14">
-      <span class="text-xs font-bold text-[#d4af37] uppercase tracking-wider">The Complete Curriculum · 5 Real Modules</span>
-      <h2 class="text-2xl sm:text-4xl font-extrabold text-white">
-        The 5 workflows you run every single month — rebuilt around AI.
-      </h2>
-      <p class="text-sm sm:text-base text-white/70">
-        Every module is delivered with sample Excel sheets, Claude prompt templates, and step-by-step walkthroughs inside our private video portal.
-      </p>
-    </div>
-
-    <div class="space-y-4">
-      
-      <!-- M01 -->
-      <div class="p-6 rounded-3xl bg-[#0d1522] border border-white/10 shadow-xl flex flex-col md:flex-row gap-5 items-start hover:border-[#d4af37]/50 transition">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#d4af37] to-[#aa8620] text-[#070c14] font-black flex items-center justify-center text-sm shrink-0 shadow-lg">
-          M01
-        </div>
-        <div class="space-y-1.5 flex-1">
-          <div class="flex flex-wrap items-center gap-2">
-            <h3 class="text-lg font-bold text-white">Claude 101 for Finance &amp; Accounting</h3>
-            <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 font-bold border border-blue-500/30">Foundation</span>
-            <span class="text-[10px] text-white/50 mono">18 mins · Video + Prompts</span>
-          </div>
-          <p class="text-xs sm:text-sm text-white/70 leading-relaxed">
-            Before we touch any ledger, learn how to frame financial data for Claude so it never hallucinates. How to upload multi-page trial balances, set strict Ind AS guardrails, and structure instructions so you get mathematically verified ledger answers every single time.
-          </p>
-        </div>
-      </div>
-
-      <!-- M02 -->
-      <div class="p-6 rounded-3xl bg-[#0d1522] border border-white/10 shadow-xl flex flex-col md:flex-row gap-5 items-start hover:border-[#d4af37]/50 transition">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#d4af37] to-[#aa8620] text-[#070c14] font-black flex items-center justify-center text-sm shrink-0 shadow-lg">
-          M02
-        </div>
-        <div class="space-y-1.5 flex-1">
-          <div class="flex flex-wrap items-center gap-2">
-            <h3 class="text-lg font-bold text-white">Automated Journal Entries from Invoices &amp; Bills</h3>
-            <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">Ledger Automation</span>
-            <span class="text-[10px] text-white/50 mono">24 mins · Video + Template</span>
-          </div>
-          <p class="text-xs sm:text-sm text-white/70 leading-relaxed">
-            Upload messy invoice PDFs, vendor bills, or expense reports. Claude extracts line items, determines appropriate General Ledger (GL) accounts, calculates TDS deductions under 194C/194J, and produces dual-entry debit/credit tables ready to copy-paste into Tally or ERPs.
-          </p>
-        </div>
-      </div>
-
-      <!-- M03 -->
-      <div class="p-6 rounded-3xl bg-[#0d1522] border border-white/10 shadow-xl flex flex-col md:flex-row gap-5 items-start hover:border-[#d4af37]/50 transition">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#d4af37] to-[#aa8620] text-[#070c14] font-black flex items-center justify-center text-sm shrink-0 shadow-lg">
-          M03
-        </div>
-        <div class="space-y-1.5 flex-1">
-          <div class="flex flex-wrap items-center gap-2">
-            <h3 class="text-lg font-bold text-white">Bank Reconciliation &amp; Fixed Asset Depreciation</h3>
-            <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30">Audit &amp; Asset Engine</span>
-            <span class="text-[10px] text-white/50 mono">28 mins · Video + SOP</span>
-          </div>
-          <p class="text-xs sm:text-sm text-white/70 leading-relaxed">
-            Paste raw, cryptic bank statement narrations into Claude. It matches thousands of entries against your book ledger in seconds, flags bank charges vs dishonored cheques, and calculates WDV/SLM depreciation schedules compliant with Companies Act Schedule II.
-          </p>
-        </div>
-      </div>
-
-      <!-- M04 -->
-      <div class="p-6 rounded-3xl bg-[#0d1522] border border-white/10 shadow-xl flex flex-col md:flex-row gap-5 items-start hover:border-[#d4af37]/50 transition">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#d4af37] to-[#aa8620] text-[#070c14] font-black flex items-center justify-center text-sm shrink-0 shadow-lg">
-          M04
-        </div>
-        <div class="space-y-1.5 flex-1">
-          <div class="flex flex-wrap items-center gap-2">
-            <h3 class="text-lg font-bold text-white">GST Reconciliation (GSTR-2A vs 2B Dispute Engine)</h3>
-            <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">Tax Compliance</span>
-            <span class="text-[10px] text-white/50 mono">32 mins · Video + XML Script</span>
-          </div>
-          <p class="text-xs sm:text-sm text-white/70 leading-relaxed">
-            The flagship workflow. Compare 2A vs 2B downloads in 30 seconds. Claude highlights missing vendor invoices, tax amount discrepancies, and automatically drafts professional follow-up emails to defaulting suppliers with invoice numbers and disputed tax amounts.
-          </p>
-        </div>
-      </div>
-
-      <!-- M05 -->
-      <div class="p-6 rounded-3xl bg-[#0d1522] border border-white/10 shadow-xl flex flex-col md:flex-row gap-5 items-start hover:border-[#d4af37]/50 transition">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#d4af37] to-[#aa8620] text-[#070c14] font-black flex items-center justify-center text-sm shrink-0 shadow-lg">
-          M05
-        </div>
-        <div class="space-y-1.5 flex-1">
-          <div class="flex flex-wrap items-center gap-2">
-            <h3 class="text-lg font-bold text-white">Month-End Close &amp; MIS Reporting (The Capstone)</h3>
-            <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-300 font-bold border border-red-500/30">Capstone Masterclass</span>
-            <span class="text-[10px] text-white/50 mono">35 mins · Capstone Project</span>
-          </div>
-          <p class="text-xs sm:text-sm text-white/70 leading-relaxed">
-            Pull all workflows together. Perform rapid GL scrutiny, monthly accrual checklists, variance flux notes (MoM / YoY), and generate executive-ready financial MIS decks that make CFOs and management say "how did you do this in 4 days?"
-          </p>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Certificate & Prompt Vault Callout -->
-    <div class="mt-10 p-7 rounded-3xl glass-gold-card grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-      <div class="space-y-2">
-        <div class="flex items-center gap-2">
-          <span class="text-base">📜</span>
-          <span class="text-xs font-bold text-[#d4af37] uppercase tracking-wider">Official Certificate</span>
-        </div>
-        <h4 class="text-lg font-bold text-white">LinkedIn Verifiable Credential</h4>
-        <p class="text-xs text-white/70 leading-relaxed">
-          Upon completing all 5 modules and the capstone submission, receive your verified <b>AI Accounting Engineer Certificate</b> issued by CA Varsha Varyani, shareable directly to your LinkedIn licenses section.
-        </p>
-      </div>
-
-      <div class="space-y-2">
-        <div class="flex items-center gap-2">
-          <span class="text-base">📂</span>
-          <span class="text-xs font-bold text-[#d4af37] uppercase tracking-wider">Prompt Vault Included</span>
-        </div>
-        <h4 class="text-lg font-bold text-white">50+ Copy-Paste Prompts &amp; SOPs</h4>
-        <p class="text-xs text-white/70 leading-relaxed">
-          Never type prompts from scratch. You get 1-click access to the exact Claude prompt recipes and downloadable Excel formulas used in the videos.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================================================= -->
-  <!-- 💬 WALL OF REVIEWS / TESTIMONIALS                                         -->
-  <!-- ========================================================================= -->
-  <section id="testimonials" class="py-16 sm:py-24 px-4 sm:px-6 bg-[#04080e] border-b border-white/10">
-    <div class="max-w-6xl mx-auto space-y-12">
-      <div class="text-center max-w-3xl mx-auto space-y-2">
-        <span class="text-xs font-bold text-[#d4af37] uppercase tracking-wider">What Finance Professionals Say</span>
-        <h2 class="text-2xl sm:text-4xl font-extrabold text-white">
-          From 14-Hour Saturdays to Day 5 Closes
-        </h2>
-        <p class="text-xs sm:text-sm text-white/60">
-          Hear from Chartered Accountants, controllers, and finance leads applying these exact workflows:
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        <!-- Review 1 -->
-        <div class="bg-[#0d1522] p-7 rounded-3xl border border-white/10 shadow-xl space-y-3.5">
-          <div class="flex items-center gap-1 text-[#d4af37] text-sm">★★★★★</div>
-          <p class="text-xs sm:text-sm text-white/80 leading-relaxed italic">
-            "The GSTR-2B dispute table prompt alone saved our team 2 days of manual matching. We recovered ₹4.2 Lakhs of ITC that was sitting in vendor mismatches for 3 quarters."
-          </p>
-          <div class="pt-3 border-t border-white/10 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-[#1e293b] text-[#d4af37] font-bold flex items-center justify-center text-xs">
-              RK
-            </div>
-            <div>
-              <div class="text-xs font-bold text-white">Rohit Kulkarni</div>
-              <div class="text-[10px] text-white/50">Senior Manager - Tax &amp; Audit, Pune</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Review 2 -->
-        <div class="bg-[#0d1522] p-7 rounded-3xl border border-white/10 shadow-xl space-y-3.5">
-          <div class="flex items-center gap-1 text-[#d4af37] text-sm">★★★★★</div>
-          <p class="text-xs sm:text-sm text-white/80 leading-relaxed italic">
-            "I was skeptical because most AI courses are fluff. But Varsha explains bank reconciliations and depreciation exactly like a Big-4 senior would. 100% practical, zero nonsense."
-          </p>
-          <div class="pt-3 border-t border-white/10 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-[#d4af37] text-[#070c14] font-bold flex items-center justify-center text-xs">
-              PS
-            </div>
-            <div>
-              <div class="text-xs font-bold text-white">Priya Sharma, CA</div>
-              <div class="text-[10px] text-white/50">Assistant Finance Controller, Bengaluru</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Review 3 -->
-        <div class="bg-[#0d1522] p-7 rounded-3xl border border-white/10 shadow-xl space-y-3.5">
-          <div class="flex items-center gap-1 text-[#d4af37] text-sm">★★★★★</div>
-          <p class="text-xs sm:text-sm text-white/80 leading-relaxed italic">
-            "Best ₹1,499 I've invested in my career. Being able to explain and run AI accounting workflows got me an immediate 35% increment during my annual review."
-          </p>
-          <div class="pt-3 border-t border-white/10 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center text-xs">
-              AM
-            </div>
-            <div>
-              <div class="text-xs font-bold text-white">Ankit Mehta</div>
-              <div class="text-[10px] text-white/50">Lead Financial Analyst, Gurugram</div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================================================= -->
-  <!-- 🎁 THE OFFER BOX WITH VARSHA POINTING DOWN (`varsha-cta.jpg`)              -->
-  <!-- ========================================================================= -->
-  <section class="py-16 sm:py-24 px-4 sm:px-6 bg-[#070c14] text-[#f8fafc]" id="pricing">
-    <div class="max-w-4xl mx-auto space-y-8">
-      
-      <!-- Varsha Pointing Down Image Card (100% Upright) -->
-      <div class="max-w-md mx-auto rounded-3xl overflow-hidden border-2 border-[#d4af37]/50 shadow-2xl relative glass-panel">
-        <img src="varsha-cta.jpg" alt="CA Varsha Varyani inviting you to enroll" class="w-full object-cover">
-        <div class="absolute bottom-3 inset-x-3 bg-[#070c14]/90 backdrop-blur-md rounded-2xl py-2 px-4 text-center text-xs font-bold text-[#d4af37] border border-white/10">
-          👇 Lock In The Founding Cohort Rate Below
-        </div>
-      </div>
-
-      <!-- Pricing Box -->
-      <div class="max-w-xl mx-auto glass-gold-card rounded-3xl p-6 sm:p-10 text-center space-y-6">
-        
-        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#d4af37]/20 border border-[#d4af37]/40 text-xs font-bold text-[#d4af37]">
-          <span>⚡ Founding Cohort · ₹3,501 Instant Discount</span>
-        </div>
-
-        <div>
-          <h2 class="text-3xl font-extrabold text-white">Join The Program Today</h2>
-          <div class="flex items-baseline justify-center gap-3 mt-3">
-            <span class="text-4xl sm:text-5xl font-black text-[#d4af37] mono">₹1,499</span>
-            <span class="text-xl line-through text-white/40 mono">₹5,000</span>
-            <span class="text-xs font-bold bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded-md border border-emerald-500/30">Save 70%</span>
-          </div>
-          <p class="text-xs text-white/50 mt-1">One-time payment · No subscription or recurring fees</p>
-        </div>
-
-        <!-- Total Value Stack -->
-        <div class="border-t border-b border-white/10 py-5 text-left text-xs sm:text-sm space-y-2.5 text-white/85">
-          <div class="flex justify-between items-center">
-            <span>✓ 5 Production Workflow Modules (HD Video)</span>
-            <span class="mono text-[#d4af37]">₹10,000 value</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span>✓ 50+ Copy-Ready Claude Prompts &amp; SOP Files</span>
-            <span class="mono text-[#d4af37]">₹5,000 value</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span>✓ Lifetime Access &amp; Future Workflow Updates</span>
-            <span class="mono text-[#d4af37]">₹3,000 value</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span>✓ Private VIP WhatsApp Community</span>
-            <span class="mono text-[#d4af37]">₹2,000 value</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span>✓ LinkedIn Shareable Verified Certificate</span>
-            <span class="mono text-[#d4af37]">₹1,000 value</span>
-          </div>
-          <div class="pt-2 border-t border-white/10 flex justify-between font-bold text-white text-sm">
-            <span>Total Value Stack:</span>
-            <span class="text-[#d4af37] mono">₹21,000+</span>
-          </div>
-        </div>
-
-        <!-- 1-Click Trigger Button -->
-        <button onclick="startUnifiedFunnel()" class="w-full btn-gold text-base py-4 rounded-2xl shadow-2xl flex items-center justify-center gap-2 transform hover:scale-[1.02] transition">
-          <span>⚡ Check Eligibility &amp; Enroll for ₹1,499</span>
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-        </button>
-
-        <div class="space-y-1 text-center">
-          <p class="text-xs text-white/50">🔒 100% Secure Checkout via UPI (GPay, PhonePe, Paytm), RuPay &amp; Cards</p>
-          <p class="text-[11px] text-emerald-400 font-medium">✓ Instant auto-redirect to Member Portal upon payment</p>
-        </div>
-
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ========================================================================= -->
-  <!-- ❓ FAQS SECTION                                                           -->
-  <!-- ========================================================================= -->
-  <section id="faq" class="py-16 sm:py-24 px-4 sm:px-6 max-w-4xl mx-auto space-y-8">
-    <div class="text-center space-y-2">
-      <span class="text-xs font-bold text-[#d4af37] uppercase tracking-wider">Got Questions?</span>
-      <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Frequently Asked Questions</h2>
-    </div>
-
-    <div class="space-y-3">
-      
-      <div class="bg-[#0d1522] rounded-2xl border border-white/10 p-5 shadow-lg">
-        <h4 class="font-bold text-sm text-white">Who is this masterclass designed for?</h4>
-        <p class="text-xs text-white/70 mt-1.5 leading-relaxed">
-          Qualified Chartered Accountants (CAs), Finance Managers, Corporate Controllers, Article Assistants, and B.Com / MBA finance graduates who manage ledgers, GST filings, and monthly close cycles.
-        </p>
-      </div>
-
-      <div class="bg-[#0d1522] rounded-2xl border border-white/10 p-5 shadow-lg">
-        <h4 class="font-bold text-sm text-white">Do I need to know any programming or Python?</h4>
-        <p class="text-xs text-white/70 mt-1.5 leading-relaxed">
-          Zero coding is required. Everything is run via natural conversational English and Claude’s document interface alongside your existing Excel spreadsheets and Tally/ERP reports.
-        </p>
-      </div>
-
-      <div class="bg-[#0d1522] rounded-2xl border border-white/10 p-5 shadow-lg">
-        <h4 class="font-bold text-sm text-white">How do I access the course after payment?</h4>
-        <p class="text-xs text-white/70 mt-1.5 leading-relaxed">
-          Access is 100% instant. Right after completing UPI payment, your screen will automatically redirect you directly into the <b>Whop-style Student Portal</b> where all 5 video modules, prompt vault, and downloads are immediately unlocked.
-        </p>
-      </div>
-
-      <div class="bg-[#0d1522] rounded-2xl border border-white/10 p-5 shadow-lg">
-        <h4 class="font-bold text-sm text-white">Can I watch the videos at my own pace?</h4>
-        <p class="text-xs text-white/70 mt-1.5 leading-relaxed">
-          Yes! You get lifetime access to all recorded videos, transcripts, and downloadable templates. You can watch anytime on desktop or mobile.
-        </p>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ========================================================================= -->
-  <!-- 📱 STICKY BOTTOM BAR (MOBILE CONVERSION)                                  -->
-  <!-- ========================================================================= -->
-  <div class="sticky-bar py-3 px-4 flex items-center justify-between sm:hidden">
-    <div>
-      <div class="text-[10px] text-white/50">⚡ 70% Off Today</div>
-      <div class="text-base font-bold text-[#d4af37] mono">₹1,499 <span class="text-xs line-through text-white/40">₹5,000</span></div>
-    </div>
-    <button onclick="startUnifiedFunnel()" class="btn-gold text-xs px-5 py-2.5 rounded-xl shadow-md font-extrabold">
-      Enroll Now →
-    </button>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- 🎯 THE UNIFIED HIGH-CONVERTING FUNNEL MODAL                                -->
-  <!-- (Qualifier -> Phone OTP Verification -> 1-Click Purchase -> Meta Signals)-->
+  <!-- 🎯 UNIFIED CHECKOUT MODAL (QUALIFIER -> OTP -> DYNAMIC UPI QR -> PORTAL)   -->
   <!-- ========================================================================= -->
-  <div id="unifiedFunnelModal" class="funnel-modal-overlay hidden">
-    <div class="glass-gold-card text-[#f8fafc] w-full max-w-lg rounded-3xl p-6 sm:p-8 space-y-6 max-h-[95vh] overflow-y-auto">
+  <div id="unifiedFunnelModal" class="modal-overlay hidden">
+    <div class="modal-container">
       
-      <!-- Top Step Header -->
-      <div class="space-y-2">
-        <div class="flex justify-between items-center text-xs">
-          <span class="text-[10px] font-bold text-[#d4af37] uppercase tracking-wider" id="funnelStepBadge">Step 1 of 3: Role &amp; Quality Qualifier</span>
-          <button onclick="closeUnifiedModal()" class="text-white/40 hover:text-white text-xl">✕</button>
-        </div>
-        <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-          <div id="funnelProgressBar" class="bg-gradient-to-r from-[#d4af37] to-[#f5d061] h-full transition-all duration-300 w-[33%]"></div>
-        </div>
+      <!-- Close Button -->
+      <button onclick="closeUnifiedModal()" class="modal-close" aria-label="Close">&times;</button>
+
+      <!-- Progress Track -->
+      <div class="w-full bg-white/10 h-1.5 rounded-full mb-5 overflow-hidden">
+        <div id="funnelProgressBar" class="h-full bg-[#c4953a] transition-all duration-300" style="width: 25%"></div>
       </div>
 
-      <!-- STEP 1: LEAD QUALIFIER (ROLE & PAIN) -->
+      <!-- Step Badge -->
+      <span id="funnelStepBadge" class="modal-step-badge">Step 1 of 3 · Profile Check</span>
+
+      <!-- ── STEP 1: QUALIFIER QUESTIONS ── -->
       <div id="funnelStep1" class="space-y-4">
         <div>
-          <span class="text-xs font-bold text-[#d4af37] uppercase tracking-wider">Quick Eligibility Check</span>
-          <h3 class="text-lg sm:text-xl font-bold text-white mt-1">What is your professional background?</h3>
-          <p class="text-xs text-white/60">Ensures you qualify for the ₹1,499 founding cohort pricing.</p>
+          <h3 class="modal-title">Customize Your AI Accounting Playbook</h3>
+          <p class="modal-subtitle">Answer 2 quick questions so we can calibrate your Claude prompts and sample datasets.</p>
         </div>
 
-        <div class="space-y-2">
-          <label class="text-[11px] font-bold text-white/70 block">Select Your Role:</label>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <button type="button" onclick="selectRole('Chartered Accountant (CA)', this)" class="role-opt-btn p-3 rounded-2xl bg-white/5 border border-white/10 hover:border-[#d4af37] text-left text-xs font-semibold text-white transition">
-              👨‍💼 Qualified CA
-            </button>
-            <button type="button" onclick="selectRole('Finance Manager / Controller', this)" class="role-opt-btn p-3 rounded-2xl bg-white/5 border border-white/10 hover:border-[#d4af37] text-left text-xs font-semibold text-white transition">
-              📊 Finance Manager
-            </button>
-            <button type="button" onclick="selectRole('Article / Junior Accountant', this)" class="role-opt-btn p-3 rounded-2xl bg-white/5 border border-white/10 hover:border-[#d4af37] text-left text-xs font-semibold text-white transition">
-              📝 Article Assistant
-            </button>
-            <button type="button" onclick="selectRole('Commerce Graduate / B.Com', this)" class="role-opt-btn p-3 rounded-2xl bg-white/5 border border-white/10 hover:border-[#d4af37] text-left text-xs font-semibold text-white transition">
-              🎓 Commerce / B.Com
-            </button>
+        <div class="space-y-3 pt-2 text-sm">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-[#c4953a] mb-1.5">Your Primary Finance Role</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button type="button" onclick="selectRole(this, 'Chartered Accountant (CA)')" class="role-btn p-3 rounded-lg border border-white/15 bg-white/5 text-left text-xs font-medium text-white hover:border-[#c4953a] transition">Chartered Accountant (CA)</button>
+              <button type="button" onclick="selectRole(this, 'Senior Accountant / Manager')" class="role-btn p-3 rounded-lg border border-white/15 bg-white/5 text-left text-xs font-medium text-white hover:border-[#c4953a] transition">Senior Accountant / Manager</button>
+              <button type="button" onclick="selectRole(this, 'Finance Controller / CFO')" class="role-btn p-3 rounded-lg border border-white/15 bg-white/5 text-left text-xs font-medium text-white hover:border-[#c4953a] transition">Finance Controller / CFO</button>
+              <button type="button" onclick="selectRole(this, 'B.Com / MBA / Fresher')" class="role-btn p-3 rounded-lg border border-white/15 bg-white/5 text-left text-xs font-medium text-white hover:border-[#c4953a] transition">B.Com / MBA / Fresher</button>
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <label class="block text-xs font-semibold uppercase tracking-wider text-[#c4953a] mb-1.5">Biggest Month-End Bottleneck</label>
+            <select id="funnelBottleneckSelect" class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-xs font-medium text-white focus:outline-none focus:border-[#c4953a]">
+              <option value="GSTR-2A vs 2B Tax Mismatch Matching">GSTR-2A vs 2B Tax Mismatch Matching (Takes 1-2 days)</option>
+              <option value="Multi-Account Bank Reconciliations">Multi-Account Bank Reconciliations with Unmatched Entries</option>
+              <option value="Manual Vendor Invoicing &amp; Journal Narration">Manual Vendor Invoicing &amp; Journal Narration</option>
+              <option value="GL Scrutiny &amp; Month-End Close Overrun">GL Scrutiny &amp; Month-End Close Overrun (Closing past Day 10)</option>
+            </select>
           </div>
         </div>
 
-        <div class="space-y-2">
-          <label class="text-[11px] font-bold text-white/70 block">Biggest Task Bottleneck:</label>
-          <select id="funnelBottleneckSelect" class="w-full bg-[#070c14] border border-white/15 rounded-2xl px-3.5 py-3 text-xs text-white focus:outline-none focus:border-[#d4af37]">
-            <option value="GSTR-2A vs 2B Tax Mismatch Matching">🧾 GSTR-2A vs 2B Reconciliation &amp; Dispute Lists</option>
-            <option value="Manual Bank Statement Matching">🏦 Bank Reconciliation &amp; Ledger Tie-Outs</option>
-            <option value="Typing Manual Journal Entries">📑 Manual Journal Entries from Invoices</option>
-            <option value="Month-End GL Scrutiny & Close">⏱️ Month-End GL Scrutiny &amp; Close Backlog</option>
-          </select>
-        </div>
-
-        <button onclick="goToStep2()" class="w-full py-3.5 rounded-2xl btn-gold text-sm font-bold flex items-center justify-center gap-2 shadow-xl">
-          <span>Continue to Verified Access →</span>
-        </button>
+        <button type="button" onclick="proceedToStep2()" class="w-full btn btn-primary py-3 text-sm mt-4">Continue to Verification &rarr;</button>
       </div>
 
-      <!-- STEP 2: PHONE + REAL OTP VERIFICATION (HIGH QUALITY LEAD) -->
-      <div id="funnelStep2" class="hidden space-y-4">
+      <!-- ── STEP 2: LEAD CAPTURE & OTP VERIFICATION ── -->
+      <div id="funnelStep2" class="space-y-4 hidden">
         <div>
-          <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Step 2: Instant Phone Verification</span>
-          <h3 class="text-lg sm:text-xl font-bold text-white mt-1">Verify Your WhatsApp Mobile Number</h3>
-          <p class="text-xs text-white/60">We send an instant 4-digit code to verify high-intent enrollment.</p>
+          <h3 class="modal-title">Where should we deliver your course access?</h3>
+          <p class="modal-subtitle">Instant WhatsApp &amp; Email access token will be generated for your verified contact.</p>
         </div>
 
-        <!-- Qualified Badge -->
-        <div class="p-3 rounded-2xl bg-[#d4af37]/15 border border-[#d4af37]/40 text-xs text-white flex items-center justify-between">
-          <span>🎯 Profile: <b id="qualifiedProfileBadge" class="text-[#d4af37]">Qualified CA</b></span>
-          <span class="text-emerald-400 font-bold">✓ Lead Score: High (95/100)</span>
-        </div>
+        <div class="space-y-3 pt-2 text-xs">
+          <div>
+            <label class="block font-semibold text-white/80 mb-1">Full Name</label>
+            <input type="text" id="leadName" value="Manak Sehgal" class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-white focus:outline-none focus:border-[#c4953a]" placeholder="CA Rahul Sharma">
+          </div>
 
-        <div class="space-y-3" id="phoneInputSection">
           <div>
-            <label class="text-[11px] font-bold text-white/70 block mb-1">Your Full Name:</label>
-            <input type="text" id="leadName" placeholder="e.g. Manak Sehgal" value="Manak Sehgal" class="w-full bg-white/5 border border-white/15 rounded-2xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#d4af37]">
+            <label class="block font-semibold text-white/80 mb-1">Work Email</label>
+            <input type="email" id="leadEmail" value="manakppc@gmail.com" class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-white focus:outline-none focus:border-[#c4953a]" placeholder="rahul@ey.com">
           </div>
+
           <div>
-            <label class="text-[11px] font-bold text-white/70 block mb-1">Email Address:</label>
-            <input type="email" id="leadEmail" placeholder="e.g. manakppc@gmail.com" value="manakppc@gmail.com" class="w-full bg-white/5 border border-white/15 rounded-2xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#d4af37]">
-          </div>
-          <div>
-            <label class="text-[11px] font-bold text-white/70 block mb-1">WhatsApp Mobile Number (+91):</label>
+            <label class="block font-semibold text-white/80 mb-1">WhatsApp Mobile Number</label>
             <div class="flex gap-2">
-              <input type="tel" id="leadPhone" placeholder="10-digit mobile number" value="9876543210" class="flex-1 bg-white/5 border border-white/15 rounded-2xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#d4af37] mono">
-              <button type="button" onclick="sendOtpCode()" id="sendOtpBtn" class="px-4 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shrink-0 transition shadow-lg">
-                Send OTP
-              </button>
+              <span class="p-3 bg-white/5 border border-white/15 rounded-lg text-white font-mono">+91</span>
+              <input type="tel" id="leadPhone" value="9876543210" class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-white font-mono focus:outline-none focus:border-[#c4953a]" placeholder="9876543210">
+              <button type="button" id="sendOtpBtn" onclick="requestOtp()" class="bg-[#c4953a] text-[#0f1b2d] font-bold px-4 rounded-lg whitespace-nowrap hover:bg-[#d4a544]">Send OTP</button>
+            </div>
+          </div>
+
+          <!-- Dynamic OTP Demo Banner -->
+          <div id="otpBanner" class="p-2.5 rounded-lg bg-[#c4953a]/15 border border-[#c4953a]/40 text-center text-[#c4953a] hidden">
+            <span>⚡ Security Demo Code: <strong id="generatedOtpText" class="font-mono text-sm underline">4829</strong></span>
+          </div>
+
+          <!-- OTP Input Section -->
+          <div id="otpInputSection" class="hidden pt-1">
+            <label class="block font-semibold text-center text-white/80 mb-2">Enter 4-Digit Code</label>
+            <div class="flex justify-center gap-3">
+              <input type="text" id="otp1" maxlength="1" oninput="focusNext(this, 'otp2')" class="w-12 h-12 text-center text-lg font-bold font-mono bg-[#0a1320] border border-[#c4953a] text-white rounded-lg focus:outline-none">
+              <input type="text" id="otp2" maxlength="1" oninput="focusNext(this, 'otp3')" class="w-12 h-12 text-center text-lg font-bold font-mono bg-[#0a1320] border border-[#c4953a] text-white rounded-lg focus:outline-none">
+              <input type="text" id="otp3" maxlength="1" oninput="focusNext(this, 'otp4')" class="w-12 h-12 text-center text-lg font-bold font-mono bg-[#0a1320] border border-[#c4953a] text-white rounded-lg focus:outline-none">
+              <input type="text" id="otp4" maxlength="1" oninput="verifyOtpDirectly()" class="w-12 h-12 text-center text-lg font-bold font-mono bg-[#0a1320] border border-[#c4953a] text-white rounded-lg focus:outline-none">
             </div>
           </div>
         </div>
 
-        <!-- SIMULATED REAL SMS / WHATSAPP BANNER -->
-        <div id="otpBanner" class="hidden p-3.5 rounded-2xl bg-black/60 border border-emerald-500/50 space-y-2">
-          <div class="flex items-center gap-2 text-xs text-emerald-400 font-bold">
-            <span>📩 WhatsApp / SMS Alert</span>
-            <span class="text-[10px] text-white/40">Just now</span>
-          </div>
-          <p class="text-xs mono text-white/90">
-            "Your AI Accounting Engineer verification code is <strong id="generatedOtpText" class="text-emerald-300 font-bold text-sm tracking-widest bg-white/10 px-1.5 py-0.5 rounded">4829</strong>. Do not share it."
-          </p>
-        </div>
-
-        <!-- OTP Input Section -->
-        <div id="otpInputSection" class="hidden space-y-3 pt-1">
-          <label class="text-[11px] font-bold text-white/80 block text-center">Enter 4-Digit OTP Code:</label>
-          <div class="flex justify-center gap-3">
-            <input type="text" maxlength="1" class="otp-input" id="otp1" oninput="moveOtpFocus(1)">
-            <input type="text" maxlength="1" class="otp-input" id="otp2" oninput="moveOtpFocus(2)">
-            <input type="text" maxlength="1" class="otp-input" id="otp3" oninput="moveOtpFocus(3)">
-            <input type="text" maxlength="1" class="otp-input" id="otp4" oninput="moveOtpFocus(4)">
-          </div>
-
-          <button onclick="verifyOtpAndProceed()" class="w-full py-3.5 rounded-2xl btn-gold text-sm font-bold flex items-center justify-center gap-2 shadow-xl mt-2">
-            <span>✓ Verify OTP &amp; Unlock 1-Click Payment</span>
-          </button>
-        </div>
+        <button type="button" id="btnVerifyAndPay" onclick="verifyOtpDirectly()" class="w-full btn btn-primary py-3 text-sm mt-3">Verify &amp; Continue to Secure Checkout &rarr;</button>
       </div>
 
-      <!-- STEP 3: 1-CLICK INSTANT PURCHASE (THE REVENUE ENGINE) -->
-      <div id="funnelStep3" class="hidden space-y-5">
+      <!-- ── STEP 3: DYNAMIC UPI QR & PAYMENT ── -->
+      <div id="funnelStep3" class="space-y-4 hidden">
         <div>
-          <span class="text-xs font-bold text-[#d4af37] uppercase tracking-wider">Step 3: 1-Click Purchase</span>
-          <h3 class="text-lg sm:text-xl font-bold text-white mt-1">Confirm Enrollment &amp; Pay via UPI</h3>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[11px] font-bold border border-emerald-500/30">
+            <span>✓ Verified Student:</span> <span id="verifiedLeadName">Manak Sehgal</span>
+          </span>
+          <h3 class="modal-title mt-2">Complete Instant Enrollment</h3>
         </div>
 
-        <!-- Verified Lead Stamp -->
-        <div class="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 text-xs text-white flex justify-between items-center">
-          <div>
-            <div class="font-bold flex items-center gap-1.5 text-emerald-300">
-              <span>✓ Verified Lead:</span>
-              <span id="verifiedLeadName">Manak Sehgal</span>
-            </div>
-            <div class="text-[11px] text-white/60 mono" id="verifiedLeadContact">+91 9876543210 · manakppc@gmail.com</div>
+        <!-- Order Summary & Bump -->
+        <div class="p-3.5 bg-white/5 border border-white/10 rounded-xl space-y-2.5 text-xs">
+          <div class="flex justify-between items-center text-white">
+            <span>AIAccountingEngineer™ Founding Seat</span>
+            <span class="font-mono font-bold text-[#c4953a]">₹1,499</span>
           </div>
-          <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold mono">1-CLICK READY</span>
-        </div>
 
-        <!-- Base Product -->
-        <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 flex justify-between items-center">
-          <div>
-            <div class="font-bold text-xs text-white">AI in Accounting by CA Varsha Varyani</div>
-            <div class="text-[11px] text-white/60">5 Workflow Modules · Lifetime Access · Official Certificate</div>
+          <!-- Order Bump Toggle -->
+          <div class="pt-2 border-t border-white/10 flex items-start gap-2.5 bg-[#c4953a]/10 p-2.5 rounded-lg border border-[#c4953a]/30">
+            <input type="checkbox" id="orderBumpCheckbox" onchange="toggleOrderBump()" class="mt-0.5 w-4 h-4 accent-[#c4953a] cursor-pointer">
+            <label for="orderBumpCheckbox" class="cursor-pointer text-[11px] text-white/90 leading-tight">
+              <strong class="text-[#c4953a]">ADD: 50+ Production Claude SOP Prompts + Excel Macros Bundle</strong>
+              <div class="text-white/60 mt-0.5">Instant copy-paste prompts for GL scrutiny &amp; fixed asset schedule (+₹399 only)</div>
+            </label>
           </div>
-          <div class="text-right">
-            <span class="text-[10px] text-white/40 line-through">₹5,000</span>
-            <div class="font-bold mono text-[#d4af37]">₹1,499</div>
+
+          <div class="pt-2 border-t border-white/10 flex justify-between items-center text-sm font-bold text-white">
+            <span>Total Payable:</span>
+            <span id="unifiedTotalAmount" class="text-lg font-mono text-[#c4953a]">₹1,499</span>
           </div>
         </div>
 
-        <!-- ORDER BUMP -->
-        <div class="order-bump-box p-4 rounded-2xl bg-[#d4af37]/10 border-2 border-[#d4af37] space-y-2">
-          <label class="flex items-start gap-3 cursor-pointer">
-            <input type="checkbox" id="orderBumpCheckbox" class="mt-1 w-4 h-4 rounded text-[#d4af37] focus:ring-[#d4af37]" onchange="toggleUnifiedBump()">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-[#d4af37] text-[#070c14] uppercase">Recommended Add-on</span>
-                <span class="text-xs font-bold text-emerald-400 mono">+ ₹399 only</span>
-              </div>
-              <div class="text-xs font-bold text-white mt-1">Add "50+ Ready Claude Prompts &amp; Excel Reconciler SOP Pack"</div>
-              <p class="text-[11px] text-white/70 mt-0.5">Pre-built formulas &amp; prompt files for GSTR-2B and Bank Rec.</p>
-            </div>
-          </label>
+        <!-- Dynamic QR Display -->
+        <div class="text-center p-4 bg-white/5 rounded-xl border border-white/10">
+          <p class="text-xs font-semibold text-white/80 mb-2">Scan with Any UPI App (GPay, PhonePe, Paytm, CRED)</p>
+          <div class="w-48 h-48 mx-auto bg-white p-2 rounded-xl shadow-lg">
+            <img id="unifiedQrImg" src="" alt="Dynamic UPI QR Code" class="w-full h-full object-contain">
+          </div>
+          <div class="mt-2 text-[11px] text-white/50 font-mono">
+            VPA: <span class="text-[#c4953a]">manakppc@okhdfcbank</span> · Ref: <span id="countdownTimer">04:59</span>
+          </div>
         </div>
 
-        <!-- Live Total & 1-Click Payment -->
-        <div class="border-t border-white/10 pt-4 space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="text-xs text-white/60">Total Payable:</span>
-            <div class="text-2xl font-black text-emerald-400 mono" id="unifiedTotalAmount">₹1,499</div>
-          </div>
-
-          <!-- Dynamic Scannable QR -->
-          <div class="bg-white p-3 rounded-2xl max-w-[200px] mx-auto text-center shadow-2xl border-2 border-[#d4af37]">
-            <img id="unifiedQrImg" src="" alt="Dynamic UPI QR Code" class="w-full h-auto mx-auto rounded-xl">
-            <p class="text-[10px] text-[#070c14] font-bold mt-1.5">Scan with GPay / PhonePe / Paytm</p>
-          </div>
-
-          <!-- 1-Click App Buttons for Mobile -->
-          <div class="grid grid-cols-3 gap-2 pt-1">
-            <a id="btnGpay" href="#" class="py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/10 text-center text-xs font-bold text-white transition block">
-              Google Pay
-            </a>
-            <a id="btnPhonepe" href="#" class="py-2.5 rounded-2xl bg-purple-600/30 hover:bg-purple-600/40 border border-purple-500/40 text-center text-xs font-bold text-purple-200 transition block">
-              PhonePe
-            </a>
-            <a id="btnPaytm" href="#" class="py-2.5 rounded-2xl bg-blue-600/30 hover:bg-blue-600/40 border border-blue-500/40 text-center text-xs font-bold text-blue-200 transition block">
-              Paytm
-            </a>
-          </div>
-
-          <button onclick="completeOneClickPurchase()" class="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-xl flex items-center justify-center gap-2 transition">
-            <span>✓ I Have Paid — Complete Enrollment &amp; Get Access</span>
-          </button>
+        <!-- 1-Click UPI Mobile Buttons -->
+        <div class="grid grid-cols-3 gap-2">
+          <a id="btnGpay" href="#" class="p-2.5 text-center text-xs font-bold rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/15">GPay</a>
+          <a id="btnPhonepe" href="#" class="p-2.5 text-center text-xs font-bold rounded-lg bg-[#5f259f]/40 hover:bg-[#5f259f]/60 text-white border border-[#5f259f]">PhonePe</a>
+          <a id="btnPaytm" href="#" class="p-2.5 text-center text-xs font-bold rounded-lg bg-[#00baf2]/30 hover:bg-[#00baf2]/50 text-white border border-[#00baf2]">Paytm</a>
         </div>
+
+        <!-- Simulate / Confirm Payment Button -->
+        <button type="button" onclick="simulatePaymentSuccess()" class="w-full btn btn-primary py-3 text-sm font-bold">I Have Paid · Grant Access Instantly &rarr;</button>
       </div>
 
-      <!-- STEP 4: CONFIRMATION & ACCESS DELIVERY -->
-      <div id="funnelStep4" class="hidden space-y-4 text-center">
-        <div class="w-14 h-14 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-2xl mx-auto shadow-lg shadow-emerald-500/20">
+      <!-- ── STEP 4: SUCCESS & INSTANT REDIRECT TO PORTAL ── -->
+      <div id="funnelStep4" class="text-center space-y-4 py-4 hidden">
+        <div class="w-16 h-16 mx-auto rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-3xl font-bold">
           ✓
         </div>
-        <h3 class="text-xl font-extrabold text-white">Enrollment Confirmed!</h3>
-        <p class="text-xs text-white/70">
-          Payment confirmed. Instant portal access token generated for <span id="finalPhone" class="text-white mono font-bold"></span>.
-        </p>
+        <h3 class="modal-title">Payment Verified! Welcome Aboard</h3>
+        <p class="text-xs text-white/80 max-w-sm mx-auto">Your founding membership is active. Access credentials dispatched to WhatsApp &amp; Email.</p>
 
-        <div class="bg-black/50 p-3.5 rounded-2xl border border-white/10 text-left text-xs space-y-1 mono">
-          <div class="flex justify-between text-white/60">
-            <span>Transaction ID:</span>
-            <span class="text-white" id="finalTxnId">AAE-2026-9821</span>
-          </div>
-          <div class="flex justify-between text-white/60">
-            <span>Total Paid:</span>
-            <span class="text-emerald-400 font-bold" id="finalTotal">₹1,499</span>
-          </div>
+        <div class="p-3 bg-white/5 rounded-xl border border-white/10 text-xs font-mono text-left space-y-1 text-white/70">
+          <div>Txn Reference: <span id="finalTxnId" class="text-[#c4953a]">AAE-984210</span></div>
+          <div>Registered Phone: <span id="finalPhone" class="text-white">+91 9876543210</span></div>
+          <div>Amount Paid: <span id="finalTotal" class="text-emerald-400">₹1,499</span></div>
         </div>
 
-        <!-- WHOP-STYLE INSTANT PORTAL ACCESS CTA -->
-        <div class="space-y-2 pt-1">
-          <a id="directPortalAccessBtn" href="/portal" class="w-full py-3.5 rounded-2xl btn-gold text-[#070c14] font-black text-xs flex items-center justify-center gap-2 shadow-2xl transition">
-            <span>🚀 Open Learning Portal Now (Instant Access)</span>
-          </a>
-          <div class="text-[11px] text-emerald-400 mono" id="portalAutoRedirectText">
-            Auto-opening learning portal in <span id="portalRedirectCountdown">3</span>s...
-          </div>
+        <div class="text-xs text-[#c4953a] font-semibold animate-pulse">
+          Redirecting to Course Portal in <span id="portalRedirectCountdown">3</span> seconds...
         </div>
 
-        <div class="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 space-y-1.5 text-left">
-          <div class="text-xs font-bold text-emerald-300">Join VIP WhatsApp Cohort</div>
-          <p class="text-[11px] text-white/70">Access weekly live doubt sessions, sample spreadsheets, and prompt updates.</p>
-          <a href="https://chat.whatsapp.com/" target="_blank" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
-            <span>💬 Join WhatsApp VIP Group</span>
-          </a>
-        </div>
-
-        <button onclick="closeUnifiedModal()" class="text-xs text-white/50 hover:text-white underline pt-1">
-          Close Window
-        </button>
+        <button type="button" id="directPortalAccessBtn" onclick="goToPortal()" class="w-full btn btn-primary py-3 text-sm font-bold">Enter Course Portal Now &rarr;</button>
       </div>
 
     </div>
   </div>
 
+  <!-- Interactive Scripts -->
   <script src="app.js"></script>
+  <script>
+    // ── FAQ Accordion ──
+    document.querySelectorAll('.faq-q').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var open = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!open));
+        var panel = btn.nextElementSibling;
+        panel.style.maxHeight = open ? null : panel.scrollHeight + 'px';
+      });
+    });
+
+    // ── Countdown Timer (48-hour persistent) ──
+    var CD_KEY = 'aae_cd_end_live';
+    var CD_HOURS = 48;
+    var stored = localStorage.getItem(CD_KEY);
+    var endTime;
+    if (stored && parseInt(stored) > Date.now()) {
+      endTime = parseInt(stored);
+    } else {
+      endTime = Date.now() + CD_HOURS * 60 * 60 * 1000;
+      localStorage.setItem(CD_KEY, endTime);
+    }
+    var cdH = document.getElementById('cd-h');
+    var cdM = document.getElementById('cd-m');
+    var cdS = document.getElementById('cd-s');
+    function updateCD() {
+      var diff = Math.max(0, endTime - Date.now());
+      var h = Math.floor(diff / 3600000);
+      var m = Math.floor((diff % 3600000) / 60000);
+      var s = Math.floor((diff % 60000) / 1000);
+      if (cdH) cdH.textContent = h < 10 ? '0' + h : h;
+      if (cdM) cdM.textContent = m < 10 ? '0' + m : m;
+      if (cdS) cdS.textContent = s < 10 ? '0' + s : s;
+    }
+    updateCD();
+    setInterval(updateCD, 1000);
+
+    // ── Sticky Mobile CTA Observer ──
+    var sticky = document.getElementById('stickyCta');
+    var heroEnd = document.querySelector('.hero');
+    if (sticky && heroEnd) {
+      var stickyIO = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          sticky.classList.toggle('visible', !e.isIntersecting);
+        });
+      }, { threshold: 0 });
+      stickyIO.observe(heroEnd);
+    }
+  </script>
+
 </body>
 </html>
