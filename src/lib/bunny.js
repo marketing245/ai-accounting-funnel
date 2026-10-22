@@ -3,7 +3,8 @@
 // 1) Runtime sync: the portal asks Bunny which videos exist in the library and maps them to modules —
 //    by metaTag module=<id> (set by scripts/videos.js) or by title prefix "M01"/"Module 1". Newest finished video wins.
 //    Manual overrides in src/lib/videos.json ({ "1": "<videoId>" }) take precedence. Static ids in course.js are the last fallback.
-// 2) Signed embed URLs when BUNNY_TOKEN_AUTH_KEY is set (library setting "Embed view token authentication").
+// 2) Signed embed URLs when BUNNY_TOKEN_AUTH_KEY is set (library setting "Embed view token authentication";
+//    the signing key is the ZoneSecurityKey of the library's pull zone — verified 2026-10-22, NOT the library API key).
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');

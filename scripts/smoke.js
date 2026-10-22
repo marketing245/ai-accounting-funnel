@@ -62,6 +62,12 @@ async function call(method, path, body, opts = {}) {
   const mods = r.data?.course?.modules || [];
   check('lessons (5 modules, embed urls, no video ids leaked)', r.status === 200 && mods.length === 5 && mods.every((m) => m.embedUrl && m.embedUrl.includes('iframe.mediadelivery.net') && m.videoStatus === 'ready' && m.description && !('bunnyVideoId' in m) && !('prompts' in m)));
 
+  if (mods[0] && /[?&]token=/.test(mods[0].embedUrl)) {
+    const e = await fetch(mods[0].embedUrl); const html = await e.text();
+    check('signed embed url opens the player', e.status === 200 && /\.m3u8/.test(html));
+    const u = await fetch(mods[0].embedUrl.split('?')[0] + '?nocache=' + Date.now()); const h2 = await u.text();
+    check('unsigned embed url is blocked', !/\.m3u8/.test(h2));
+  }
   r = await call('POST', '/api/course/progress', { completed: [1, 2, 99], lastModule: 2 });
   check('progress saved (invalid ids dropped)', r.status === 200 && JSON.stringify(r.data.progress.completed) === '[1,2]');
   r = await call('GET', '/api/course/lessons');

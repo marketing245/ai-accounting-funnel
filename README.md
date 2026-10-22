@@ -48,7 +48,7 @@ Varsha can also upload in the Bunny dashboard: title the video `M03: …` and th
 | `BUNNY_LIBRARY_ID` | optional | defaults to `786834` |
 | `BUNNY_STREAM_API_KEY` | yes | the library's API key (Stream → library → API) — lets the portal list videos |
 | `BUNNY_API_KEY` | scripts | account API key, only for `scripts/videos.js protect` |
-| `BUNNY_TOKEN_AUTH_KEY` | recommended | Bunny Stream → library → Security → "Embed view token authentication"; makes video URLs expire |
+| `BUNNY_TOKEN_AUTH_KEY` | yes (ON now) | signing key for embed-token authentication = `ZoneSecurityKey` of the library's pull zone (account API `GET /pullzone/<PullZoneId>`); video URLs expire after 6 h and cannot be embedded elsewhere |
 | `WHATSAPP_GROUP_URL` | optional | shows the group button in the portal |
 | `SUPPORT_EMAIL` | optional | defaults to hello@aiaccountingengineer.com |
 
@@ -58,7 +58,7 @@ Public tags (GA4, Google Ads conversion label, Meta pixel) live in `public/site-
 - [ ] Custom domain on Vercel (e.g. `course.aiaccountingengineer.com`) and `SITE_URL` updated
 - [ ] Razorpay keys + webhook secret set, `PAYMENT_MODE=razorpay`, one real ₹1 test refunded
 - [ ] Legal entity name, address, GSTIN and grievance officer filled in `privacy.html`, `terms.html`, `contact.html`; refund window confirmed in `refund.html` and the "draft" note removed
-- [ ] Real lesson videos uploaded with `scripts/videos.js` (test clips deleted), token authentication on
+- [ ] Real lesson videos uploaded with `scripts/videos.js` (test clips deleted) — token authentication is already ON
 - [ ] Google Ads conversion label in `site-config.js`; GA4 `purchase` visible in Realtime after a test order
 - [ ] Password-reset email provider (Resend / Gmail) — until then resets are handled by support email
 

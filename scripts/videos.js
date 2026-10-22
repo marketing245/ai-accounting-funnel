@@ -97,7 +97,7 @@ async function protect(on) {
   const r = await fetch(`https://api.bunny.net/videolibrary/${LIB}`, { method: 'POST', headers: { AccessKey: k, 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ PlayerTokenAuthenticationEnabled: on }) });
   if (!r.ok) die(`Bunny account API → ${r.status}`);
   console.log(`✔ embed token authentication ${on ? 'ON' : 'OFF'} for library ${LIB}`);
-  if (on) console.log('   make sure BUNNY_TOKEN_AUTH_KEY (= the library API key) is set on Vercel, otherwise the portal player will be blocked.');
+  if (on) console.log('   make sure BUNNY_TOKEN_AUTH_KEY (= the ZoneSecurityKey of the library\'s pull zone, GET https://api.bunny.net/pullzone/<PullZoneId>) is set on Vercel and redeployed, otherwise the portal player is blocked.');
 }
 
 (async () => {
