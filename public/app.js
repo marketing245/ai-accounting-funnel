@@ -188,6 +188,7 @@ function submitBookingInquiry(e) {
   if (name.length < 2) return showErr('Please enter your full name.'), false;
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return showErr('Please enter a valid email address.'), false;
   if (!/^[6-9]\d{9}$/.test(phone)) return showErr('Please enter a valid 10-digit mobile number.'), false;
+  var btnText = btn ? btn.textContent : '';
   if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
   var inqBody = function () { return JSON.stringify({ name: name, email: email, phone: phone, type: type, notes: notes, website: ($('bookWebsite') && $('bookWebsite').value) || '', formToken: CHECKOUT && CHECKOUT.formToken, attribution: window.aaeAttribution ? aaeAttribution() : null }); };
   postForm('/api/inquiry', inqBody).then(function (d) {
@@ -197,7 +198,7 @@ function submitBookingInquiry(e) {
       if ($('bookingSuccessWrap')) $('bookingSuccessWrap').classList.remove('hidden');
     } else showErr((d && d.error) || 'Could not send your request. Please try again.');
   }).catch(function () { showErr('Network error. Please try again.'); })
-    .finally(function () { if (btn) { btn.disabled = false; btn.textContent = 'Request a quote →'; } });
+    .finally(function () { if (btn) { btn.disabled = false; btn.textContent = btnText; } });
   return false;
 }
 
