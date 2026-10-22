@@ -110,7 +110,7 @@
   <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
 
     <!-- LEFT SIDEBAR: CURRICULUM MODULES (COLLAPSIBLE ON MOBILE) -->
-    <aside class="w-full lg:w-96 shrink-0 custom-glass border-r border-white/10 flex flex-col h-auto lg:h-[calc(100vh-61px)] overflow-y-auto">
+    <aside class="w-full lg:w-96 shrink-0 custom-glass border-r border-white/10 flex flex-col h-auto lg:h-[calc(100vh-61px)] overflow-y-auto order-2 lg:order-1">
       <div class="p-4 border-b border-white/10 flex items-center justify-between bg-black/20">
         <div>
           <h2 class="text-xs font-bold uppercase tracking-wider text-white/50">Course Curriculum</h2>
@@ -143,10 +143,10 @@
     </aside>
 
     <!-- RIGHT/CENTER: CINEMA VIDEO PLAYER & INTERACTIVE LAB -->
-    <main class="flex-1 flex flex-col h-auto lg:h-[calc(100vh-61px)] overflow-y-auto bg-[#09111c]">
+    <main class="flex-1 flex flex-col h-auto lg:h-[calc(100vh-61px)] overflow-y-auto bg-[#09111c] order-1 lg:order-2">
 
       <!-- Active Lesson Header -->
-      <div class="px-6 py-4 border-b border-white/10 bg-black/20 flex flex-wrap items-center justify-between gap-4">
+      <div class="px-4 lg:px-6 py-3 lg:py-4 border-b border-white/10 bg-black/20 flex flex-wrap items-center justify-between gap-3">
         <div>
           <div class="flex items-center gap-2 text-xs text-[#dfb35a] font-semibold mb-1">
             <span id="currentModuleBadge">Module 1</span>
@@ -165,7 +165,7 @@
       </div>
 
       <!-- Video Player Area (Bunny.net Stream Anti-Download Encrypted Player) -->
-      <div class="p-6 pb-2">
+      <div class="p-3 lg:p-6 pb-2">
         <div class="relative w-full rounded-2xl overflow-hidden bg-black border border-white/10 shadow-2xl aspect-video max-h-[520px] mx-auto">
           <iframe
             id="bunnyPlayerIframe"

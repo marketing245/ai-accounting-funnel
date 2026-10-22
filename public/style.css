@@ -1492,3 +1492,10 @@ footer {
   .stmt-row .fig, .stmt-row .src, .stmt-row .txt, .stmt-row > div { flex: none !important; }
   .stmt-row .src { margin-top: 2px; }
 }
+
+@media (max-width: 640px) {
+  .hero-ctas .hero-secondary-link { display: block; padding: 12px 0; }
+  .foot-links a { display: inline-block; padding: 10px 6px 10px 0; margin-right: 8px; }
+  .hero-credential-pill { font-size: 11px; }
+  .nav-cta { min-height: 44px; display: inline-flex; align-items: center; }
+}
