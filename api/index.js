@@ -4,6 +4,7 @@
 // Body parsing is disabled so the Razorpay webhook can verify the raw body; handlers read JSON via src/lib/http.readJson.
 const ROUTES = {
   'health': () => require('../src/handlers/health'),
+  'inquiry': () => require('../src/handlers/inquiry'),
   'checkout/config': () => require('../src/handlers/checkout/config'),
   'checkout/create-order': () => require('../src/handlers/checkout/create-order'),
   'checkout/verify': () => require('../src/handlers/checkout/verify'),

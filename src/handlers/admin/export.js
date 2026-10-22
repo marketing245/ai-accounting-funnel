@@ -13,9 +13,10 @@ module.exports = wrap(async (req, res) => {
   else if (type === 'leads') body = admin.csv(data.orders.filter((o) => o.status !== 'paid'), ORDER_COLS);
   else if (type === 'all') body = admin.csv(data.orders, ORDER_COLS);
   else if (type === 'students') body = admin.csv(data.students, ['name', 'email', 'phone', 'status', 'purchasedAt', 'paid', 'orders', 'completed', 'total', 'completionPct', 'viewed', 'watchMin', 'activeMin', 'loginCount', 'firstLoginAt', 'lastLoginAt', 'lastActive', 'lastModule', 'certificate', 'hasPassword']);
+  else if (type === 'inquiries') body = admin.csv(data.inquiries, ['createdAt', 'type', 'name', 'email', 'phone', 'notes', 'status', 'source', 'medium', 'campaign', 'landing', 'city', 'country', 'id']);
   else if (type === 'google-offline') body = admin.googleOfflineCsv(data.orders);
   else if (type === 'meta-offline') body = admin.metaOfflineCsv(data.orders);
-  else return fail(res, 400, 'type must be orders, leads, all, students, google-offline or meta-offline');
+  else return fail(res, 400, 'type must be orders, leads, all, students, inquiries, google-offline or meta-offline');
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
   res.setHeader('Content-Disposition', `attachment; filename="aiae-${name}-${days}d-${new Date().toISOString().slice(0, 10)}.csv"`);

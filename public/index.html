@@ -32,7 +32,7 @@
   </script>
 
   <!-- Official Brand Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=20261022_1745">
+  <link rel="stylesheet" href="style.css?v=20261022_1750">
   <script src="site-config.js"></script>
   <script src="analytics.js" defer></script>
 </head>
@@ -41,17 +41,20 @@
   <!-- ── 1. OFFER STRIP ── -->
   <div class="urgency-strip">
     <div class="urgency-inner">
-      <span>Launch price <strong>₹1,499 + GST</strong> (regular ₹5,000) &middot; Lifetime access &middot; 5 recorded modules &middot; Certificate</span>
+      <span>Executive Edition &middot; Launch price <strong>₹1,499 + GST</strong> (regular ₹5,000) &middot; Lifetime access &middot; 5 recorded modules &middot; Certificate</span>
     </div>
   </div>
 
   <!-- ── 2. STICKY NAV ── -->
   <nav>
     <div class="wrap nav-inner">
-      <a href="#top" class="brand"><span class="ai">AI</span>AccountingEngineer</a>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <a href="#consultation-webinars" style="font-family:var(--mono);font-size:var(--text-sm);color:var(--navy);font-weight:600;text-decoration:none;padding:6px 10px;">1:1 &amp; Workshops</a>
-        <a href="/login" style="font-family:var(--mono);font-size:var(--text-sm);color:var(--gold);font-weight:600;padding:8px 16px;border:1px solid rgba(196,149,58,0.4);border-radius:4px;background:rgba(196,149,58,0.08);transition:all .2s ease;">Student login</a>
+      <a href="#top" class="brand"><span class="ai">AI</span>AccountingEngineer<span class="brand-edition-badge">Executive</span></a>
+      <div style="display:flex;align-items:center;gap:14px;">
+        <a href="#curriculum" style="font-family:var(--mono);font-size:var(--text-sm);color:#94a3b8;font-weight:600;text-decoration:none;padding:6px 8px;">Curriculum</a>
+        <a href="#finance-roi-calculator" style="font-family:var(--mono);font-size:var(--text-sm);color:var(--gold);font-weight:600;text-decoration:none;padding:6px 8px;">Close ROI</a>
+        <a href="#finance-stack" style="font-family:var(--mono);font-size:var(--text-sm);color:#94a3b8;font-weight:600;text-decoration:none;padding:6px 8px;">ERP Stack</a>
+        <a href="/workshops" class="nav-secondary" style="font-family:var(--mono);font-size:var(--text-sm);color:#94a3b8;font-weight:600;text-decoration:none;padding:6px 8px;">1:1 &amp; Workshops</a>
+        <a href="/login" class="nav-secondary" style="font-family:var(--mono);font-size:var(--text-sm);color:var(--gold);font-weight:600;padding:8px 16px;border:1px solid rgba(212,175,55,0.4);border-radius:4px;background:rgba(212,175,55,0.08);transition:all .2s ease;">Student login</a>
         <button onclick="startUnifiedFunnel()" class="nav-cta">Enroll Now</button>
       </div>
     </div>
@@ -67,7 +70,7 @@
         <div>
           <div class="hero-credential-pill">
             <span class="pill-dot"></span>
-            <span>Chartered Accountant · Ex-EY Senior Manager · 11+ Yrs</span>
+            <span>Big 4 FAAS Methodology · Ind AS / IFRS Aligned · ICAI Curriculum</span>
           </div>
 
           <h1>Close the books in 5 days instead of 15 — <span class="em">using AI.</span></h1>
@@ -79,14 +82,7 @@
           </div>
           
           <div class="hero-social-proof">
-            <div class="proof-avatars">
-              <span class="proof-star">★</span>
-              <span class="proof-star">★</span>
-              <span class="proof-star">★</span>
-              <span class="proof-star">★</span>
-              <span class="proof-star">★</span>
-            </div>
-            <span><strong>4.9 / 5 Rating</strong> &middot; Built for CAs, Senior Accountants, Finance MBAs &amp; B.Com Graduates</span>
+            <span><strong>1,500+ Finance Professionals</strong> &middot; Built for CAs, Senior Accountants, Finance MBAs &amp; Corporate Controllers</span>
           </div>
         </div>
 
@@ -147,6 +143,148 @@
         <div class="stat-card">
           <div class="stat-num">50+</div>
           <div class="stat-lbl">Battle-Tested Prompts &amp; Excel Reconcilers</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4B. INTERACTIVE FINANCE CLOSE ROI & CAPACITY CALCULATOR ── -->
+    <section class="section section-alt" id="finance-roi-calculator">
+      <div class="wrap">
+        <div class="section-head" style="text-align:center;max-width:780px;margin:0 auto 36px;">
+          <span class="eyebrow">Financial Velocity Model</span>
+          <h2>Calculate Your Month-End Close Hours Reclaimed</h2>
+          <p>Drag the sliders to model the exact business days and team bandwidth your accounting &amp; finance department unlocks with AI reconciliation workflows.</p>
+        </div>
+
+        <div class="calc-container">
+          <!-- Left: Controls -->
+          <div class="calc-controls">
+            
+            <div class="calc-slider-group">
+              <div class="calc-slider-header">
+                <span class="calc-slider-label">Current Month-End Close Duration</span>
+                <span class="calc-slider-badge" id="calcCloseDaysVal">12 Days</span>
+              </div>
+              <input type="range" id="calcCloseDays" class="calc-range" min="5" max="22" step="1" value="12">
+              <div class="calc-hint">Typical Indian enterprise / CA firm close: 10–16 working days</div>
+            </div>
+
+            <div class="calc-slider-group">
+              <div class="calc-slider-header">
+                <span class="calc-slider-label">Finance &amp; Accounting Team Size</span>
+                <span class="calc-slider-badge" id="calcTeamSizeVal">4 People</span>
+              </div>
+              <input type="range" id="calcTeamSize" class="calc-range" min="1" max="20" step="1" value="4">
+              <div class="calc-hint">CAs, Audit Seniors, Semi-qualified, FP&amp;A Analysts &amp; Accountants</div>
+            </div>
+
+            <div class="calc-slider-group">
+              <div class="calc-slider-header">
+                <span class="calc-slider-label">Monthly Transaction / Rec Line Volume</span>
+                <span class="calc-slider-badge" id="calcTxnVolVal">5,000 txns</span>
+              </div>
+              <input type="range" id="calcTxnVol" class="calc-range" min="1000" max="30000" step="1000" value="5000">
+              <div class="calc-hint">Bank GL lines, vendor invoices, GSTR-2B entries, and payroll vouchers</div>
+            </div>
+
+          </div>
+
+          <!-- Right: Glowing Results Display Box -->
+          <div class="calc-display-box">
+            <div>
+              <div class="calc-display-head">
+                <div class="calc-display-title">⚡ Projected AI Accounting Velocity</div>
+                <div class="calc-display-sub">Benchmarked on Big 4 FAAS close acceleration framework</div>
+              </div>
+
+              <div class="calc-kpi-grid">
+                <div class="calc-kpi-card">
+                  <div class="calc-kpi-val" id="outNewCloseVelocity">Day 4.8 Close</div>
+                  <div class="calc-kpi-lbl">New Target Close Velocity</div>
+                </div>
+                <div class="calc-kpi-card">
+                  <div class="calc-kpi-val" id="outDaysSaved">7.2 Days Reclaimed</div>
+                  <div class="calc-kpi-lbl">Close Cycle Reduction</div>
+                </div>
+                <div class="calc-kpi-card">
+                  <div class="calc-kpi-val" id="outHoursSaved">184 Hours / mo</div>
+                  <div class="calc-kpi-lbl">Total Team Hours Reclaimed</div>
+                </div>
+                <div class="calc-kpi-card">
+                  <div class="calc-kpi-val" id="outAnnualValue">₹16.5 Lakhs / yr</div>
+                  <div class="calc-kpi-lbl">Annual Capacity Value Unlocked</div>
+                </div>
+              </div>
+            </div>
+
+            <button onclick="startUnifiedFunnel()" class="btn btn-primary" style="width:100%;padding:14px 20px;font-size:15px;font-weight:700;">
+              Unlock This Velocity — Enroll For ₹1,499 &rarr;
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── 4C. ENTERPRISE ACCOUNTING & ERP COMPATIBILITY MATRIX ── -->
+    <section class="section" id="finance-stack">
+      <div class="wrap">
+        <div class="section-head" style="text-align:center;max-width:780px;margin:0 auto 36px;">
+          <span class="eyebrow">Enterprise Compatibility</span>
+          <h2>Engineered For Your Existing Financial Stack</h2>
+          <p>Zero IT approvals, zero API integrations. Every workflow runs on standard CSV, Excel, and Trial Balance dumps exported directly from your current systems.</p>
+        </div>
+
+        <div class="erp-grid">
+          
+          <div class="erp-card">
+            <span class="erp-badge">Production Verified</span>
+            <h4>SAP S/4HANA &amp; ECC</h4>
+            <p>Automate FBL3N GL line-item parsing, trial balance variance checks, and multi-currency ledger tie-outs in seconds.</p>
+          </div>
+
+          <div class="erp-card">
+            <span class="erp-badge">Production Verified</span>
+            <h4>Oracle NetSuite</h4>
+            <p>Reconcile saved search exports, intercompany balances, and automated recurring journal schedules seamlessly.</p>
+          </div>
+
+          <div class="erp-card">
+            <span class="erp-badge">Production Verified</span>
+            <h4>Tally Prime &amp; ERP 9</h4>
+            <p>Parse daybook and XML/Excel dumps to run bank reconciliation, voucher classification, and automated ledger scrutiny.</p>
+          </div>
+
+          <div class="erp-card">
+            <span class="erp-badge">Production Verified</span>
+            <h4>Zoho Books &amp; QuickBooks</h4>
+            <p>Direct CSV reconciliation for high-growth tech startups, SaaS revenue schedules, and vendor payment matching.</p>
+          </div>
+
+          <div class="erp-card">
+            <span class="erp-badge">Production Verified</span>
+            <h4>Microsoft Excel &amp; Python</h4>
+            <p>Deploy advanced prompt models directly inside Excel sheets. Build auto-pivot variance reconcilers without coding.</p>
+          </div>
+
+          <div class="erp-card">
+            <span class="erp-badge">Production Verified</span>
+            <h4>Power BI &amp; CFO Dashboards</h4>
+            <p>Generate board-ready EBITDA flux commentaries and automated monthly financial reporting presentation slides.</p>
+          </div>
+
+          <div class="erp-card">
+            <span class="erp-badge">Production Verified</span>
+            <h4>Claude 3.5 Sonnet</h4>
+            <p>Harness Artifacts, Projects, and system instructions specifically configured for Indian GAAP, Ind AS, and IFRS.</p>
+          </div>
+
+          <div class="erp-card">
+            <span class="erp-badge">Production Verified</span>
+            <h4>Audit Workpaper Engine</h4>
+            <p>Generate clean, transparent formula audit trails ready for statutory audit review by EY, PwC, Deloitte, or KPMG.</p>
+          </div>
+
         </div>
       </div>
     </section>
@@ -232,6 +370,39 @@
               <li><span class="m">04</span> Your scope — and your salary — keeps rising</li>
             </ul>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 7B. BIG 4 GOVERNANCE & DATA SECURITY ── -->
+    <section class="section" id="finance-security">
+      <div class="wrap">
+        <div class="section-head" style="text-align:center;max-width:780px;margin:0 auto 36px;">
+          <span class="eyebrow">Enterprise Governance</span>
+          <h2>Bank-Grade Confidentiality &amp; Zero-Hallucination Controls</h2>
+          <p>How elite CAs and finance leaders prompt AI safely without compromising client confidentiality, NDA obligations, or statutory audit compliance.</p>
+        </div>
+
+        <div class="gov-grid">
+          
+          <div class="gov-card">
+            <div class="gov-icon">🔒</div>
+            <h4>Zero-PII Data Masking Protocol</h4>
+            <p>Step-by-step methodology to strip employee names, PAN numbers, bank accounts, and sensitive payroll figures in 10 seconds before feeding datasets to Claude.</p>
+          </div>
+
+          <div class="gov-card">
+            <div class="gov-icon">⚖️</div>
+            <h4>Deterministic Formula Verification</h4>
+            <p>Financial numbers cannot tolerate hallucination. Learn the exact validation prompts that guarantee every reconciliation balances to ₹0.00 with transparent Excel formula proofs.</p>
+          </div>
+
+          <div class="gov-card">
+            <div class="gov-icon">🛡️</div>
+            <h4>Statutory Audit-Proof Documentation</h4>
+            <p>Every schedule, variance note, and adjusting journal entry is formatted according to Big 4 (EY, PwC, Deloitte, KPMG) working paper and CARO 2020 standards.</p>
+          </div>
+
         </div>
       </div>
     </section>
@@ -395,91 +566,14 @@
       </div>
     </section>
 
-    <!-- ── 9B. 1:1 CONSULTATION & CORPORATE WEBINARS (MINAL / ROHIT / NANDINI STYLE) ── -->
-    <section class="section section-alt" id="consultation-webinars">
-      <div class="wrap">
-        <div class="section-head" style="text-align:center;max-width:760px;margin:0 auto 48px;">
-          <span class="eyebrow">Beyond Self-Paced Learning</span>
-          <h2>Direct Mentorship &amp; Corporate Team Training</h2>
-          <p>Whether you need personalized 1:1 roadmap guidance from CA Varsha Varyani or customized hands-on workshops for your finance team or CA firm.</p>
-        </div>
-
-        <div class="advisory-grid">
-          
-          <!-- Card 1: 1:1 Advisory -->
-          <div class="advisory-card">
-            <div class="advisory-badge">1:1 Executive Advisory</div>
-            <h3>1:1 Strategic AI Consultation</h3>
-            <p class="advisory-sub">A focused 45-minute private strategy session with CA Varsha Varyani. Bring your firm's real workflows, month-end bottlenecks, or career questions.</p>
-            
-            <div class="advisory-features">
-              <div class="adv-feat">
-                <span class="adv-ic">🎯</span>
-                <div>
-                  <strong>Live Close Bottleneck Audit</strong>
-                  <p>We review your month-end timeline, ERP exports, and identify the highest ROI AI automations.</p>
-                </div>
-              </div>
-              <div class="adv-feat">
-                <span class="adv-ic">⚡</span>
-                <div>
-                  <strong>Custom Claude Prompt Blueprint</strong>
-                  <p>Tailored prompts built live for your company's chart of accounts and reporting structure.</p>
-                </div>
-              </div>
-              <div class="adv-feat">
-                <span class="adv-ic">📈</span>
-                <div>
-                  <strong>CA Career Growth Roadmap</strong>
-                  <p>Positioning, resume signaling, and how to lead AI adoption in top corporate finance seats.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="advisory-footer">
-              <div class="adv-price">₹4,999 <span>/ 45-min session</span></div>
-              <button onclick="openBookingModal('1:1 Strategic AI Consultation')" class="btn btn-primary" style="width:100%">Book 1:1 Consultation &rarr;</button>
-              <div class="adv-slots">⚡ Limited to 4 executive slots per week</div>
-            </div>
-          </div>
-
-          <!-- Card 2: Corporate Webinars & Team Workshops -->
-          <div class="advisory-card featured-advisory">
-            <div class="advisory-badge badge-gold">For Teams &amp; CA Firms</div>
-            <h3>Corporate Webinars &amp; Team Workshops</h3>
-            <p class="advisory-sub">Hands-on, production-grade training for your finance department, audit team, or advisory practice.</p>
-            
-            <div class="advisory-features">
-              <div class="adv-feat">
-                <span class="adv-ic">🏢</span>
-                <div>
-                  <strong>Trained on Your Sample Data</strong>
-                  <p>We run exercises using your firm's anonymized Excel sheets, vendor bills, and reconciliations.</p>
-                </div>
-              </div>
-              <div class="adv-feat">
-                <span class="adv-ic">👥</span>
-                <div>
-                  <strong>Live Interactive Cohort (Half-Day or 2-Day)</strong>
-                  <p>Interactive live webinar or on-site sessions with Q&amp;A, live troubleshooting, and team exercises.</p>
-                </div>
-              </div>
-              <div class="adv-feat">
-                <span class="adv-ic">🏆</span>
-                <div>
-                  <strong>Team Licenses &amp; Certificates</strong>
-                  <p>Includes complete course portal access, production prompt vaults, and verifiable certificates for all team members.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="advisory-footer">
-              <div class="adv-price">Custom Cohort <span>/ Team pricing</span></div>
-              <button onclick="openBookingModal('Corporate Webinar / Team Workshop')" class="btn btn-primary" style="width:100%;background:#dfb35a;">Request Team Workshop &rarr;</button>
-              <div class="adv-slots">Trusted by finance teams across Big 4 &amp; MNCs</div>
-            </div>
-          </div>
-
+    <!-- ── 9B. CORPORATE TEAM TRAINING & 1:1 ADVISORY BANNER ── -->
+    <section class="section section-alt" id="enterprise-workshops">
+      <div class="wrap" style="text-align:center;max-width:860px;margin:0 auto;">
+        <span class="eyebrow">Enterprise &amp; CA Firms</span>
+        <h2>Looking for 1:1 Mentorship or Corporate Team Workshops?</h2>
+        <p style="margin:14px auto 28px;max-width:580px;color:#94a3b8;">We train corporate finance teams, CA firm audit staff, and CFO offices on their own anonymized datasets, ERP exports, and chart of accounts.</p>
+        <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
+          <a href="/workshops" class="btn btn-primary" style="padding:14px 28px;font-size:15px;font-weight:700;">Explore 1:1 &amp; Corporate Workshops &rarr;</a>
         </div>
       </div>
     </section>
@@ -732,60 +826,8 @@
     </div>
   </div>
 
-  <!-- ── 1:1 CONSULTATION & WEBINARS INQUIRY MODAL ── -->
-  <div id="bookingModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="bookingModalTitle">
-    <div class="modal-container">
-      <button onclick="closeBookingModal()" class="modal-close" aria-label="Close">&times;</button>
-      
-      <div id="bookingFormWrap">
-        <span class="modal-step-badge" id="bookingModalBadge">Direct Mentorship &amp; Advisory</span>
-        <h3 class="modal-title" id="bookingModalTitle">Schedule 1:1 Consultation</h3>
-        <p class="modal-subtitle">Directly mentored by CA Varsha Varyani. Enter your details below — our executive team will confirm your slot via WhatsApp &amp; Email.</p>
-
-        <form id="bookingForm" class="space-y-3 pt-3 text-xs" onsubmit="return submitBookingInquiry(event)">
-          <input type="hidden" id="bookingType" name="bookingType" value="1:1 Strategic AI Consultation">
-          
-          <div>
-            <label for="bookName" class="block font-semibold text-white/90 mb-1">Full Name</label>
-            <input type="text" id="bookName" required class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-white text-sm focus:outline-none focus:border-[#c4953a]" placeholder="CA Priya Nair">
-          </div>
-
-          <div>
-            <label for="bookEmail" class="block font-semibold text-white/90 mb-1">Work Email</label>
-            <input type="email" id="bookEmail" required class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-white text-sm focus:outline-none focus:border-[#c4953a]" placeholder="priya@company.com">
-          </div>
-
-          <div>
-            <label for="bookPhone" class="block font-semibold text-white/90 mb-1">WhatsApp Mobile Number</label>
-            <div class="flex gap-2">
-              <span class="p-3 bg-white/5 border border-white/15 rounded-lg text-white font-mono text-sm">+91</span>
-              <input type="tel" id="bookPhone" maxlength="10" required class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-white font-mono text-sm focus:outline-none focus:border-[#c4953a]" placeholder="9876543210">
-            </div>
-          </div>
-
-          <div>
-            <label for="bookNotes" class="block font-semibold text-white/90 mb-1">Organization / CA Firm &amp; What you want to solve</label>
-            <textarea id="bookNotes" rows="2" class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-white text-xs focus:outline-none focus:border-[#c4953a]" placeholder="e.g. EY FAAS Senior / Finance Controller at series B startup. Want to review our month-end close schedule..."></textarea>
-          </div>
-
-          <button type="submit" id="bookSubmitBtn" class="w-full btn btn-primary py-3.5 text-sm font-bold shadow-xl transition mt-2">
-            Confirm &amp; Request Slot via WhatsApp &rarr;
-          </button>
-        </form>
-      </div>
-
-      <div id="bookingSuccessWrap" class="text-center space-y-4 py-6 hidden">
-        <div class="w-16 h-16 mx-auto rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-3xl font-bold">✓</div>
-        <h3 class="modal-title">Inquiry Received!</h3>
-        <p class="text-xs text-white/80 max-w-sm mx-auto">Thank you. Varsha ma'am's scheduling team will reach out on your WhatsApp within 2 hours to confirm your scheduled slot.</p>
-        <button type="button" onclick="closeBookingModal()" class="w-full btn btn-primary py-3 text-sm font-bold">Done</button>
-      </div>
-
-    </div>
-  </div>
-
   <!-- Interactive Scripts -->
-  <script src="app.js?v=20261022_1745"></script>
+  <script src="app.js?v=20261022_1750"></script>
   <script>
     // ── FAQ Accordion ──
     document.querySelectorAll('.faq-q').forEach(function(btn) {

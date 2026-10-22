@@ -60,18 +60,20 @@ function group(rows, keyFn, labelFn) {
 
 async function loadAll(force) {
   if (!force && cache.data && Date.now() - cache.at < CACHE_MS) return cache.data;
-  const [orders, users, certs] = await Promise.all([store.listJson('orders/'), store.listJson('users/'), store.listJson('certificates/')]);
+  const [orders, users, certs, inquiries] = await Promise.all([store.listJson('orders/'), store.listJson('users/'), store.listJson('certificates/'), store.listJson('inquiries/')]);
   orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  cache = { at: Date.now(), data: { orders, users, certs } };
+  inquiries.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  cache = { at: Date.now(), data: { orders, users, certs, inquiries } };
   return cache.data;
 }
 function invalidate() { cache = { at: 0, data: null }; }
 store.setOnWrite(() => invalidate());
 
 async function overview({ days = 30, force = false } = {}) {
-  const { orders, users, certs } = await loadAll(force);
+  const { orders, users, certs, inquiries } = await loadAll(force);
   const now = Date.now(), day = 86400000;
   const inRange = (o) => days === 'all' || now - new Date(o.createdAt).getTime() < Number(days) * day;
+  const inquiryRows = inquiries.filter(inRange).map((q) => ({ id: q.id, createdAt: q.createdAt, type: q.type, name: q.name, email: q.email, phone: q.phone, notes: q.notes, status: q.status, source: q.source || 'unknown', medium: q.medium || '', campaign: q.campaign || '', landing: q.landing || '', city: q.city || '', country: q.country || '' }));
   const rowsAll = orders.map(flat);
   const rows = rowsAll.filter(inRange);
   const paid = rows.filter((r) => r.status === 'paid'), leads = rows.filter((r) => r.status !== 'paid');
@@ -88,6 +90,7 @@ async function overview({ days = 30, force = false } = {}) {
     testOrders: rows.filter((r) => r.gateway === 'test').length,
     withClickId: rows.filter((r) => r.platform).length,
     metaSent: rows.filter((r) => r.metaPurchase === 'sent').length,
+    inquiries: inquiryRows.length,
   };
   const series = [];
   const n = days === 'all' ? 90 : Math.min(Number(days), 365);
@@ -100,7 +103,7 @@ async function overview({ days = 30, force = false } = {}) {
   const students = users.filter((u) => (u.purchases || []).length).map((u) => studentRow(u, certByHash)).sort((a, b) => new Date(b.purchasedAt || 0) - new Date(a.purchasedAt || 0));
   const engagement = engagementSummary(students);
   return {
-    stats, series, orders: rows, students, engagement,
+    stats, series, orders: rows, students, engagement, inquiries: inquiryRows,
     bySource: group(rows, (r) => `${r.source}|${r.medium}`, (r) => ({ source: r.source, medium: r.medium })),
     byCampaign: group(rows, (r) => `${r.source}|${r.medium}|${r.campaign}|${r.term}|${r.content}`, (r) => ({ source: r.source, medium: r.medium, campaign: r.campaign, term: r.term, content: r.content })),
     byPlatform: group(rows, (r) => r.platform || 'no click id', (r) => ({ platform: r.platform || 'no click id' })),

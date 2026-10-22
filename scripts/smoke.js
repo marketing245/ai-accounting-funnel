@@ -123,6 +123,12 @@ async function call(method, path, body, opts = {}) {
   r = await call('POST', '/api/auth/set-password', { password: 'AnotherPass123', currentPassword: 'nope' });
   check('change password needs current password', r.status === 400);
 
+  // inquiries (1:1 / workshops form) must NOT create orders
+  r = await call('POST', '/api/inquiry', { name: 'Smoke Inquirer', email: 'inq+' + Date.now() + '@example.com', phone: '9876543210', type: 'Corporate Webinar / Team Workshop', notes: 'team of 12', attribution: { last: { source: 'linkedin', medium: 'social', campaign: 'inq_test', landing: '/workshops' } } }, { noCookie: true });
+  check('inquiry stored', r.status === 200 && r.data.ok && /^inq_/.test(r.data.id));
+  r = await call('POST', '/api/inquiry', { name: 'x', email: 'bad', phone: '1' }, { noCookie: true });
+  check('inquiry validates', r.status === 400);
+
   // admin panel
   cookie = '';
   r = await call('GET', '/api/admin/overview');
@@ -141,6 +147,7 @@ async function call(method, path, body, opts = {}) {
     check('admin overview lists the student', stu && stu.completed === 5 && stu.certificate === certId);
     check('admin student engagement fields', stu && stu.loginCount >= 2 && stu.watchMin === 2 && stu.viewed >= 1 && stu.status === 'completed' && Array.isArray(stu.perModule) && stu.perModule.length === 5, stu && `logins=${stu.loginCount} watch=${stu.watchMin}`);
     check('admin engagement summary', ov.engagement && ov.engagement.modules.length === 5 && typeof ov.engagement.active7 === 'number');
+    check('admin lists inquiries (not as orders)', Array.isArray(ov.inquiries) && ov.inquiries.some((q) => q.name === 'Smoke Inquirer' && q.campaign === 'inq_test') && !(ov.orders || []).some((o) => o.name === 'Smoke Inquirer'));
     r = await call('GET', `/api/admin/student?email=${encodeURIComponent(email)}`);
     check('admin student detail + timeline', r.status === 200 && r.data.student.email === email && r.data.timeline.length >= 4 && r.data.orders.length === 1);
     check('admin source table has google/cpc', (ov.bySource || []).some((b) => b.source === 'google' && b.paid >= 1));
@@ -161,13 +168,14 @@ async function call(method, path, body, opts = {}) {
   } else console.log('skip  admin login checks (ADMIN_PASSWORD not in env)');
 
   // static pages
-  for (const p of ['/', '/login', '/thank-you', '/portal', '/privacy', '/terms', '/refund', '/contact', '/verify', '/admin']) {
+  for (const p of ['/', '/login', '/thank-you', '/portal', '/privacy', '/terms', '/refund', '/contact', '/verify', '/admin', '/workshops']) {
     const s = await fetch(BASE + p, { redirect: 'manual' });
     const html = await s.text();
     check(`page ${p}`, s.status === 200 && /<html/i.test(html), `${s.status}`);
   }
   const home = await (await fetch(BASE + '/')).text();
-  check('home has no fake scarcity / UPI / old portal links', !/Long Weekend|Limited Spots|okhdfcbank|I Have Paid|cd-h/.test(home));
+  check('home has no fake scarcity / UPI / old portal links / invented rating', !/Long Weekend|Limited Spots|okhdfcbank|I Have Paid|cd-h|4\.9 \/ 5/.test(home));
+  check('home keeps the funnel focused (consultation moved to /workshops)', !/id="consultation-webinars"|bookingModal/.test(home) && /href="\/workshops"/.test(home));
   check('home loads tracking config + checkout modal', /site-config\.js/.test(home) && /analytics\.js/.test(home) && /checkoutPayBtn/.test(home));
   const cfg = await (await fetch(BASE + '/site-config.js')).text();
   check('GA4 id configured', /G-YZVRBXJRME/.test(cfg));

@@ -62,7 +62,7 @@
       <div id="modeBanner" class="hidden text-xs rounded-xl px-4 py-2 bg-amber-900/40 border border-amber-500/40 text-amber-200"></div>
       <nav class="flex gap-1 overflow-auto pb-1" id="tabs">
         <span class="tab active" data-tab="overview">Overview</span><span class="tab" data-tab="orders">Paid orders</span><span class="tab" data-tab="leads">Leads</span>
-        <span class="tab" data-tab="students">Members &amp; engagement</span><span class="tab" data-tab="sources">Traffic sources</span><span class="tab" data-tab="signals">Conversion signals</span><span class="tab" data-tab="settings">Settings & health</span>
+        <span class="tab" data-tab="students">Members &amp; engagement</span><span class="tab" data-tab="inquiries">Inquiries</span><span class="tab" data-tab="sources">Traffic sources</span><span class="tab" data-tab="signals">Conversion signals</span><span class="tab" data-tab="settings">Settings & health</span>
       </nav>
 
       <!-- OVERVIEW -->
@@ -102,6 +102,12 @@
           <div class="flex flex-wrap items-center gap-2"><h3>Members</h3><p class="text-[11px] text-white/50 mr-auto">Click a row for the full timeline: logins, every module's views and minutes, certificate.</p><select id="statusFilter" onchange="renderStudents()"><option value="">All statuses</option><option value="active">Active</option><option value="idle">Idle</option><option value="inactive">Inactive</option><option value="no password">No password</option><option value="completed">Completed</option></select><input id="searchStudents" placeholder="Search…" class="w-56" oninput="renderStudents()"><a id="exportStudents" class="btn">Export CSV</a></div>
           <div class="overflow-auto max-h-[60vh]"><table id="t-students"></table></div>
         </div>
+      </section>
+
+      <!-- INQUIRIES -->
+      <section id="tab-inquiries" class="hidden card p-4 space-y-3">
+        <div class="flex flex-wrap items-center gap-2"><h3 id="inqTitle">Inquiries</h3><p class="text-[11px] text-white/50 mr-auto">1:1 consultation and corporate workshop requests from the /workshops page. Not course orders.</p><a id="exportInquiries" class="btn">Export CSV</a></div>
+        <div class="overflow-auto max-h-[70vh]"><table id="t-inquiries"></table></div>
       </section>
 
       <!-- SOURCES -->
@@ -180,7 +186,7 @@
     document.querySelectorAll('#tabs .tab').forEach((t) => t.addEventListener('click', () => { location.hash = t.dataset.tab; setTab(t.dataset.tab); }));
     function setTab(t) {
       TAB = t; document.querySelectorAll('#tabs .tab').forEach((el) => el.classList.toggle('active', el.dataset.tab === t));
-      ['overview', 'orders', 'students', 'sources', 'signals', 'settings'].forEach((k) => $('tab-' + k).classList.toggle('hidden', !(k === t || (k === 'orders' && t === 'leads'))));
+      ['overview', 'orders', 'students', 'inquiries', 'sources', 'signals', 'settings'].forEach((k) => $('tab-' + k).classList.toggle('hidden', !(k === t || (k === 'orders' && t === 'leads'))));
       if (t === 'orders' || t === 'leads') { ORDERS_MODE = t === 'orders' ? 'paid' : 'leads'; renderOrders(); }
     }
 
@@ -195,7 +201,7 @@
       $('modeBanner').classList.toggle('hidden', DATA.settings.paymentMode === 'razorpay');
       $('modeBanner').textContent = 'Payment mode is "' + DATA.settings.paymentMode + '" — orders here are test orders (no real money). Add Razorpay keys and set PAYMENT_MODE=razorpay before running ads.';
       ['exportOrders', 'exportStudents', 'exportGoogle', 'exportMeta'].forEach((id) => { const t = { exportOrders: ORDERS_MODE === 'paid' ? 'orders' : 'leads', exportStudents: 'students', exportGoogle: 'google-offline', exportMeta: 'meta-offline' }[id]; $(id).href = '/api/admin/export?type=' + t + '&days=' + days; });
-      renderOverview(); renderOrders(); renderStudents(); renderSources(); renderSignals(); renderSettings();
+      renderOverview(); renderOrders(); renderStudents(); renderInquiries(); renderSources(); renderSignals(); renderSettings();
       const h = (location.hash || '').slice(1); if (h && document.querySelector('#tabs .tab[data-tab="' + h + '"]')) setTab(h);
     }
 
@@ -203,7 +209,7 @@
       const s = DATA.stats;
       $('kpis').innerHTML = [
         ['Revenue', inr(s.revenue), s.paid + ' paid · GST ' + inr(s.gst)], ['Paid orders', s.paid, 'all time ' + s.paidAll],
-        ['Checkouts started', s.checkouts, 'entered details'], ['Leads (unpaid)', s.leads, 'follow up on WhatsApp'],
+        ['Checkouts started', s.checkouts, 'entered details'], ['Leads (unpaid)', s.leads, (s.inquiries || 0) + ' workshop / 1:1 inquiries'],
         ['Checkout → paid', pct(s.conversion), 'conversion rate'], ['Avg order value', inr(s.aov), 'incl. GST'],
         ['Time to buy', s.medianHoursToPurchase == null ? '—' : (s.medianHoursToPurchase < 48 ? s.medianHoursToPurchase + ' h' : Math.round(s.medianHoursToPurchase / 24) + ' d'), 'median, first visit → paid'],
         ['Students', s.students, s.activeStudents7d + ' active · ' + s.certificates + ' certified'],
@@ -266,6 +272,14 @@
         <div class="card p-4 space-y-2"><h3>Timeline</h3><ol class="text-xs space-y-1 list-decimal pl-5">${timeline.map((t) => `<li><span class="muted">${dt(t.at)}</span> — ${esc(t.what)}</li>`).join('') || '<li class="muted">nothing yet</li>'}</ol></div>
         <div class="card p-4 space-y-2"><h3>Orders</h3>${orders.map((o) => `<div class="text-xs">${dt(o.paidAt || o.createdAt)} · <span class="pill ${o.status === 'paid' ? 'paid' : 'lead'}">${o.status === 'paid' ? 'paid' : 'lead'}</span> ${inr(o.amount)} · ${esc(o.source)}${o.campaign ? ' · ' + esc(o.campaign) : ''} · <a class="underline" onclick="openOrder('${esc(o.id)}')">${esc(o.id)}</a></div>`).join('')}</div>`;
       $('drawer').classList.add('open');
+    }
+
+    function renderInquiries() {
+      const rows = DATA.inquiries || [];
+      $('inqTitle').textContent = 'Inquiries (' + rows.length + ')';
+      $('exportInquiries').href = '/api/admin/export?type=inquiries&days=' + $('range').value;
+      $('t-inquiries').innerHTML = '<tr><th>When</th><th>Type</th><th>Name</th><th>Email</th><th>Phone</th><th>Notes</th><th>Source</th><th>Campaign</th><th>Location</th></tr>' +
+        (rows.map((q) => `<tr><td>${dt(q.createdAt)}</td><td>${esc(q.type)}</td><td>${esc(q.name)}</td><td>${esc(q.email)}</td><td><a class="underline" href="https://wa.me/91${esc(q.phone)}" target="_blank">${esc(q.phone)}</a></td><td title="${esc(q.notes)}">${esc((q.notes || '').slice(0, 60))}</td><td>${esc(q.source)}${q.medium ? ' / ' + esc(q.medium) : ''}</td><td>${esc(q.campaign || '—')}</td><td>${esc([q.city, q.country].filter(Boolean).join(', ') || '—')}</td></tr>`).join('') || '<tr><td class="muted" colspan="9">No inquiries yet</td></tr>');
     }
 
     function renderSources() {

@@ -172,18 +172,60 @@ function submitBookingInquiry(e) {
 
   if (!name || !email || !phone) return false;
 
-  // Send lead to server
-  fetch('/api/checkout/create-order', {
+  // Send the inquiry to the server (stored under inquiries/, shown in /admin → Inquiries)
+  fetch('/api/inquiry', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: name, email: email, phone: phone, inquiryType: type, notes: notes })
+    body: JSON.stringify({ name: name, email: email, phone: phone, type: type, notes: notes, attribution: window.aaeAttribution ? aaeAttribution() : null })
   }).catch(function () {});
+  if (window.aaeTrack) aaeTrack('generate_lead', { lead_type: type });
 
   // Show success confirmation
   if ($('bookingFormWrap')) $('bookingFormWrap').classList.add('hidden');
   if ($('bookingSuccessWrap')) $('bookingSuccessWrap').classList.remove('hidden');
 
   return false;
+}
+
+// ── Finance Close ROI & Time-Savings Calculator ──
+function initFinanceCalculator() {
+  var closeDaysSlider = $('calcCloseDays');
+  var teamSizeSlider = $('calcTeamSize');
+  var txnVolSlider = $('calcTxnVol');
+
+  if (!closeDaysSlider || !teamSizeSlider) return;
+
+  function recalculate() {
+    var closeDays = parseInt(closeDaysSlider.value, 10) || 12;
+    var teamSize = parseInt(teamSizeSlider.value, 10) || 4;
+    var txnVol = parseInt((txnVolSlider && txnVolSlider.value) || 5000, 10);
+
+    // Update display of input values
+    if ($('calcCloseDaysVal')) $('calcCloseDaysVal').textContent = closeDays + ' Days';
+    if ($('calcTeamSizeVal')) $('calcTeamSizeVal').textContent = teamSize + ' People';
+    if ($('calcTxnVolVal')) $('calcTxnVolVal').textContent = txnVol.toLocaleString('en-IN') + ' txns';
+
+    // Model calculations: AI reduces close cycle duration by ~60%
+    var newCloseDays = Math.max(3, Math.round(closeDays * 0.4 * 10) / 10);
+    var daysSaved = Math.round((closeDays - newCloseDays) * 10) / 10;
+    
+    // Monthly hours saved per person
+    var hoursSavedPerPerson = Math.min(45, Math.round(daysSaved * 5.5 + (txnVol / 2000) * 2.5));
+    var totalTeamHours = hoursSavedPerPerson * teamSize;
+
+    // Annual financial capacity unlocked (blended CA/finance professional hourly ~₹750/hr)
+    var annualValue = Math.round((totalTeamHours * 12 * 750) / 10000) / 10; // in Lakhs
+
+    if ($('outNewCloseVelocity')) $('outNewCloseVelocity').textContent = 'Day ' + newCloseDays + ' Close';
+    if ($('outDaysSaved')) $('outDaysSaved').textContent = daysSaved + ' Days Reclaimed';
+    if ($('outHoursSaved')) $('outHoursSaved').textContent = totalTeamHours + ' Hours / mo';
+    if ($('outAnnualValue')) $('outAnnualValue').textContent = '₹' + annualValue + ' Lakhs / yr';
+  }
+
+  closeDaysSlider.addEventListener('input', recalculate);
+  teamSizeSlider.addEventListener('input', recalculate);
+  if (txnVolSlider) txnVolSlider.addEventListener('input', recalculate);
+  recalculate();
 }
 
 document.addEventListener('keydown', function (e) {
@@ -195,6 +237,7 @@ document.addEventListener('keydown', function (e) {
 
 window.addEventListener('DOMContentLoaded', function () {
   loadCheckoutConfig();
+  initFinanceCalculator();
   var params = new URLSearchParams(window.location.search);
   if (params.get('open') === 'checkout' || params.get('enroll') === 'true') startUnifiedFunnel();
   var overlay = $('unifiedFunnelModal');
