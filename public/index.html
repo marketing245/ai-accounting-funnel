@@ -32,7 +32,7 @@
   </script>
 
   <!-- Official Brand Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=20261022_1750">
+  <link rel="stylesheet" href="style.css?v=20261022_1745">
   <script src="site-config.js"></script>
   <script src="analytics.js" defer></script>
 </head>
@@ -41,20 +41,17 @@
   <!-- ── 1. OFFER STRIP ── -->
   <div class="urgency-strip">
     <div class="urgency-inner">
-      <span>Executive Edition &middot; Launch price <strong>₹1,499 + GST</strong> (regular ₹5,000) &middot; Lifetime access &middot; 5 recorded modules &middot; Certificate</span>
+      <span>Launch price <strong>₹1,499 + GST</strong> (regular ₹5,000) &middot; Lifetime access &middot; 5 recorded modules &middot; Certificate</span>
     </div>
   </div>
 
   <!-- ── 2. STICKY NAV ── -->
   <nav>
     <div class="wrap nav-inner">
-      <a href="#top" class="brand"><span class="ai">AI</span>AccountingEngineer<span class="brand-edition-badge">Executive</span></a>
-      <div style="display:flex;align-items:center;gap:14px;">
-        <a href="#curriculum" class="nav-secondary" style="font-family:var(--mono);font-size:var(--text-sm);color:#94a3b8;font-weight:600;text-decoration:none;padding:6px 8px;">Curriculum</a>
-        <a href="#finance-roi-calculator" class="nav-secondary" style="font-family:var(--mono);font-size:var(--text-sm);color:var(--gold);font-weight:600;text-decoration:none;padding:6px 8px;">Close ROI</a>
-        <a href="#finance-stack" class="nav-secondary" style="font-family:var(--mono);font-size:var(--text-sm);color:#94a3b8;font-weight:600;text-decoration:none;padding:6px 8px;">ERP Stack</a>
-        <a href="/workshops" class="nav-secondary" style="font-family:var(--mono);font-size:var(--text-sm);color:#94a3b8;font-weight:600;text-decoration:none;padding:6px 8px;">1:1 &amp; Workshops</a>
-        <a href="/login" class="nav-secondary" style="font-family:var(--mono);font-size:var(--text-sm);color:var(--gold);font-weight:600;padding:8px 16px;border:1px solid rgba(212,175,55,0.4);border-radius:4px;background:rgba(212,175,55,0.08);transition:all .2s ease;">Student login</a>
+      <a href="#top" class="brand"><span class="ai">AI</span>AccountingEngineer</a>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <a href="/workshops" class="nav-secondary" style="font-family:var(--mono);font-size:var(--text-sm);color:var(--navy);font-weight:600;text-decoration:none;padding:6px 10px;">1:1 &amp; Workshops</a>
+        <a href="/login" class="nav-secondary" style="font-family:var(--mono);font-size:var(--text-sm);color:var(--gold);font-weight:600;padding:8px 16px;border:1px solid rgba(196,149,58,0.4);border-radius:4px;background:rgba(196,149,58,0.08);transition:all .2s ease;">Student login</a>
         <button onclick="startUnifiedFunnel()" class="nav-cta">Enroll Now</button>
       </div>
     </div>
@@ -82,7 +79,7 @@
           </div>
           
           <div class="hero-social-proof">
-            <span><strong>1,500+ Finance Professionals</strong> &middot; Built for CAs, Senior Accountants, Finance MBAs &amp; Corporate Controllers</span>
+            <span><strong>1,500+ finance professionals</strong> have taken this course &middot; Certificate &middot; Lifetime access</span>
           </div>
         </div>
 
@@ -143,148 +140,6 @@
         <div class="stat-card">
           <div class="stat-num">1,500+</div>
           <div class="stat-lbl">Finance professionals enrolled</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── 4B. INTERACTIVE FINANCE CLOSE ROI & CAPACITY CALCULATOR ── -->
-    <section class="section section-alt" id="finance-roi-calculator" data-mobile="hide">
-      <div class="wrap">
-        <div class="section-head" style="text-align:center;max-width:780px;margin:0 auto 36px;">
-          <span class="eyebrow">Financial Velocity Model</span>
-          <h2>Calculate Your Month-End Close Hours Reclaimed</h2>
-          <p>Drag the sliders to model the exact business days and team bandwidth your accounting &amp; finance department unlocks with AI reconciliation workflows.</p>
-        </div>
-
-        <div class="calc-container">
-          <!-- Left: Controls -->
-          <div class="calc-controls">
-            
-            <div class="calc-slider-group">
-              <div class="calc-slider-header">
-                <span class="calc-slider-label">Current Month-End Close Duration</span>
-                <span class="calc-slider-badge" id="calcCloseDaysVal">12 Days</span>
-              </div>
-              <input type="range" id="calcCloseDays" class="calc-range" min="5" max="22" step="1" value="12">
-              <div class="calc-hint">Typical Indian enterprise / CA firm close: 10–16 working days</div>
-            </div>
-
-            <div class="calc-slider-group">
-              <div class="calc-slider-header">
-                <span class="calc-slider-label">Finance &amp; Accounting Team Size</span>
-                <span class="calc-slider-badge" id="calcTeamSizeVal">4 People</span>
-              </div>
-              <input type="range" id="calcTeamSize" class="calc-range" min="1" max="20" step="1" value="4">
-              <div class="calc-hint">CAs, Audit Seniors, Semi-qualified, FP&amp;A Analysts &amp; Accountants</div>
-            </div>
-
-            <div class="calc-slider-group">
-              <div class="calc-slider-header">
-                <span class="calc-slider-label">Monthly Transaction / Rec Line Volume</span>
-                <span class="calc-slider-badge" id="calcTxnVolVal">5,000 txns</span>
-              </div>
-              <input type="range" id="calcTxnVol" class="calc-range" min="1000" max="30000" step="1000" value="5000">
-              <div class="calc-hint">Bank GL lines, vendor invoices, GSTR-2B entries, and payroll vouchers</div>
-            </div>
-
-          </div>
-
-          <!-- Right: Glowing Results Display Box -->
-          <div class="calc-display-box">
-            <div>
-              <div class="calc-display-head">
-                <div class="calc-display-title">⚡ Projected AI Accounting Velocity</div>
-                <div class="calc-display-sub">Benchmarked on Big 4 FAAS close acceleration framework</div>
-              </div>
-
-              <div class="calc-kpi-grid">
-                <div class="calc-kpi-card">
-                  <div class="calc-kpi-val" id="outNewCloseVelocity">Day 4.8 Close</div>
-                  <div class="calc-kpi-lbl">New Target Close Velocity</div>
-                </div>
-                <div class="calc-kpi-card">
-                  <div class="calc-kpi-val" id="outDaysSaved">7.2 Days Reclaimed</div>
-                  <div class="calc-kpi-lbl">Close Cycle Reduction</div>
-                </div>
-                <div class="calc-kpi-card">
-                  <div class="calc-kpi-val" id="outHoursSaved">184 Hours / mo</div>
-                  <div class="calc-kpi-lbl">Total Team Hours Reclaimed</div>
-                </div>
-                <div class="calc-kpi-card">
-                  <div class="calc-kpi-val" id="outAnnualValue">₹16.5 Lakhs / yr</div>
-                  <div class="calc-kpi-lbl">Annual Capacity Value Unlocked</div>
-                </div>
-              </div>
-            </div>
-
-            <button onclick="startUnifiedFunnel()" class="btn btn-primary" style="width:100%;padding:14px 20px;font-size:15px;font-weight:700;">
-              Unlock This Velocity — Enroll For ₹1,499 &rarr;
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ── 4C. ENTERPRISE ACCOUNTING & ERP COMPATIBILITY MATRIX ── -->
-    <section class="section" id="finance-stack" data-mobile="hide">
-      <div class="wrap">
-        <div class="section-head" style="text-align:center;max-width:780px;margin:0 auto 36px;">
-          <span class="eyebrow">Enterprise Compatibility</span>
-          <h2>Engineered For Your Existing Financial Stack</h2>
-          <p>Zero IT approvals, zero API integrations. Every workflow runs on standard CSV, Excel, and Trial Balance dumps exported directly from your current systems.</p>
-        </div>
-
-        <div class="erp-grid">
-          
-          <div class="erp-card">
-            <span class="erp-badge">Works with</span>
-            <h4>SAP S/4HANA &amp; ECC</h4>
-            <p>Automate FBL3N GL line-item parsing, trial balance variance checks, and multi-currency ledger tie-outs in seconds.</p>
-          </div>
-
-          <div class="erp-card">
-            <span class="erp-badge">Works with</span>
-            <h4>Oracle NetSuite</h4>
-            <p>Reconcile saved search exports, intercompany balances, and automated recurring journal schedules seamlessly.</p>
-          </div>
-
-          <div class="erp-card">
-            <span class="erp-badge">Works with</span>
-            <h4>Tally Prime &amp; ERP 9</h4>
-            <p>Parse daybook and XML/Excel dumps to run bank reconciliation, voucher classification, and automated ledger scrutiny.</p>
-          </div>
-
-          <div class="erp-card">
-            <span class="erp-badge">Works with</span>
-            <h4>Zoho Books &amp; QuickBooks</h4>
-            <p>Direct CSV reconciliation for high-growth tech startups, SaaS revenue schedules, and vendor payment matching.</p>
-          </div>
-
-          <div class="erp-card">
-            <span class="erp-badge">Works with</span>
-            <h4>Microsoft Excel &amp; Python</h4>
-            <p>Deploy advanced prompt models directly inside Excel sheets. Build auto-pivot variance reconcilers without coding.</p>
-          </div>
-
-          <div class="erp-card">
-            <span class="erp-badge">Works with</span>
-            <h4>Power BI &amp; CFO Dashboards</h4>
-            <p>Generate board-ready EBITDA flux commentaries and automated monthly financial reporting presentation slides.</p>
-          </div>
-
-          <div class="erp-card">
-            <span class="erp-badge">Works with</span>
-            <h4>Claude</h4>
-            <p>Harness Artifacts, Projects, and system instructions specifically configured for Indian GAAP, Ind AS, and IFRS.</p>
-          </div>
-
-          <div class="erp-card">
-            <span class="erp-badge">Works with</span>
-            <h4>Audit Workpaper Engine</h4>
-            <p>Generate clean, transparent formula audit trails ready for statutory audit review by EY, PwC, Deloitte, or KPMG.</p>
-          </div>
-
         </div>
       </div>
     </section>
@@ -370,39 +225,6 @@
               <li><span class="m">04</span> Your scope — and your salary — keeps rising</li>
             </ul>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── 7B. BIG 4 GOVERNANCE & DATA SECURITY ── -->
-    <section class="section" id="finance-security" data-mobile="hide">
-      <div class="wrap">
-        <div class="section-head" style="text-align:center;max-width:780px;margin:0 auto 36px;">
-          <span class="eyebrow">Enterprise Governance</span>
-          <h2>Confidentiality &amp; Verification Controls</h2>
-          <p>How elite CAs and finance leaders prompt AI safely without compromising client confidentiality, NDA obligations, or statutory audit compliance.</p>
-        </div>
-
-        <div class="gov-grid">
-          
-          <div class="gov-card">
-            <div class="gov-icon">🔒</div>
-            <h4>Zero-PII Data Masking Protocol</h4>
-            <p>Step-by-step methodology to strip employee names, PAN numbers, bank accounts, and sensitive payroll figures in 10 seconds before feeding datasets to Claude.</p>
-          </div>
-
-          <div class="gov-card">
-            <div class="gov-icon">⚖️</div>
-            <h4>Deterministic Formula Verification</h4>
-            <p>Financial numbers cannot tolerate hallucination. Learn the validation prompts that check every reconciliation balances, with transparent Excel formula proofs.</p>
-          </div>
-
-          <div class="gov-card">
-            <div class="gov-icon">🛡️</div>
-            <h4>Statutory Audit-Proof Documentation</h4>
-            <p>Every schedule, variance note, and adjusting journal entry is formatted according to Big 4 (EY, PwC, Deloitte, KPMG) working paper and CARO 2020 standards.</p>
-          </div>
-
         </div>
       </div>
     </section>
@@ -566,12 +388,12 @@
       </div>
     </section>
 
-    <!-- ── 9B. CORPORATE TEAM TRAINING & 1:1 ADVISORY BANNER ── -->
-    <div class="wrap mid-cta" style="text-align:center;margin:-16px auto 40px">
+    <div class="wrap mid-cta" style="text-align:center;margin:-24px auto 40px">
       <button onclick="startUnifiedFunnel()" class="btn btn-primary cta-link">Enroll Now — ₹1,499 + GST</button>
-      <div style="margin-top:8px;font-size:13px;color:var(--muted-on-dark,#94a3b8)">Lifetime access &middot; Certificate &middot; 7-day refund</div>
+      <div style="margin-top:8px;font-size:13px;color:var(--muted)">Lifetime access &middot; Certificate &middot; 7-day refund</div>
     </div>
 
+    <!-- ── 10. FOUNDING COHORT OFFER CARD (WITH VARSHA POINTING DOWN) ── -->
     <section class="section section-dark" id="enroll">
       <div class="wrap">
         
@@ -705,18 +527,12 @@
     </section>
 
     <!-- ── 12. FINAL CALL TO ACTION ── -->
-    <section class="section section-alt" id="enterprise-workshops" data-mobile="hide">
-      <div class="wrap" style="text-align:center;max-width:860px;margin:0 auto;">
-        <span class="eyebrow">Enterprise &amp; CA Firms</span>
-        <h2>Looking for 1:1 Mentorship or Corporate Team Workshops?</h2>
-        <p style="margin:14px auto 28px;max-width:580px;color:#94a3b8;">We train corporate finance teams, CA firm audit staff, and CFO offices on their own anonymized datasets, ERP exports, and chart of accounts.</p>
-        <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
-          <a href="/workshops" class="btn btn-primary" style="padding:14px 28px;font-size:15px;font-weight:700;">Explore 1:1 &amp; Corporate Workshops &rarr;</a>
-        </div>
+    <section class="section section-alt" id="workshops-pointer" style="padding:34px 0">
+      <div class="wrap" style="text-align:center">
+        <p style="font-size:15px;color:var(--muted)">Need 1:1 guidance or training for your finance team? <a href="/workshops" style="color:var(--gold-dark);font-weight:600;text-decoration:underline;text-underline-offset:3px">See 1:1 consultation &amp; corporate workshops &rarr;</a></p>
       </div>
     </section>
 
-    <!-- ── 10. FOUNDING COHORT OFFER CARD (WITH VARSHA POINTING DOWN) ── -->
     <section class="section final">
       <div class="wrap">
         <h2>Every month you close the books the old way is a month someone else does it in half the time.</h2>
@@ -738,6 +554,7 @@
         <a href="/terms">Terms</a>
         <a href="/refund">Refunds</a>
         <a href="/contact">Contact</a>
+        <a href="/workshops">1:1 &amp; Workshops</a>
       </span>
       <a href="mailto:hello@aiaccountingengineer.com">hello@aiaccountingengineer.com</a>
     </div>
@@ -759,10 +576,10 @@
       <!-- Step 1: details -->
       <form id="checkoutFormSection" class="space-y-4" novalidate onsubmit="return submitCheckout(event)">
         <div>
-          <span class="modal-step-badge">Step 1 of 2 · Your details</span>
+          <span class="modal-step-badge hide-sm">Step 1 of 2 · Your details</span>
           <span id="paymentModeBadge" class="modal-step-badge hidden" style="background:#b45309;color:#fff;margin-left:6px">Test mode · no money is charged</span>
           <h3 class="modal-title" id="checkoutTitle">Enroll in AI in Accounting</h3>
-          <p class="modal-subtitle">Your email becomes your student login. Payment is handled by Razorpay — UPI, cards and net banking.</p>
+          <p class="modal-subtitle">Your email becomes your login. Pay by UPI, card or net banking (Razorpay).</p>
         </div>
 
         <div class="space-y-3 pt-1 text-xs">
@@ -831,8 +648,9 @@
     </div>
   </div>
 
+  <!-- ── 1:1 CONSULTATION & WEBINARS INQUIRY MODAL ── -->
   <!-- Interactive Scripts -->
-  <script src="app.js?v=20261022_1750"></script>
+  <script src="app.js?v=20261022_1745"></script>
   <script>
     // ── FAQ Accordion ──
     document.querySelectorAll('.faq-q').forEach(function(btn) {
