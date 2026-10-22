@@ -1,24 +1,7 @@
 {
-  "version": 2,
-  "public": true,
   "cleanUrls": true,
-  "builds": [
-    {
-      "src": "server.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "server.js"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "server.js"
-    }
+  "rewrites": [
+    { "source": "/portal", "destination": "/portal.html" },
+    { "source": "/api/(.*)", "destination": "/server.js" }
   ]
 }

@@ -110,6 +110,10 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 AI Accounting Funnel Engine running at http://0.0.0.0:${PORT}`);
-});
+if (require.main === module) {
+  server.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 AI Accounting Funnel Engine running at http://0.0.0.0:${PORT}`);
+  });
+}
+
+module.exports = server;
