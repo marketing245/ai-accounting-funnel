@@ -1,7 +1,7 @@
 {
   "name": "ai-accounting-funnel",
   "version": "1.0.0",
-  "description": "AI Accounting Engineer \u2014 course funnel: landing page, Razorpay checkout, student portal (Vercel functions + private Blob store)",
+  "description": "AI Accounting Engineer — course funnel: landing page, Razorpay checkout, student portal (Vercel functions + private Blob store)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -20,6 +20,7 @@
   "author": "Manak Sehgal",
   "license": "MIT",
   "dependencies": {
-    "@vercel/blob": "^2.8.2"
+    "@vercel/blob": "^2.8.2",
+    "pdfkit": "^0.17.2"
   }
 }

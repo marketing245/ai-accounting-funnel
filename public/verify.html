@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify a certificate — AI Accounting Engineer</title>
+  <meta name="description" content="Check whether an AI Accounting Engineer certificate of completion is genuine.">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link href="https://api.fontshare.com/v2/css?f[]=sentient@400,500,600,700&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="site-config.js"></script>
+  <script src="analytics.js" defer></script>
+</head>
+<body class="page-simple">
+  <nav>
+    <div class="wrap nav-inner">
+      <a href="/" class="brand"><span class="ai">AI</span>AccountingEngineer</a>
+      <div style="display:flex;align-items:center;gap:12px;"><a href="/login" style="font-family:var(--mono);font-size:var(--text-sm);color:var(--gold);font-weight:600;">Student login</a><a href="/?open=checkout" class="nav-cta">Enroll Now</a></div>
+    </div>
+  </nav>
+  <main>
+    <div class="auth-wrap" style="max-width:560px">
+      <div class="auth-card">
+        <h1>Verify a certificate</h1>
+        <p class="sub">Enter the certificate ID printed on the certificate (format AAE-2026-XXXXXX).</p>
+        <form id="f" novalidate>
+          <label for="id">Certificate ID</label>
+          <input type="text" id="id" placeholder="AAE-2026-ABC123" autocomplete="off" style="text-transform:uppercase;font-family:var(--mono)">
+          <button type="submit" class="btn btn-primary">Check</button>
+        </form>
+        <div id="result" style="margin-top:22px"></div>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <div class="wrap foot-inner">
+      <span class="brand"><span class="ai" style="color:var(--gold)">AI</span>AccountingEngineer</span>
+      <span>&copy; 2026 &middot; AI skills for finance professionals</span>
+      <span class="foot-links"><a href="/login">Student login</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/refund">Refunds</a><a href="/contact">Contact</a></span>
+      <a href="mailto:hello@aiaccountingengineer.com">hello@aiaccountingengineer.com</a>
+    </div>
+  </footer>
+  <script>
+    (function () {
+      var f = document.getElementById('f'), input = document.getElementById('id'), out = document.getElementById('result');
+      var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); };
+      async function check(id) {
+        out.innerHTML = '<p class="sub">Checking…</p>';
+        var d;
+        try { d = await (await fetch('/api/certificate/verify?id=' + encodeURIComponent(id), { cache: 'no-store' })).json(); } catch (e) { d = null; }
+        if (!d || !d.ok) { out.innerHTML = '<div class="err show">Could not check right now. Please try again.</div>'; return; }
+        if (!d.valid) { out.innerHTML = '<div class="err show">No certificate found with ID <b>' + esc(id) + '</b>. Check the ID on the certificate and try again.</div>'; return; }
+        var c = d.certificate, date = new Date(c.issuedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+        out.innerHTML = '<span class="ok-badge">✓ Valid certificate</span>' +
+          '<div class="order-box"><div class="row"><span>Name</span><span><b>' + esc(c.name) + '</b></span></div>' +
+          '<div class="row"><span>Course</span><span>' + esc(c.course) + '</span></div>' +
+          '<div class="row"><span>Instructor</span><span>' + esc(c.instructor) + '</span></div>' +
+          '<div class="row"><span>Completed on</span><span>' + esc(date) + '</span></div>' +
+          '<div class="row"><span>Certificate ID</span><span style="font-family:var(--mono)">' + esc(c.id) + '</span></div></div>';
+      }
+      f.addEventListener('submit', function (e) { e.preventDefault(); var id = input.value.trim().toUpperCase(); if (id) check(id); });
+      var q = new URLSearchParams(location.search).get('id');
+      if (q) { input.value = q.toUpperCase(); check(q.toUpperCase()); }
+    })();
+  </script>
+</body>
+</html>

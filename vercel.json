@@ -48,5 +48,10 @@
         }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "api/certificate/pdf.js": {
+      "includeFiles": "node_modules/pdfkit/js/data/**"
+    }
+  }
 }

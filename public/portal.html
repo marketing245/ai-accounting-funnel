@@ -125,6 +125,20 @@
         <!-- Rendered by JS -->
       </div>
 
+
+      <!-- CERTIFICATE OF COMPLETION -->
+      <div id="certCard" class="p-4 m-3 rounded-xl bg-gradient-to-br from-[#c4953a]/15 to-black/40 border border-[#c4953a]/30 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] font-extrabold tracking-wider uppercase text-[#dfb35a]">Certificate of completion</span>
+          <span id="certStatus" class="text-[10px] font-mono text-white/50"></span>
+        </div>
+        <p id="certText" class="text-[11px] text-white/70 leading-relaxed">Complete all modules to unlock your certificate.</p>
+        <div id="certActions" class="hidden space-y-2 pt-1">
+          <a id="certDownload" href="/api/certificate/pdf" class="block text-center w-full py-2 rounded-lg bg-[#c4953a] hover:bg-[#dfb35a] text-black font-bold text-[11px] transition">⬇ Download certificate (PDF)</a>
+          <a id="certLinkedin" href="#" target="_blank" rel="noopener" class="block text-center w-full py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold text-[11px] transition">Add to LinkedIn profile</a>
+          <div class="text-[10px] font-mono text-white/40">ID: <span id="certId"></span> · <a id="certVerify" href="#" target="_blank" rel="noopener" class="underline">verify link</a></div>
+        </div>
+      </div>
     </aside>
 
     <!-- RIGHT/CENTER: CINEMA VIDEO PLAYER & INTERACTIVE LAB -->
@@ -219,6 +233,7 @@
       loadLesson(currentModuleIndex);
       updateProgressDisplay();
       $('authGate').classList.add('hidden');
+      refreshCertificate();
     }
 
     async function logout() {
@@ -284,8 +299,27 @@
           const r = await fetch('/api/course/progress', { method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ completed: [...completedLessons], lastModule: CURRICULUM[currentModuleIndex]?.id }) });
           if (r.status === 401) goLogin();
+          else refreshCertificate();
         } catch (e) {}
       }, 600);
+    }
+
+    async function refreshCertificate() {
+      let d;
+      try { d = await (await fetch('/api/certificate', { cache: 'no-store' })).json(); } catch (e) { return; }
+      if (!d || !d.ok) return;
+      if (d.ready) {
+        $('certStatus').textContent = 'Issued';
+        $('certText').textContent = `Congratulations ${(USER.name || '').split(' ')[0]} — you have completed all ${d.total} modules.`;
+        $('certId').textContent = d.certificate.id;
+        $('certLinkedin').href = d.certificate.linkedinUrl;
+        $('certVerify').href = d.certificate.verifyUrl;
+        $('certActions').classList.remove('hidden');
+      } else {
+        $('certStatus').textContent = `${d.completed}/${d.total} done`;
+        $('certText').textContent = `Mark all ${d.total} modules complete to unlock your verified certificate (${d.remaining} to go).`;
+        $('certActions').classList.add('hidden');
+      }
     }
 
     function updateCompleteBtnState() {

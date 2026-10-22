@@ -8,6 +8,7 @@ public/            landing (index), login, thank-you, portal, privacy, terms, re
 api/checkout/      config · create-order · verify · webhook · order
 api/auth/          login · logout · me · set-password
 api/course/        lessons (gated) · progress
+api/certificate*   certificate status/issue · pdf (pdfkit) · verify (public, used by /verify)
 api/_lib/          config (prices) · course (5 modules + Bunny video ids — edit here to change videos) · store (Blob JSON) · auth · razorpay · bunny · fulfil
 server.js          local dev server (node server.js) — mirrors Vercel routing
 scripts/smoke.js   end-to-end test: node scripts/smoke.js [baseUrl]
@@ -18,7 +19,8 @@ scripts/smoke.js   end-to-end test: node scripts/smoke.js [baseUrl]
 2. Razorpay Checkout opens in the browser. On success → `POST /api/checkout/verify` (server checks the HMAC signature **and** re-fetches the payment from Razorpay: amount + order must match).
 3. Server marks the order paid, creates/updates `users/<sha256(email)>.json`, sets an HttpOnly session cookie, redirects to `/thank-you` where the student sets a password. GA4 `purchase` fires there, once per order.
 4. `/portal` loads `GET /api/course/lessons` — only a valid session with a paid purchase gets the curriculum, prompts and video embed URLs. Video ids never appear in public HTML.
-5. `POST /api/checkout/webhook` (Razorpay `payment.captured` / `order.paid`) grants access even if the browser was closed mid-way.
+5. Marking all modules complete unlocks a certificate: unique id `AAE-YYYY-XXXXXX`, PDF download, LinkedIn add-to-profile link, public check at `/verify?id=`.
+6. `POST /api/checkout/webhook` (Razorpay `payment.captured` / `order.paid`) grants access even if the browser was closed mid-way.
 
 **Test mode** (`PAYMENT_MODE=test`): the Razorpay window is replaced by a clearly labelled "simulated payment" step; everything else is identical. No money moves.
 

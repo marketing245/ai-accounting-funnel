@@ -67,6 +67,26 @@ async function call(method, path, body, opts = {}) {
   r = await call('GET', '/api/course/lessons');
   check('progress persisted', r.data?.progress?.completed?.length === 2);
 
+  r = await call('GET', '/api/certificate');
+  check('certificate locked before completion', r.status === 200 && r.data.ready === false && r.data.remaining === 3);
+  r = await call('GET', '/api/certificate/pdf');
+  check('certificate pdf refused before completion', r.status === 409);
+  r = await call('POST', '/api/course/progress', { completed: [1, 2, 3, 4, 5], lastModule: 5 });
+  r = await call('GET', '/api/certificate');
+  const certId = r.data?.certificate?.id;
+  check('certificate issued after 5/5', r.status === 200 && r.data.ready === true && /^AAE-\d{4}-[A-Z2-9]{6}$/.test(certId || '') && r.data.certificate.linkedinUrl.includes('linkedin.com'), certId);
+  r = await call('GET', '/api/certificate');
+  check('certificate id is stable', r.data?.certificate?.id === certId);
+  {
+    const p = await fetch(BASE + '/api/certificate/pdf', { headers: { Cookie: cookie } });
+    const buf = Buffer.from(await p.arrayBuffer());
+    check('certificate pdf downloads', p.status === 200 && p.headers.get('content-type') === 'application/pdf' && buf.slice(0, 5).toString() === '%PDF-' && buf.length > 2000, `${buf.length} bytes`);
+  }
+  r = await call('GET', `/api/certificate/verify?id=${certId}`, null, { noCookie: true });
+  check('public verify → valid', r.status === 200 && r.data.valid === true && r.data.certificate.name === 'Smoke Tester' && !('emailHash' in r.data.certificate));
+  r = await call('GET', '/api/certificate/verify?id=AAE-2026-ZZZZZZ', null, { noCookie: true });
+  check('public verify → invalid id', r.status === 200 && r.data.valid === false);
+
   r = await call('POST', '/api/auth/login', { email, password: 'whatever1' }, { noCookie: true });
   check('login before password set → NO_PASSWORD', r.status === 409 && r.data.code === 'NO_PASSWORD');
 
@@ -93,7 +113,7 @@ async function call(method, path, body, opts = {}) {
   check('change password needs current password', r.status === 400);
 
   // static pages
-  for (const p of ['/', '/login', '/thank-you', '/portal', '/privacy', '/terms', '/refund', '/contact']) {
+  for (const p of ['/', '/login', '/thank-you', '/portal', '/privacy', '/terms', '/refund', '/contact', '/verify']) {
     const s = await fetch(BASE + p, { redirect: 'manual' });
     const html = await s.text();
     check(`page ${p}`, s.status === 200 && /<html/i.test(html), `${s.status}`);
