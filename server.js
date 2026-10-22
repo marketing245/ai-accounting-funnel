@@ -73,6 +73,8 @@ const server = http.createServer((req, res) => {
   let safePath = path.normalize(pathname).replace(/^(\.\.[\/\\])+/, '');
   if (safePath === '/' || safePath === '') {
     safePath = '/index.html';
+  } else if (safePath === '/portal' || safePath === '/portal/') {
+    safePath = '/portal.html';
   }
 
   const filePath = path.join(PUBLIC_DIR, safePath);

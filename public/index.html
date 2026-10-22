@@ -50,6 +50,9 @@
       <div class="flex items-center gap-3">
         <a href="#curriculum" class="text-xs font-semibold text-[#0f1b2d]/70 hover:text-[#0f1b2d] hidden sm:block">Curriculum</a>
         <a href="#faq" class="text-xs font-semibold text-[#0f1b2d]/70 hover:text-[#0f1b2d] hidden sm:block">FAQ</a>
+        <a href="/portal" class="text-xs font-bold text-[#c4953a] hover:underline flex items-center gap-1 border border-[#c4953a]/30 px-3 py-1.5 rounded-lg bg-[#c4953a]/10">
+          <span>Member Portal ➔</span>
+        </a>
         <button onclick="startUnifiedFunnel()" class="btn-gold text-xs px-4 py-2.5 rounded-lg flex items-center gap-1.5 shadow-sm">
           <span>Enroll Now ₹1,499</span>
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
@@ -643,16 +646,16 @@
       </div>
 
       <!-- STEP 4: CONFIRMATION & ACCESS DELIVERY -->
-      <div id="funnelStep4" class="hidden space-y-5 text-center">
-        <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-3xl mx-auto">
+      <div id="funnelStep4" class="hidden space-y-4 text-center">
+        <div class="w-14 h-14 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-2xl mx-auto">
           ✓
         </div>
-        <h3 class="text-2xl font-extrabold serif-heading text-white">Enrollment Confirmed!</h3>
+        <h3 class="text-xl font-extrabold serif-heading text-white">Enrollment Confirmed!</h3>
         <p class="text-xs text-white/70">
-          Payment confirmed. Login credentials have been dispatched to your verified WhatsApp mobile (<span id="finalPhone" class="text-white font-mono"></span>).
+          Payment confirmed. Instant portal access token generated for <span id="finalPhone" class="text-white font-mono font-bold"></span>.
         </p>
 
-        <div class="bg-black/40 p-4 rounded-xl border border-white/10 text-left text-xs space-y-1.5 font-mono">
+        <div class="bg-black/40 p-3.5 rounded-xl border border-white/10 text-left text-xs space-y-1 font-mono">
           <div class="flex justify-between text-white/60">
             <span>Transaction ID:</span>
             <span class="text-white" id="finalTxnId">AAE-2026-9821</span>
@@ -663,15 +666,25 @@
           </div>
         </div>
 
-        <div class="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 space-y-2">
-          <div class="text-xs font-bold text-emerald-300">Join Your VIP WhatsApp Cohort Group</div>
-          <p class="text-[11px] text-white/70">Access weekly live doubt sessions, sample raw spreadsheets, and prompt updates.</p>
-          <button onclick="alert('Joining Private WhatsApp VIP Community...')" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2">
-            <span>💬 Join WhatsApp VIP Group Now</span>
-          </button>
+        <!-- WHOP-STYLE INSTANT PORTAL ACCESS CTA -->
+        <div class="space-y-2 pt-1">
+          <a id="directPortalAccessBtn" href="/portal" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#c4953a] to-[#dfb35a] hover:from-[#dfb35a] hover:to-[#c4953a] text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-2xl transition duration-300">
+            <span>🚀 Open Learning Portal Now (Instant Access)</span>
+          </a>
+          <div class="text-[11px] text-emerald-400 font-mono" id="portalAutoRedirectText">
+            Auto-opening learning portal in <span id="portalRedirectCountdown">3</span>s...
+          </div>
         </div>
 
-        <button onclick="closeUnifiedModal()" class="text-xs text-white/50 hover:text-white underline">
+        <div class="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/40 space-y-1.5 text-left">
+          <div class="text-xs font-bold text-emerald-300">Join VIP WhatsApp Cohort</div>
+          <p class="text-[11px] text-white/70">Access weekly live doubt sessions, sample spreadsheets, and prompt updates.</p>
+          <a href="https://chat.whatsapp.com/" target="_blank" class="w-full py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
+            <span>💬 Join WhatsApp VIP Group</span>
+          </a>
+        </div>
+
+        <button onclick="closeUnifiedModal()" class="text-xs text-white/50 hover:text-white underline pt-1">
           Close Window
         </button>
       </div>

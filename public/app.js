@@ -255,7 +255,7 @@ function updateUnifiedTotal() {
   if (paytm) paytm.href = upiUrl;
 }
 
-// Complete 1-Click Purchase
+// Complete 1-Click Purchase & Instant Whop-Style Portal Redirect
 function completeOneClickPurchase() {
   const total = state.basePrice + (state.hasOrderBump ? state.bumpPrice : 0);
   const txnId = `AAE-${Date.now().toString().slice(-6)}`;
@@ -270,12 +270,32 @@ function completeOneClickPurchase() {
     phone: state.phone
   });
 
-  // Show Step 4 (Confirmation & WhatsApp VIP)
+  // Prepare instant portal access link
+  const portalUrl = `/portal?token=${txnId}&phone=${encodeURIComponent(state.phone)}&name=${encodeURIComponent(state.name)}&bump=${state.hasOrderBump ? 'true' : 'false'}`;
+
+  // Show Step 4 (Confirmation & Instant Portal Bridge)
   document.getElementById('finalPhone').innerText = `+91 ${state.phone}`;
   document.getElementById('finalTotal').innerText = `₹${total.toLocaleString('en-IN')}`;
   document.getElementById('finalTxnId').innerText = txnId;
 
+  const directBtn = document.getElementById('directPortalAccessBtn');
+  if (directBtn) directBtn.href = portalUrl;
+
   showStep(4);
+
+  // Auto-redirect to /portal in 3 seconds (Whop-style instant fulfillment)
+  let countdown = 3;
+  const countEl = document.getElementById('portalRedirectCountdown');
+  if (countEl) countEl.innerText = countdown;
+
+  const redirectTimer = setInterval(() => {
+    countdown--;
+    if (countEl) countEl.innerText = countdown;
+    if (countdown <= 0) {
+      clearInterval(redirectTimer);
+      window.location.href = portalUrl;
+    }
+  }, 1000);
 }
 
 // Countdown Timer
