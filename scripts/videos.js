@@ -19,6 +19,7 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
+const { Readable } = require('stream');
 
 const ROOT = path.join(__dirname, '..');
 const envFile = path.join(ROOT, '.env.local');
@@ -36,7 +37,8 @@ const flag = (name) => { const i = args.indexOf('--' + name); return i >= 0 ? ar
 const has = (name) => args.includes('--' + name);
 
 async function api(method, url, body, headers = {}) {
-  const r = await fetch(url, { method, headers: { AccessKey: key(), Accept: 'application/json', ...(body && !(body instanceof fs.ReadStream) ? { 'Content-Type': 'application/json' } : {}), ...headers }, body: body && !(body instanceof fs.ReadStream) ? JSON.stringify(body) : body, duplex: body instanceof fs.ReadStream ? 'half' : undefined });
+  const isStream = body instanceof fs.ReadStream;
+  const r = await fetch(url, { method, headers: { AccessKey: key(), Accept: 'application/json', ...(body && !isStream ? { 'Content-Type': 'application/json' } : {}), ...headers }, body: isStream ? Readable.toWeb(body) : (body ? JSON.stringify(body) : undefined), duplex: isStream ? 'half' : undefined });
   const text = await r.text();
   let data; try { data = JSON.parse(text); } catch { data = text; }
   if (!r.ok) throw new Error(`${method} ${url} → ${r.status} ${typeof data === 'string' ? data.slice(0, 200) : JSON.stringify(data).slice(0, 200)}`);
@@ -76,24 +78,31 @@ async function upload(file, moduleId, title) {
   await api('PUT', `${STREAM}/library/${LIB}/videos/${id}`, fs.createReadStream(file), { 'Content-Type': 'application/octet-stream', 'Content-Length': String(size) });
   await api('POST', `${STREAM}/library/${LIB}/videos/${id}`, { title, metaTags: [{ property: 'module', value: String(mod.id) }] });
   console.log(`   ✔ uploaded; Bunny is encoding it now (tagged module=${mod.id})`);
+  uploadedIds.push(id);
   return id;
 }
+const uploadedIds = [];
+
+async function getVideo(id) { return api('GET', `${STREAM}/library/${LIB}/videos/${id}`); }
 
 async function wait() {
-  process.stdout.write('Waiting for encoding');
-  for (let i = 0; i < 360; i++) {
-    const resolved = await bunny.resolveVideos(CURRICULUM);
-    bunnyCacheReset();
-    const pending = Object.values(resolved).filter((v) => v && !v.ready && !['error', 'upload_failed'].includes(v.statusText));
-    const failed = Object.values(resolved).filter((v) => v && ['error', 'upload_failed'].includes(v.statusText));
-    if (failed.length) { console.log('\n✖ failed:', failed.map((v) => v.videoId).join(', ')); process.exit(1); }
-    if (!pending.length) { console.log('\n✔ all module videos are ready'); return; }
-    process.stdout.write('.');
+  // Videos uploaded in this run, or (when run on its own) every video in the library that is still encoding.
+  let ids = uploadedIds.slice();
+  if (!ids.length) ids = (await bunny.listVideos({ force: true })).filter((v) => v.status < 4).map((v) => v.guid);
+  if (!ids.length) { console.log('✔ nothing is encoding'); return; }
+  process.stdout.write(`Waiting for Bunny to encode ${ids.length} video(s)`);
+  const started = Date.now();
+  while (Date.now() - started < 90 * 60 * 1000) {
+    const vids = await Promise.all(ids.map(getVideo));
+    const failed = vids.filter((v) => v.status >= 5);
+    if (failed.length) { console.log('\n✖ Bunny could not process:', failed.map((v) => `${v.guid} (${bunny.STATUS[v.status]})`).join(', ')); process.exit(1); }
+    const pending = vids.filter((v) => v.status < 4);
+    if (!pending.length) { console.log(`\n✔ ready (${vids.map((v) => bunny.durationLabel(v.length, v.length + ' s')).join(', ')})`); return; }
+    process.stdout.write(` ${Math.min(...pending.map((v) => v.encodeProgress || 0))}%`);
     await new Promise((r) => setTimeout(r, 10000));
   }
-  die('timed out after 60 minutes');
+  die('timed out after 90 minutes');
 }
-function bunnyCacheReset() { try { delete require.cache[require.resolve('../src/lib/bunny')]; } catch {} }
 
 async function protect(on) {
   const k = process.env.BUNNY_API_KEY; if (!k) die('BUNNY_API_KEY (account key) is not set');
