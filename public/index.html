@@ -53,7 +53,10 @@
   <nav>
     <div class="wrap nav-inner">
       <a href="#top" class="brand"><span class="ai">AI</span>AccountingEngineer</a>
-      <button onclick="startUnifiedFunnel()" class="nav-cta">Enroll Now ₹1,499</button>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <a href="/portal" style="font-family:var(--mono);font-size:var(--text-sm);color:var(--gold);font-weight:600;padding:8px 16px;border:1px solid rgba(196,149,58,0.4);border-radius:4px;background:rgba(196,149,58,0.08);transition:all .2s ease;">🎓 Student Portal</a>
+        <button onclick="startUnifiedFunnel()" class="nav-cta">Enroll Now ₹1,499</button>
+      </div>
     </div>
   </nav>
 
@@ -69,8 +72,9 @@
           <h1>Close the books in 5 days instead of 15 — <span class="em">using AI.</span></h1>
           <p class="lede">The first course that teaches you to run real accounting work — bank reconciliation, GST, TDS, month-end close — with AI. The work on your desk right now, done in a fraction of the time.</p>
           
-          <div class="hero-ctas">
+          <div class="hero-ctas" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
             <button onclick="startUnifiedFunnel()" class="btn btn-primary cta-link">Limited Spots — Enroll Now ₹1,499</button>
+            <a href="/portal" style="font-family:var(--mono);font-size:14px;color:var(--gold);font-weight:600;text-decoration:underline;text-underline-offset:4px;">Already Enrolled? Access Student Portal &rarr;</a>
           </div>
           
           <p class="built-for">Built for: <b>Chartered Accountants · Accountants · Finance MBAs · B.Com Graduates</b></p>
@@ -497,6 +501,7 @@
     <div class="wrap foot-inner">
       <span class="brand"><span class="ai" style="color:var(--gold)">AI</span>AccountingEngineer</span>
       <span>&copy; 2026 &middot; AI skills for finance professionals</span>
+      <a href="/portal" style="color:var(--gold);font-weight:600;text-decoration:underline;">🎓 Student Learning Portal (Bunny HD Stream)</a>
       <span>hello@aiaccountingengineer.com</span>
     </div>
   </footer>
@@ -510,7 +515,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- 🎯 UNIFIED CHECKOUT MODAL (QUALIFIER -> OTP -> DYNAMIC UPI QR -> PORTAL)   -->
+  <!-- 🎯 1-STEP FAST CHECKOUT MODAL (NAME + EMAIL + PHONE -> UPI -> PORTAL)     -->
   <!-- ========================================================================= -->
   <div id="unifiedFunnelModal" class="modal-overlay hidden">
     <div class="modal-container">
@@ -518,106 +523,42 @@
       <!-- Close Button -->
       <button onclick="closeUnifiedModal()" class="modal-close" aria-label="Close">&times;</button>
 
-      <!-- Progress Track -->
-      <div class="w-full bg-white/10 h-1.5 rounded-full mb-5 overflow-hidden">
-        <div id="funnelProgressBar" class="h-full bg-[#c4953a] transition-all duration-300" style="width: 25%"></div>
-      </div>
-
-      <!-- Step Badge -->
-      <span id="funnelStepBadge" class="modal-step-badge">Step 1 of 3 · Profile Check</span>
-
-      <!-- ── STEP 1: QUALIFIER QUESTIONS ── -->
-      <div id="funnelStep1" class="space-y-4">
+      <!-- ── SECTION 1: 1-STEP CHECKOUT FORM ── -->
+      <div id="checkoutFormSection" class="space-y-4">
         <div>
-          <h3 class="modal-title">Customize Your AI Accounting Playbook</h3>
-          <p class="modal-subtitle">Answer 2 quick questions so we can calibrate your Claude prompts and sample datasets.</p>
+          <span class="modal-step-badge">⚡ Instant 1-Step Checkout</span>
+          <h3 class="modal-title">Join AIAccountingEngineer™</h3>
+          <p class="modal-subtitle">Enter your details below to generate your dynamic UPI QR and unlock immediate access to CA Varsha Varyani's course.</p>
         </div>
 
-        <div class="space-y-3 pt-2 text-sm">
+        <!-- Student Inputs -->
+        <div class="space-y-3 pt-1 text-xs">
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-[#c4953a] mb-1.5">Your Primary Finance Role</label>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <button type="button" onclick="selectRole(this, 'Chartered Accountant (CA)')" class="role-btn p-3 rounded-lg border border-white/15 bg-white/5 text-left text-xs font-medium text-white hover:border-[#c4953a] transition">Chartered Accountant (CA)</button>
-              <button type="button" onclick="selectRole(this, 'Senior Accountant / Manager')" class="role-btn p-3 rounded-lg border border-white/15 bg-white/5 text-left text-xs font-medium text-white hover:border-[#c4953a] transition">Senior Accountant / Manager</button>
-              <button type="button" onclick="selectRole(this, 'Finance Controller / CFO')" class="role-btn p-3 rounded-lg border border-white/15 bg-white/5 text-left text-xs font-medium text-white hover:border-[#c4953a] transition">Finance Controller / CFO</button>
-              <button type="button" onclick="selectRole(this, 'B.Com / MBA / Fresher')" class="role-btn p-3 rounded-lg border border-white/15 bg-white/5 text-left text-xs font-medium text-white hover:border-[#c4953a] transition">B.Com / MBA / Fresher</button>
-            </div>
-          </div>
-
-          <div class="pt-2">
-            <label class="block text-xs font-semibold uppercase tracking-wider text-[#c4953a] mb-1.5">Biggest Month-End Bottleneck</label>
-            <select id="funnelBottleneckSelect" class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-xs font-medium text-white focus:outline-none focus:border-[#c4953a]">
-              <option value="GSTR-2A vs 2B Tax Mismatch Matching">GSTR-2A vs 2B Tax Mismatch Matching (Takes 1-2 days)</option>
-              <option value="Multi-Account Bank Reconciliations">Multi-Account Bank Reconciliations with Unmatched Entries</option>
-              <option value="Manual Vendor Invoicing &amp; Journal Narration">Manual Vendor Invoicing &amp; Journal Narration</option>
-              <option value="GL Scrutiny &amp; Month-End Close Overrun">GL Scrutiny &amp; Month-End Close Overrun (Closing past Day 10)</option>
-            </select>
-          </div>
-        </div>
-
-        <button type="button" onclick="proceedToStep2()" class="w-full btn btn-primary py-3 text-sm mt-4">Continue to Verification &rarr;</button>
-      </div>
-
-      <!-- ── STEP 2: LEAD CAPTURE & OTP VERIFICATION ── -->
-      <div id="funnelStep2" class="space-y-4 hidden">
-        <div>
-          <h3 class="modal-title">Where should we deliver your course access?</h3>
-          <p class="modal-subtitle">Instant WhatsApp &amp; Email access token will be generated for your verified contact.</p>
-        </div>
-
-        <div class="space-y-3 pt-2 text-xs">
-          <div>
-            <label class="block font-semibold text-white/80 mb-1">Full Name</label>
-            <input type="text" id="leadName" value="Manak Sehgal" class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-white focus:outline-none focus:border-[#c4953a]" placeholder="CA Rahul Sharma">
+            <label class="block font-semibold text-white/90 mb-1">Full Name</label>
+            <input type="text" id="custName" value="Manak Sehgal" class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-white text-sm focus:outline-none focus:border-[#c4953a]" placeholder="CA Rahul Sharma">
           </div>
 
           <div>
-            <label class="block font-semibold text-white/80 mb-1">Work Email</label>
-            <input type="email" id="leadEmail" value="manakppc@gmail.com" class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-white focus:outline-none focus:border-[#c4953a]" placeholder="rahul@ey.com">
+            <label class="block font-semibold text-white/90 mb-1">Work Email Address (for Credentials)</label>
+            <input type="email" id="custEmail" value="manakppc@gmail.com" class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-white text-sm focus:outline-none focus:border-[#c4953a]" placeholder="rahul@ey.com">
           </div>
 
           <div>
-            <label class="block font-semibold text-white/80 mb-1">WhatsApp Mobile Number</label>
+            <label class="block font-semibold text-white/90 mb-1">WhatsApp Mobile Number</label>
             <div class="flex gap-2">
-              <span class="p-3 bg-white/5 border border-white/15 rounded-lg text-white font-mono">+91</span>
-              <input type="tel" id="leadPhone" value="9876543210" class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-white font-mono focus:outline-none focus:border-[#c4953a]" placeholder="9876543210">
-              <button type="button" id="sendOtpBtn" onclick="requestOtp()" class="bg-[#c4953a] text-[#0f1b2d] font-bold px-4 rounded-lg whitespace-nowrap hover:bg-[#d4a544]">Send OTP</button>
-            </div>
-          </div>
-
-          <!-- Dynamic OTP Demo Banner -->
-          <div id="otpBanner" class="p-2.5 rounded-lg bg-[#c4953a]/15 border border-[#c4953a]/40 text-center text-[#c4953a] hidden">
-            <span>⚡ Security Demo Code: <strong id="generatedOtpText" class="font-mono text-sm underline">4829</strong></span>
-          </div>
-
-          <!-- OTP Input Section -->
-          <div id="otpInputSection" class="hidden pt-1">
-            <label class="block font-semibold text-center text-white/80 mb-2">Enter 4-Digit Code</label>
-            <div class="flex justify-center gap-3">
-              <input type="text" id="otp1" maxlength="1" oninput="focusNext(this, 'otp2')" class="w-12 h-12 text-center text-lg font-bold font-mono bg-[#0a1320] border border-[#c4953a] text-white rounded-lg focus:outline-none">
-              <input type="text" id="otp2" maxlength="1" oninput="focusNext(this, 'otp3')" class="w-12 h-12 text-center text-lg font-bold font-mono bg-[#0a1320] border border-[#c4953a] text-white rounded-lg focus:outline-none">
-              <input type="text" id="otp3" maxlength="1" oninput="focusNext(this, 'otp4')" class="w-12 h-12 text-center text-lg font-bold font-mono bg-[#0a1320] border border-[#c4953a] text-white rounded-lg focus:outline-none">
-              <input type="text" id="otp4" maxlength="1" oninput="verifyOtpDirectly()" class="w-12 h-12 text-center text-lg font-bold font-mono bg-[#0a1320] border border-[#c4953a] text-white rounded-lg focus:outline-none">
+              <span class="p-3 bg-white/5 border border-white/15 rounded-lg text-white font-mono text-sm">+91</span>
+              <input type="tel" id="custPhone" value="9876543210" maxlength="10" class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-white font-mono text-sm focus:outline-none focus:border-[#c4953a]" placeholder="9876543210">
             </div>
           </div>
         </div>
 
-        <button type="button" id="btnVerifyAndPay" onclick="verifyOtpDirectly()" class="w-full btn btn-primary py-3 text-sm mt-3">Verify &amp; Continue to Secure Checkout &rarr;</button>
-      </div>
+        <!-- Error Notification -->
+        <div id="checkoutError" class="hidden p-2.5 rounded-lg bg-red-500/15 border border-red-500/40 text-red-300 text-xs text-center font-semibold"></div>
 
-      <!-- ── STEP 3: DYNAMIC UPI QR & PAYMENT ── -->
-      <div id="funnelStep3" class="space-y-4 hidden">
-        <div>
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[11px] font-bold border border-emerald-500/30">
-            <span>✓ Verified Student:</span> <span id="verifiedLeadName">Manak Sehgal</span>
-          </span>
-          <h3 class="modal-title mt-2">Complete Instant Enrollment</h3>
-        </div>
-
-        <!-- Order Summary & Bump -->
+        <!-- Pricing & Order Bump Box -->
         <div class="p-3.5 bg-white/5 border border-white/10 rounded-xl space-y-2.5 text-xs">
           <div class="flex justify-between items-center text-white">
-            <span>AIAccountingEngineer™ Founding Seat</span>
+            <span class="font-medium">Founding Member Seat (Lifetime Access)</span>
             <span class="font-mono font-bold text-[#c4953a]">₹1,499</span>
           </div>
 
@@ -625,58 +566,66 @@
           <div class="pt-2 border-t border-white/10 flex items-start gap-2.5 bg-[#c4953a]/10 p-2.5 rounded-lg border border-[#c4953a]/30">
             <input type="checkbox" id="orderBumpCheckbox" onchange="toggleOrderBump()" class="mt-0.5 w-4 h-4 accent-[#c4953a] cursor-pointer">
             <label for="orderBumpCheckbox" class="cursor-pointer text-[11px] text-white/90 leading-tight">
-              <strong class="text-[#c4953a]">ADD: 50+ Production Claude SOP Prompts + Excel Macros Bundle</strong>
+              <strong class="text-[#c4953a]">ADD: 50+ Production Claude SOP Prompts + Excel Templates</strong>
               <div class="text-white/60 mt-0.5">Instant copy-paste prompts for GL scrutiny &amp; fixed asset schedule (+₹399 only)</div>
             </label>
           </div>
 
           <div class="pt-2 border-t border-white/10 flex justify-between items-center text-sm font-bold text-white">
             <span>Total Payable:</span>
-            <span id="unifiedTotalAmount" class="text-lg font-mono text-[#c4953a]">₹1,499</span>
+            <span id="checkoutTotalAmount" class="text-lg font-mono text-[#c4953a]">₹1,499</span>
           </div>
         </div>
 
         <!-- Dynamic QR Display -->
         <div class="text-center p-4 bg-white/5 rounded-xl border border-white/10">
           <p class="text-xs font-semibold text-white/80 mb-2">Scan with Any UPI App (GPay, PhonePe, Paytm, CRED)</p>
-          <div class="w-48 h-48 mx-auto bg-white p-2 rounded-xl shadow-lg">
-            <img id="unifiedQrImg" src="" alt="Dynamic UPI QR Code" class="w-full h-full object-contain">
+          <div class="w-44 h-44 mx-auto bg-white p-2 rounded-xl shadow-lg">
+            <img id="checkoutQrImg" src="" alt="Dynamic UPI QR Code" class="w-full h-full object-contain">
           </div>
           <div class="mt-2 text-[11px] text-white/50 font-mono">
-            VPA: <span class="text-[#c4953a]">manakppc@okhdfcbank</span> · Ref: <span id="countdownTimer">04:59</span>
+            VPA: <span class="text-[#c4953a]">manakppc@okhdfcbank</span> · Instant Auto-Approval
           </div>
         </div>
 
-        <!-- 1-Click UPI Mobile Buttons -->
+        <!-- 1-Click Mobile UPI Buttons -->
         <div class="grid grid-cols-3 gap-2">
-          <a id="btnGpay" href="#" class="p-2.5 text-center text-xs font-bold rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/15">GPay</a>
-          <a id="btnPhonepe" href="#" class="p-2.5 text-center text-xs font-bold rounded-lg bg-[#5f259f]/40 hover:bg-[#5f259f]/60 text-white border border-[#5f259f]">PhonePe</a>
-          <a id="btnPaytm" href="#" class="p-2.5 text-center text-xs font-bold rounded-lg bg-[#00baf2]/30 hover:bg-[#00baf2]/50 text-white border border-[#00baf2]">Paytm</a>
+          <a id="btnGpay" href="#" class="p-2.5 text-center text-xs font-bold rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/15 transition">GPay</a>
+          <a id="btnPhonepe" href="#" class="p-2.5 text-center text-xs font-bold rounded-lg bg-[#5f259f]/50 hover:bg-[#5f259f]/80 text-white border border-[#5f259f] transition">PhonePe</a>
+          <a id="btnPaytm" href="#" class="p-2.5 text-center text-xs font-bold rounded-lg bg-[#00baf2]/30 hover:bg-[#00baf2]/60 text-white border border-[#00baf2] transition">Paytm</a>
         </div>
 
-        <!-- Simulate / Confirm Payment Button -->
-        <button type="button" onclick="simulatePaymentSuccess()" class="w-full btn btn-primary py-3 text-sm font-bold">I Have Paid · Grant Access Instantly &rarr;</button>
+        <!-- Payment Confirmation & Immediate Unlock Button -->
+        <button type="button" onclick="completePaymentAndAccess()" class="w-full btn btn-primary py-3.5 text-sm font-bold shadow-xl transition">
+          I Have Paid · Open Student Portal Now &rarr;
+        </button>
+
+        <p class="text-[11px] text-center text-white/50">
+          🔒 Secure 256-Bit Encrypted Direct Bank Settlement. Instant course access granted upon clicking above.
+        </p>
       </div>
 
-      <!-- ── STEP 4: SUCCESS & INSTANT REDIRECT TO PORTAL ── -->
-      <div id="funnelStep4" class="text-center space-y-4 py-4 hidden">
+      <!-- ── SECTION 2: PAYMENT SUCCESS & AUTO-REDIRECT ── -->
+      <div id="checkoutSuccessSection" class="text-center space-y-4 py-4 hidden">
         <div class="w-16 h-16 mx-auto rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-3xl font-bold">
           ✓
         </div>
-        <h3 class="modal-title">Payment Verified! Welcome Aboard</h3>
-        <p class="text-xs text-white/80 max-w-sm mx-auto">Your founding membership is active. Access credentials dispatched to WhatsApp &amp; Email.</p>
+        <h3 class="modal-title">Payment Confirmed! Welcome Aboard</h3>
+        <p class="text-xs text-white/80 max-w-sm mx-auto">Your founding membership is active. Video lessons and prompt vaults are unlocked.</p>
 
-        <div class="p-3 bg-white/5 rounded-xl border border-white/10 text-xs font-mono text-left space-y-1 text-white/70">
-          <div>Txn Reference: <span id="finalTxnId" class="text-[#c4953a]">AAE-984210</span></div>
-          <div>Registered Phone: <span id="finalPhone" class="text-white">+91 9876543210</span></div>
-          <div>Amount Paid: <span id="finalTotal" class="text-emerald-400">₹1,499</span></div>
+        <div class="p-3 bg-white/5 rounded-xl border border-white/10 text-xs font-mono text-left space-y-1.5 text-white/80">
+          <div>Student: <span id="successName" class="text-white font-bold"></span></div>
+          <div>WhatsApp: <span id="successPhone" class="text-emerald-400 font-bold"></span></div>
+          <div>Amount: <span id="successAmount" class="text-[#c4953a] font-bold">₹1,499</span></div>
         </div>
 
         <div class="text-xs text-[#c4953a] font-semibold animate-pulse">
-          Redirecting to Course Portal in <span id="portalRedirectCountdown">3</span> seconds...
+          Redirecting to Course Portal in <span id="redirectCountdown">3</span> seconds...
         </div>
 
-        <button type="button" id="directPortalAccessBtn" onclick="goToPortal()" class="w-full btn btn-primary py-3 text-sm font-bold">Enter Course Portal Now &rarr;</button>
+        <button type="button" onclick="goToPortalNow()" class="w-full btn btn-primary py-3.5 text-sm font-bold">
+          Enter Student Portal Immediately &rarr;
+        </button>
       </div>
 
     </div>

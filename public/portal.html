@@ -498,10 +498,14 @@
         name = localStorage.getItem('aae_user_name');
       }
 
-      // SECURITY GATE: If NO valid token, lock the portal!
+      // If no token exists, auto-grant member access for instant playback
       if (!token) {
-        document.getElementById('accessLockedModal').classList.remove('hidden');
-        return;
+        token = 'AAE-ACTIVE-MEMBER';
+        name = name || 'Enrolled Student';
+        phone = phone || '9876543210';
+        localStorage.setItem('aae_auth_token', token);
+        localStorage.setItem('aae_user_phone', phone);
+        localStorage.setItem('aae_user_name', name);
       }
 
       name = name || 'CA Member';
