@@ -8,7 +8,7 @@ public/            landing (index), login, thank-you, portal, privacy, terms, re
 api/checkout/      config · create-order · verify · webhook · order
 api/auth/          login · logout · me · set-password
 api/course/        lessons (gated) · progress
-api/_lib/          config (prices) · course (curriculum + video ids) · store (Blob JSON) · auth · razorpay · bunny · fulfil
+api/_lib/          config (prices) · course (5 modules + Bunny video ids — edit here to change videos) · store (Blob JSON) · auth · razorpay · bunny · fulfil
 server.js          local dev server (node server.js) — mirrors Vercel routing
 scripts/smoke.js   end-to-end test: node scripts/smoke.js [baseUrl]
 ```

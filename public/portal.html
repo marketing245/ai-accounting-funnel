@@ -113,7 +113,7 @@
       <div class="p-4 border-b border-white/10 flex items-center justify-between bg-black/20">
         <div>
           <h2 class="text-xs font-bold uppercase tracking-wider text-white/50">Course Curriculum</h2>
-          <div class="text-sm font-extrabold text-white">5 Mastery Modules + Vault</div>
+          <div class="text-sm font-extrabold text-white">5 recorded modules</div>
         </div>
         <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
           Full Lifetime Access
@@ -137,8 +137,6 @@
             <span id="currentModuleBadge">Module 1</span>
             <span>•</span>
             <span id="currentDurationBadge" class="text-white/60"></span>
-            <span>•</span>
-            <span class="text-emerald-400 font-medium">Hands-on Implementation</span>
           </div>
           <h1 class="text-xl lg:text-2xl font-bold text-white" id="currentLessonTitle">Loading…</h1>
         </div>
@@ -166,87 +164,13 @@
         </div>
       </div>
 
-      <!-- LESSON TABS: PROMPTS, DOWNLOADS, NOTES, COMMUNITY -->
+      <!-- ABOUT THIS LESSON -->
       <div class="p-6 pt-4 flex-1">
-        <!-- Tabs Header -->
-        <div class="flex items-center gap-2 border-b border-white/10 pb-2">
-          <button onclick="switchTab('prompts')" id="tabBtn-prompts" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition bg-[#c4953a]/20 border border-[#c4953a] text-[#dfb35a]">
-            ⚡ 1-Click Prompt Vault
-          </button>
-          <button onclick="switchTab('templates')" id="tabBtn-templates" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition bg-white/5 border border-white/10 text-white/70 hover:text-white">
-            📁 Excel & Tally Templates
-          </button>
-          <button onclick="switchTab('notes')" id="tabBtn-notes" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition bg-white/5 border border-white/10 text-white/70 hover:text-white">
-            📝 Lesson SOP & Notes
-          </button>
-          <button onclick="switchTab('community')" id="tabBtn-community" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition bg-white/5 border border-white/10 text-white/70 hover:text-white">
-            💬 Mentor & WhatsApp Support
-          </button>
+        <div class="p-5 rounded-2xl bg-black/40 border border-white/10 text-xs text-white/80 leading-relaxed space-y-2">
+          <h3 class="text-sm font-bold text-[#dfb35a]">About this lesson</h3>
+          <p id="lessonDescription"></p>
         </div>
-
-        <!-- TAB 1: PROMPT VAULT -->
-        <div id="tabContent-prompts" class="tab-content py-5 space-y-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 class="text-sm font-bold text-white">Ready-to-use AI prompts for this module</h3>
-              <p class="text-xs text-white/60">Copy a prompt and paste it into Claude (or another AI assistant) with your own documents.</p>
-            </div>
-            <span id="promptCountBadge" class="text-xs font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-3 py-1 rounded-full"></span>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="promptsContainer">
-            <!-- Injected by JS -->
-          </div>
-        </div>
-
-        <!-- TAB 2: DOWNLOADABLE TEMPLATES -->
-        <div id="tabContent-templates" class="tab-content hidden py-5 space-y-4">
-          <div>
-            <h3 class="text-sm font-bold text-white">Downloadable Implementation Files</h3>
-            <p class="text-xs text-white/60">Templates used by CA Varsha Varyani in the lessons.</p>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="templatesContainer"><!-- rendered by JS --></div>
-        </div>
-
-        <!-- TAB 3: LESSON NOTES & SOP -->
-        <div id="tabContent-notes" class="tab-content hidden py-5 space-y-4">
-          <div class="p-5 rounded-2xl bg-black/40 border border-white/10 space-y-4 text-xs text-white/80 leading-relaxed font-sans">
-            <h3 class="text-sm font-bold text-[#dfb35a] flex items-center gap-2">
-              <span>📌</span> Workflow Scope & Deliverable
-            </h3>
-            <div id="lessonFocusDescription" class="p-3 rounded-xl bg-white/5 border border-white/10 text-white/90 leading-relaxed">
-              <!-- Injected by JS -->
-            </div>
-            <div id="lessonResultOutcome" class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 font-semibold leading-relaxed">
-              <!-- Injected by JS -->
-            </div>
-            <h4 class="text-xs font-bold text-white pt-2">Standard Implementation SOP:</h4>
-            <ul class="space-y-2 list-disc pl-5 text-white/70">
-              <li>Open Claude (free or Pro plan) or your preferred AI assistant.</li>
-              <li>Copy the tested prompt from the <b>Prompt Vault</b> tab.</li>
-              <li>Upload your source document (Invoice, Bank CSV, GSTR-2B extract).</li>
-              <li>Review and cross-verify totals before final posting in your accounting software.</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- TAB 4: MENTOR & WHATSAPP SUPPORT -->
-        <div id="tabContent-community" class="tab-content hidden py-5 space-y-4">
-          <div class="p-6 rounded-2xl bg-gradient-to-r from-emerald-950/40 to-black/60 border border-emerald-500/30 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div class="space-y-2 text-center md:text-left">
-              <span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-[11px] font-bold border border-emerald-500/30">
-                Mentorship &amp; doubt solving
-              </span>
-              <h3 class="text-lg font-bold text-white">Got Stuck On A Client File?</h3>
-              <p class="text-xs text-white/70 max-w-xl">
-                Join the private WhatsApp group with CA Varsha Varyani and fellow students. Share your bank statement or GST query and get a response within one working day.
-              </p>
-            </div>
-            <a id="communityJoinBtn" href="#" target="_blank" rel="noopener" class="px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shrink-0 flex items-center gap-2 shadow-xl shadow-emerald-950 transition">💬 Join the WhatsApp group</a>
-          </div>
-        </div>
-
+        <p class="mt-4 text-[11px] text-white/40">Questions about a lesson? Email <a id="supportLink" href="mailto:hello@aiaccountingengineer.com" class="underline text-white/60">hello@aiaccountingengineer.com</a>.</p>
       </div>
 
     </main>
@@ -256,7 +180,6 @@
   <!-- PORTAL SCRIPT — all content comes from /api/course/lessons after the server checks the session cookie -->
   <script>
     let CURRICULUM = [];
-    let RESOURCES = [];
     let USER = null;
     let currentModuleIndex = 0;
     let completedLessons = new Set();
@@ -282,7 +205,6 @@
       }
       USER = data.user;
       CURRICULUM = data.course.modules;
-      RESOURCES = data.course.resources || [];
       completedLessons = new Set((data.progress && data.progress.completed) || []);
       const last = data.progress && data.progress.lastModule;
       currentModuleIndex = Math.max(0, CURRICULUM.findIndex((m) => m.id === last));
@@ -290,11 +212,10 @@
       $('userNameLabel').textContent = USER.name || 'Student';
       $('userPhoneLabel').textContent = USER.email;
       $('userAvatarInitials').textContent = (USER.name || 'S').split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
-      if (data.course.whatsappGroupUrl) { $('whatsappLink').href = data.course.whatsappGroupUrl; $('whatsappLink').style.display=''; $('communityJoinBtn').href = data.course.whatsappGroupUrl; }
-      else { $('communityJoinBtn').href = 'mailto:' + (data.course.supportEmail || 'hello@aiaccountingengineer.com'); $('communityJoinBtn').textContent = '✉ Email the mentor team'; }
+      if (data.course.whatsappGroupUrl) { $('whatsappLink').href = data.course.whatsappGroupUrl; $('whatsappLink').style.display = ''; }
+      if (data.course.supportEmail) { $('supportLink').href = 'mailto:' + data.course.supportEmail; $('supportLink').textContent = data.course.supportEmail; }
 
       renderCurriculum();
-      renderResources();
       loadLesson(currentModuleIndex);
       updateProgressDisplay();
       $('authGate').classList.add('hidden');
@@ -329,22 +250,6 @@
       });
     }
 
-    function renderResources() {
-      const c = $('templatesContainer');
-      c.innerHTML = '';
-      if (!RESOURCES.length) { c.innerHTML = '<p class="text-xs text-white/60">Downloadable files will appear here as the instructor uploads them.</p>'; return; }
-      RESOURCES.forEach((r) => {
-        const mod = CURRICULUM.find((m) => m.id === r.moduleId);
-        const card = document.createElement('div');
-        card.className = 'p-4 rounded-xl bg-black/40 border border-white/10 space-y-3';
-        card.innerHTML = `
-          <div class="text-[10px] font-bold uppercase tracking-wider text-white/40">${mod ? esc(mod.code) + ' · ' + esc(mod.title) : 'Course resource'}</div>
-          <div><h4 class="text-xs font-bold text-white">${esc(r.title)}</h4><p class="text-[11px] text-white/60 mt-0.5">${esc(r.description || '')}</p></div>
-          ${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener" class="block text-center w-full py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold text-xs transition">⬇ Download</a>`
-                  : `<div class="w-full py-2 rounded-lg bg-white/5 text-white/40 font-semibold text-xs text-center border border-dashed border-white/10">Coming soon — being prepared by the instructor</div>`}`;
-        c.appendChild(card);
-      });
-    }
 
     function loadLesson(idx) {
       currentModuleIndex = idx;
@@ -356,11 +261,8 @@
       const iframe = $('bunnyPlayerIframe');
       if (mod.embedUrl) { iframe.src = mod.embedUrl; $('videoUnavailable').classList.add('hidden'); }
       else { iframe.src = 'about:blank'; $('videoUnavailable').classList.remove('hidden'); }
-      $('lessonFocusDescription').innerHTML = `<b>Workflow scope:</b> ${esc(mod.description)}`;
-      $('lessonResultOutcome').innerHTML = `<b>Target outcome:</b> ${esc(mod.result)}`;
-      $('promptCountBadge').textContent = `${(mod.prompts || []).length} tested prompts for this lesson`;
+      $('lessonDescription').textContent = mod.description || '';
       updateCompleteBtnState();
-      renderPrompts(mod.prompts || []);
       renderCurriculum();
       queueSave();
     }
@@ -404,35 +306,7 @@
       $('topProgressText').textContent = `${done}/${total} completed (${pct}%)`;
     }
 
-    function renderPrompts(prompts) {
-      const container = $('promptsContainer');
-      container.innerHTML = '';
-      prompts.forEach((p, i) => {
-        const card = document.createElement('div');
-        card.className = 'p-4 rounded-xl bg-black/40 border border-white/10 flex flex-col justify-between space-y-3';
-        card.innerHTML = `
-          <div>
-            <div class="flex items-center justify-between text-xs font-bold text-white mb-1">
-              <span class="text-[#dfb35a]">⚡ ${esc(p.title)}</span>
-              <span class="text-[10px] text-white/50 font-normal">${esc(p.useCase)}</span>
-            </div>
-            <div class="p-3 rounded-lg bg-black/60 border border-white/5 font-mono text-[11px] text-white/80 line-clamp-4 select-all leading-relaxed">${esc(p.content)}</div>
-          </div>
-          <button type="button" data-i="${i}" class="copy-btn w-full py-2 rounded-lg bg-[#c4953a]/20 hover:bg-[#c4953a] border border-[#c4953a]/40 text-[#dfb35a] hover:text-black font-bold text-xs flex items-center justify-center gap-2 transition"><span>📋 Copy prompt</span></button>`;
-        card.querySelector('.copy-btn').addEventListener('click', (ev) => copyPromptText(p.content, ev.currentTarget));
-        container.appendChild(card);
-      });
-    }
 
-    function copyPromptText(text, btn) {
-      navigator.clipboard.writeText(text).then(() => {
-        showToast('Prompt copied — paste it into Claude.');
-        const original = btn.innerHTML, cls = btn.className;
-        btn.innerHTML = '<span>✓ Copied</span>';
-        btn.className = 'copy-btn w-full py-2 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-2 transition';
-        setTimeout(() => { btn.innerHTML = original; btn.className = cls; }, 2000);
-      }).catch(() => showToast('Could not copy — select the text and copy manually.'));
-    }
 
     function showToast(msg) {
       $('toastMessage').textContent = msg;
@@ -440,13 +314,6 @@
       setTimeout(() => $('portalToast').classList.add('hidden'), 3000);
     }
 
-    function switchTab(tab) {
-      document.querySelectorAll('.tab-content').forEach((el) => el.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach((btn) => { btn.className = 'tab-btn px-4 py-2 rounded-xl text-xs font-bold transition bg-white/5 border border-white/10 text-white/70 hover:text-white'; });
-      const content = $(`tabContent-${tab}`), btn = $(`tabBtn-${tab}`);
-      if (content) content.classList.remove('hidden');
-      if (btn) btn.className = 'tab-btn px-4 py-2 rounded-xl text-xs font-bold transition bg-[#c4953a]/20 border border-[#c4953a] text-[#dfb35a]';
-    }
 
     window.addEventListener('DOMContentLoaded', initPortal);
   </script>

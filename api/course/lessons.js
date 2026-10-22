@@ -1,7 +1,7 @@
 'use strict';
 const { send, fail, allow, wrap } = require('../_lib/http');
 const auth = require('../_lib/auth');
-const { CURRICULUM, RESOURCES, publicCurriculum } = require('../_lib/course');
+const { CURRICULUM, publicCurriculum } = require('../_lib/course');
 const bunny = require('../_lib/bunny');
 const { PRODUCT } = require('../_lib/config');
 
@@ -19,7 +19,7 @@ module.exports = wrap(async (req, res) => {
   send(res, 200, {
     ok: true,
     user: { name: user.name, email: user.email, phone: user.phone },
-    course: { title: PRODUCT.name, modules, resources: RESOURCES, videoProtected: bunny.signed(), whatsappGroupUrl: PRODUCT.whatsappGroupUrl, supportEmail: PRODUCT.supportEmail },
+    course: { title: PRODUCT.name, modules, videoProtected: bunny.signed(), whatsappGroupUrl: PRODUCT.whatsappGroupUrl, supportEmail: PRODUCT.supportEmail },
     progress: user.progress || { completed: [] },
   });
 });
