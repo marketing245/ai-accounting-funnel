@@ -34,6 +34,7 @@ module.exports = wrap(async (req, res) => {
   }
 
   const { order: paidOrder, user } = await fulfil(order, paymentId, 'checkout');
+  if (!user.firstLoginAt) { user.firstLoginAt = new Date().toISOString(); user.lastLoginAt = user.firstLoginAt; user.loginCount = (user.loginCount || 0) + 1; await auth.saveUser(user); }
   auth.setSession(res, req, user);
   send(res, 200, { ok: true, orderId: paidOrder.id, needsPassword: !user.passwordHash, next: `/thank-you?order=${encodeURIComponent(paidOrder.id)}` });
 });

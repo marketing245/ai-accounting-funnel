@@ -22,8 +22,12 @@ module.exports = wrap(async (req, res) => {
     await auth.saveUser(user);
     return generic();
   }
-  if (user.failedLogins || user.lockedUntil) { user.failedLogins = 0; user.lockedUntil = null; await auth.saveUser(user); }
   if (!user.purchases || user.purchases.length === 0) return fail(res, 403, 'No active course purchase on this account.');
+  const now = new Date().toISOString();
+  user.failedLogins = 0; user.lockedUntil = null;
+  user.loginCount = (user.loginCount || 0) + 1; user.lastLoginAt = now; user.firstLoginAt = user.firstLoginAt || now;
+  user.lastLoginUa = String(req.headers['user-agent'] || '').slice(0, 200);
+  await auth.saveUser(user);
   auth.setSession(res, req, user);
   send(res, 200, { ok: true, user: { name: user.name, email: user.email } });
 });

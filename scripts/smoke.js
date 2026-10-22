@@ -68,8 +68,11 @@ async function call(method, path, body, opts = {}) {
     const u = await fetch(mods[0].embedUrl.split('?')[0] + '?nocache=' + Date.now()); const h2 = await u.text();
     check('unsigned embed url is blocked', !/\.m3u8/.test(h2));
   }
-  r = await call('POST', '/api/course/progress', { completed: [1, 2, 99], lastModule: 2 });
+  r = await call('POST', '/api/course/progress', { completed: [1, 2, 99], lastModule: 2, viewed: { 1: { views: 2, watchSeconds: 90, activeSeconds: 120 }, 99: { views: 1 } } });
   check('progress saved (invalid ids dropped)', r.status === 200 && JSON.stringify(r.data.progress.completed) === '[1,2]');
+  check('engagement merged per module', r.data.progress.modules && r.data.progress.modules[1] && r.data.progress.modules[1].views === 2 && r.data.progress.modules[1].watchSeconds === 90 && !!r.data.progress.modules[1].completedAt && !r.data.progress.modules[99]);
+  r = await call('POST', '/api/course/progress', { completed: [1, 2], lastModule: 2, viewed: { 1: { views: 1, watchSeconds: 30 } } });
+  check('engagement accumulates', r.data.progress.modules[1].views === 3 && r.data.progress.modules[1].watchSeconds === 120);
   r = await call('GET', '/api/course/lessons');
   check('progress persisted', r.data?.progress?.completed?.length === 2);
 
@@ -112,6 +115,8 @@ async function call(method, path, body, opts = {}) {
   cookie = '';
   r = await call('POST', '/api/auth/login', { email, password });
   check('login correct → session', r.status === 200 && r.data.ok && !!cookie);
+  r = await call('GET', '/api/auth/me');
+  check('me after login', r.status === 200);
   r = await call('GET', '/api/course/lessons');
   check('lessons after login', r.status === 200 && r.data.ok);
 
@@ -129,11 +134,17 @@ async function call(method, path, body, opts = {}) {
     r = await call('POST', '/api/admin/login', { password: adminPw });
     check('admin login', r.status === 200 && r.data.ok && !!cookie);
     r = await call('GET', '/api/admin/overview');
-    const mine = (r.data?.orders || []).find((o) => o.id === order.orderId);
-    check('admin overview lists the order with attribution', r.status === 200 && mine && mine.status === 'paid' && mine.source === 'google' && mine.campaign === 'smoke_campaign' && typeof r.data.stats.revenueAll === 'number', mine && `${mine.source}/${mine.campaign}`);
-    check('admin overview lists the student', (r.data?.students || []).some((u) => u.email === email && u.completed === 5 && u.certificate === certId));
-    check('admin source table has google/cpc', (r.data?.bySource || []).some((b) => b.source === 'google' && b.paid >= 1));
-    check('admin overview has breakdowns + settings', Array.isArray(r.data.byCampaign) && Array.isArray(r.data.byPlatform) && Array.isArray(r.data.byDevice) && r.data.settings && typeof r.data.settings.paymentMode === 'string' && typeof r.data.stats.conversion === 'number');
+    const ov = r.data || {};
+    const mine = (ov.orders || []).find((o) => o.id === order.orderId);
+    check('admin overview lists the order with attribution', r.status === 200 && mine && mine.status === 'paid' && mine.source === 'google' && mine.campaign === 'smoke_campaign' && typeof ov.stats.revenueAll === 'number', mine && `${mine.source}/${mine.campaign}`);
+    const stu = (ov.students || []).find((u) => u.email === email);
+    check('admin overview lists the student', stu && stu.completed === 5 && stu.certificate === certId);
+    check('admin student engagement fields', stu && stu.loginCount >= 2 && stu.watchMin === 2 && stu.viewed >= 1 && stu.status === 'completed' && Array.isArray(stu.perModule) && stu.perModule.length === 5, stu && `logins=${stu.loginCount} watch=${stu.watchMin}`);
+    check('admin engagement summary', ov.engagement && ov.engagement.modules.length === 5 && typeof ov.engagement.active7 === 'number');
+    r = await call('GET', `/api/admin/student?email=${encodeURIComponent(email)}`);
+    check('admin student detail + timeline', r.status === 200 && r.data.student.email === email && r.data.timeline.length >= 4 && r.data.orders.length === 1);
+    check('admin source table has google/cpc', (ov.bySource || []).some((b) => b.source === 'google' && b.paid >= 1));
+    check('admin overview has breakdowns + settings', Array.isArray(ov.byCampaign) && Array.isArray(ov.byPlatform) && Array.isArray(ov.byDevice) && ov.settings && typeof ov.settings.paymentMode === 'string' && typeof ov.stats.conversion === 'number');
     check('admin order has geo/device/signals', mine && mine.platform === 'google_ads' && typeof mine.device === 'string' && ['not_configured', 'sent', 'error', ''].includes(mine.metaPurchase));
     r = await call('GET', '/api/admin/overview?days=7');
     check('admin overview date range', r.status === 200 && r.data.stats.days === 7);

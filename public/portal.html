@@ -8,6 +8,7 @@
   <script src="site-config.js"></script>
   <script src="analytics.js" defer></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://assets.mediadelivery.net/playerjs/player-0.1.0.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
@@ -198,6 +199,38 @@
     let currentModuleIndex = 0;
     let completedLessons = new Set();
     let saveTimer = null;
+    // ── Engagement tracking: views, watched seconds (Bunny player events), active seconds (tab visible) per module ──
+    const pending = {};           // moduleId → { views, watchSeconds, activeSeconds } not yet sent
+    let player = null, playing = false, lastPlayerTime = null, activeTick = null;
+    const bump = (id, k, n) => { if (!id) return; pending[id] = pending[id] || { views: 0, watchSeconds: 0, activeSeconds: 0 }; pending[id][k] += n; };
+    function currentId() { return CURRICULUM[currentModuleIndex] && CURRICULUM[currentModuleIndex].id; }
+    function attachPlayer() {
+      try {
+        if (!window.playerjs) return;
+        player = new playerjs.Player($('bunnyPlayerIframe'));
+        player.on('ready', () => {
+          player.on('play', () => { playing = true; lastPlayerTime = null; });
+          player.on('pause', () => { playing = false; });
+          player.on('ended', () => { playing = false; });
+          player.on('timeupdate', (d) => { if (!playing || !d) return; const t = Number(d.seconds || 0); if (lastPlayerTime != null) { const delta = t - lastPlayerTime; if (delta > 0 && delta < 5) bump(currentId(), 'watchSeconds', delta); } lastPlayerTime = t; });
+        });
+      } catch (e) {}
+    }
+    function startActiveTick() {
+      clearInterval(activeTick);
+      activeTick = setInterval(() => { if (document.visibilityState === 'visible') bump(currentId(), 'activeSeconds', 15); }, 15000);
+    }
+    function flush(useBeacon) {
+      const ids = Object.keys(pending).filter((k) => pending[k].views || pending[k].watchSeconds || pending[k].activeSeconds);
+      if (!ids.length && !useBeacon) return;
+      const payload = JSON.stringify({ completed: [...completedLessons], lastModule: currentId(), viewed: Object.fromEntries(ids.map((k) => [k, pending[k]])) });
+      ids.forEach((k) => { pending[k] = { views: 0, watchSeconds: 0, activeSeconds: 0 }; });
+      if (useBeacon && navigator.sendBeacon) { navigator.sendBeacon('/api/course/progress', new Blob([payload], { type: 'application/json' })); return; }
+      fetch('/api/course/progress', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload, keepalive: true }).then((r) => { if (r.status === 401) goLogin(); else refreshCertificate(); }).catch(() => {});
+    }
+    setInterval(() => flush(false), 60000);
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(true); });
+    window.addEventListener('pagehide', () => flush(true));
 
     const $ = (id) => document.getElementById(id);
     const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -234,6 +267,7 @@
       updateProgressDisplay();
       $('authGate').classList.add('hidden');
       refreshCertificate();
+      attachPlayer(); startActiveTick();
     }
 
     async function logout() {
@@ -274,6 +308,7 @@
       $('currentDurationBadge').textContent = mod.duration;
       $('currentLessonTitle').textContent = mod.title;
       const iframe = $('bunnyPlayerIframe');
+      bump(mod.id, 'views', 1); playing = false; lastPlayerTime = null;
       if (mod.embedUrl) { iframe.src = mod.embedUrl; $('videoUnavailable').classList.add('hidden'); }
       else {
         iframe.src = 'about:blank';
@@ -284,7 +319,6 @@
       $('lessonDescription').textContent = mod.description || '';
       updateCompleteBtnState();
       renderCurriculum();
-      queueSave();
     }
 
     function toggleCurrentLessonCompletion() {
@@ -299,13 +333,10 @@
 
     function queueSave() {
       clearTimeout(saveTimer);
-      saveTimer = setTimeout(async () => {
-        try {
-          const r = await fetch('/api/course/progress', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ completed: [...completedLessons], lastModule: CURRICULUM[currentModuleIndex]?.id }) });
-          if (r.status === 401) goLogin();
-          else refreshCertificate();
-        } catch (e) {}
+      saveTimer = setTimeout(() => {
+        const payload = JSON.stringify({ completed: [...completedLessons], lastModule: currentId(), viewed: pending });
+        Object.keys(pending).forEach((k) => { pending[k] = { views: 0, watchSeconds: 0, activeSeconds: 0 }; });
+        fetch('/api/course/progress', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload }).then((r) => { if (r.status === 401) goLogin(); else refreshCertificate(); }).catch(() => {});
       }, 600);
     }
 

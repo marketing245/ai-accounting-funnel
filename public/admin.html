@@ -62,7 +62,7 @@
       <div id="modeBanner" class="hidden text-xs rounded-xl px-4 py-2 bg-amber-900/40 border border-amber-500/40 text-amber-200"></div>
       <nav class="flex gap-1 overflow-auto pb-1" id="tabs">
         <span class="tab active" data-tab="overview">Overview</span><span class="tab" data-tab="orders">Paid orders</span><span class="tab" data-tab="leads">Leads</span>
-        <span class="tab" data-tab="students">Students</span><span class="tab" data-tab="sources">Traffic sources</span><span class="tab" data-tab="signals">Conversion signals</span><span class="tab" data-tab="settings">Settings & health</span>
+        <span class="tab" data-tab="students">Members &amp; engagement</span><span class="tab" data-tab="sources">Traffic sources</span><span class="tab" data-tab="signals">Conversion signals</span><span class="tab" data-tab="settings">Settings & health</span>
       </nav>
 
       <!-- OVERVIEW -->
@@ -92,9 +92,16 @@
       </section>
 
       <!-- STUDENTS -->
-      <section id="tab-students" class="hidden card p-4 space-y-3">
-        <div class="flex flex-wrap items-center gap-2"><h3>Students</h3><p class="text-[11px] text-white/50 mr-auto">Everyone with course access. Progress = modules marked complete.</p><input id="searchStudents" placeholder="Search…" class="w-56" oninput="renderStudents()"><a id="exportStudents" class="btn">Export CSV</a></div>
-        <div class="overflow-auto max-h-[70vh]"><table id="t-students"></table></div>
+      <section id="tab-students" class="hidden space-y-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3" id="engKpis"></div>
+        <div class="grid lg:grid-cols-3 gap-4">
+          <div class="card p-4 lg:col-span-2"><h3 class="mb-1">Module funnel — where members stop</h3><p class="text-[11px] text-white/50 mb-2">Of all members: how many opened each module, how many marked it complete, average minutes watched (from the video player).</p><div class="overflow-auto"><table id="t-modules"></table></div></div>
+          <div class="card p-4"><h3 class="mb-2">Member status</h3><div id="statusBars" class="space-y-2 text-xs"></div><p class="text-[11px] text-white/40 mt-3">active = did something in the last 7 days · idle = 7–30 days · inactive = 30+ days · no password = paid but never finished sign-up.</p></div>
+        </div>
+        <div class="card p-4 space-y-3">
+          <div class="flex flex-wrap items-center gap-2"><h3>Members</h3><p class="text-[11px] text-white/50 mr-auto">Click a row for the full timeline: logins, every module's views and minutes, certificate.</p><select id="statusFilter" onchange="renderStudents()"><option value="">All statuses</option><option value="active">Active</option><option value="idle">Idle</option><option value="inactive">Inactive</option><option value="no password">No password</option><option value="completed">Completed</option></select><input id="searchStudents" placeholder="Search…" class="w-56" oninput="renderStudents()"><a id="exportStudents" class="btn">Export CSV</a></div>
+          <div class="overflow-auto max-h-[60vh]"><table id="t-students"></table></div>
+        </div>
       </section>
 
       <!-- SOURCES -->
@@ -225,11 +232,40 @@
         (rows.map((o) => `<tr class="row" onclick="openOrder('${esc(o.id)}')"><td>${dt(o.paidAt || o.createdAt)}</td><td><span class="pill ${o.status === 'paid' ? 'paid' : 'lead'}">${o.status === 'paid' ? 'paid' : 'lead'}</span></td><td>${esc(o.name)}</td><td>${esc(o.email)}</td><td><a class="underline" onclick="event.stopPropagation()" href="https://wa.me/91${esc(o.phone)}" target="_blank">${esc(o.phone)}</a></td><td>${inr(o.amount)}</td><td>${esc(o.platform || '—')}</td><td>${esc(o.source)}${o.medium ? ' / ' + esc(o.medium) : ''}</td><td>${esc(o.campaign || '—')}</td><td>${esc([o.term, o.content].filter(Boolean).join(' · ') || '—')}</td><td>${esc(o.firstSource ? o.firstSource + (o.firstCampaign ? ' · ' + o.firstCampaign : '') : '—')}</td><td title="${esc(o.landing)}">${esc((o.landing || '').split('?')[0] || '—')}</td><td>${esc([o.device, o.os].filter(Boolean).join(' · ') || '—')}</td><td>${esc([o.city, o.country].filter(Boolean).join(', ') || '—')}</td><td>${esc(click(o) || '—')}</td><td class="${o.metaPurchase === 'sent' ? 'ok' : o.metaPurchase === 'error' ? 'bad' : 'muted'}">${esc(o.status === 'paid' ? (o.metaPurchase || '—') : (o.metaInitiateCheckout || '—'))}</td><td>${esc(o.gateway)}</td><td>${esc(o.paymentId || '')}</td></tr>`).join('') || '<tr><td class="muted" colspan="18">Nothing here yet</td></tr>');
     }
 
+    const statusCls = (st) => ({ active: 'ok', completed: 'ok', idle: 'warn', inactive: 'bad', 'no password': 'warn' }[st] || '');
     function renderStudents() {
-      const q = ($('searchStudents').value || '').toLowerCase();
-      const rows = DATA.students.filter((u) => !q || [u.name, u.email, u.phone, u.certificate].some((v) => String(v || '').toLowerCase().includes(q)));
-      $('t-students').innerHTML = '<tr><th>Joined</th><th>Name</th><th>Email</th><th>Phone</th><th>Paid</th><th>Progress</th><th>Last active</th><th>Password</th><th>Certificate</th></tr>' +
-        (rows.map((u) => `<tr><td>${dt(u.purchasedAt)}</td><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td><a class="underline" href="https://wa.me/91${esc(u.phone)}" target="_blank">${esc(u.phone)}</a></td><td>${inr(u.paid)}</td><td>${u.completed}/${u.total}</td><td>${dt(u.lastActive) || '—'}</td><td>${u.hasPassword ? '<span class="ok">set</span>' : '<span class="warn">not set</span>'}</td><td>${esc(u.certificate || '—')}</td></tr>`).join('') || '<tr><td class="muted" colspan="9">No students yet</td></tr>');
+      const e = DATA.engagement || {};
+      $('engKpis').innerHTML = [
+        ['Members', e.students, e.completedAll + ' finished all modules'], ['Active today', e.activeToday, 'logged in or watched'], ['Active 7 days', e.active7, (e.students ? Math.round((e.active7 / e.students) * 100) : 0) + '% of members'], ['Active 30 days', e.active30, ''],
+        ['Never started', e.notStarted, 'paid, opened no module'], ['No password', e.noPassword, 'cannot log in yet'], ['Avg completion', pct(e.avgCompletionPct), 'modules marked done'], ['Watch time', (e.totalWatchMin || 0) + ' min', 'avg ' + (e.avgWatchMin || 0) + ' min / member · ' + (e.totalLogins || 0) + ' logins'],
+      ].map((k) => `<div class="card p-3"><div class="kpi" style="font-size:20px">${esc(k[1] == null ? '—' : k[1])}</div><div class="text-xs font-semibold mt-1">${esc(k[0])}</div><div class="kpi-sub">${esc(k[2])}</div></div>`).join('');
+      const maxV = Math.max(1, ...(e.modules || []).map((m) => m.viewed));
+      $('t-modules').innerHTML = '<tr><th>Module</th><th>Opened</th><th>Completed</th><th>Drop-off</th><th>Avg min watched</th><th>Total min</th></tr>' + (e.modules || []).map((m, i, arr) => {
+        const prev = i ? arr[i - 1].viewed : m.viewed; const drop = prev ? Math.max(0, Math.round(((prev - m.viewed) / prev) * 100)) : 0;
+        return `<tr><td><b>${esc(m.code)}</b> ${esc(m.title)}</td><td>${m.viewed} <span class="muted">(${m.viewedPct}%)</span><div style="height:4px;background:#c4953a;width:${Math.round((m.viewed / maxV) * 100)}%;border-radius:2px;margin-top:3px"></div></td><td>${m.completed} <span class="muted">(${m.completedPct}%)</span></td><td class="${drop >= 30 ? 'bad' : drop >= 10 ? 'warn' : 'ok'}">${i ? '−' + drop + '% vs ' + arr[i - 1].code : '—'}</td><td>${m.avgWatchMin}</td><td>${m.totalWatchMin}</td></tr>`; }).join('');
+      const counts = {}; DATA.students.forEach((u) => { counts[u.status] = (counts[u.status] || 0) + 1; });
+      const total = DATA.students.length || 1;
+      $('statusBars').innerHTML = ['active', 'idle', 'inactive', 'completed', 'no password'].map((st) => `<div><div class="flex justify-between"><span class="${statusCls(st)}">${st}</span><span>${counts[st] || 0}</span></div><div style="height:6px;background:rgba(255,255,255,.08);border-radius:3px"><div style="height:6px;width:${Math.round(((counts[st] || 0) / total) * 100)}%;background:#c4953a;border-radius:3px"></div></div></div>`).join('');
+      const q = ($('searchStudents').value || '').toLowerCase(), sf = $('statusFilter').value;
+      const rows = DATA.students.filter((u) => (!sf || u.status === sf) && (!q || [u.name, u.email, u.phone, u.certificate].some((v) => String(v || '').toLowerCase().includes(q))));
+      $('t-students').innerHTML = '<tr><th>Status</th><th>Name</th><th>Email</th><th>Phone</th><th>Joined</th><th>Logins</th><th>Last login</th><th>Last active</th><th>Opened</th><th>Completed</th><th>Watched</th><th>Last module</th><th>Password</th><th>Certificate</th></tr>' +
+        (rows.map((u) => `<tr class="row" onclick="openStudent('${esc(u.email)}')"><td><span class="${statusCls(u.status)}">● ${esc(u.status)}</span></td><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td><a class="underline" onclick="event.stopPropagation()" href="https://wa.me/91${esc(u.phone)}" target="_blank">${esc(u.phone)}</a></td><td>${dt(u.purchasedAt)}</td><td>${u.loginCount}</td><td>${dt(u.lastLoginAt) || '—'}</td><td>${dt(u.lastActive) || '—'}</td><td>${u.viewed}/${u.total}</td><td>${u.completed}/${u.total}</td><td>${u.watchMin} min</td><td>${u.lastModule ? 'M0' + u.lastModule : '—'}</td><td>${u.hasPassword ? '<span class="ok">set</span>' : '<span class="warn">not set</span>'}</td><td>${esc(u.certificate || '—')}</td></tr>`).join('') || '<tr><td class="muted" colspan="14">No members match</td></tr>');
+    }
+
+    async function openStudent(email) {
+      const r = await api('/api/admin/student?email=' + encodeURIComponent(email));
+      if (!r.data || !r.data.ok) return alert('Could not load member');
+      const { student: u, orders, timeline, lastLoginUa } = r.data;
+      const kv = (pairs) => '<div class="kv">' + pairs.map((p) => `<b>${esc(p[0])}</b><span>${p[1] == null || p[1] === '' ? '<span class="muted">—</span>' : esc(p[1])}</span>`).join('') + '</div>';
+      $('dTitle').textContent = 'Member — ' + u.name;
+      $('dBody').innerHTML = `
+        <div class="card p-4 space-y-2"><h3>Account</h3>${kv([['Status', u.status], ['Email', u.email], ['Phone', u.phone], ['Joined', dt(u.purchasedAt)], ['Paid', inr(u.paid) + ' (' + u.orders + ' order' + (u.orders > 1 ? 's' : '') + ')'], ['Password', u.hasPassword ? 'set ' + dt(u.passwordSetAt) : 'not set — cannot log in'], ['Logins', u.loginCount + (u.firstLoginAt ? ' · first ' + dt(u.firstLoginAt) : '') + (u.lastLoginAt ? ' · last ' + dt(u.lastLoginAt) : '')], ['Failed logins', u.failedLogins + (u.lockedUntil && new Date(u.lockedUntil) > new Date() ? ' · LOCKED until ' + dt(u.lockedUntil) : '')], ['Last device', lastLoginUa], ['Certificate', u.certificate ? u.certificate + ' · ' + dt(u.certificateAt) : '—']])}
+          <div class="pt-2"><a class="btn-ghost" href="https://wa.me/91${esc(u.phone)}?text=${encodeURIComponent('Hi ' + (u.name || '').split(' ')[0] + ', ')}" target="_blank">WhatsApp</a> <a class="btn-ghost" href="mailto:${esc(u.email)}">Email</a></div></div>
+        <div class="card p-4 space-y-2"><h3>Modules — ${u.completed}/${u.total} completed · ${u.watchMin} min watched · ${u.activeMin} min on the page</h3>
+          <table><tr><th>Module</th><th>Opened</th><th>Watched</th><th>On page</th><th>First opened</th><th>Last opened</th><th>Completed</th></tr>${u.perModule.map((m) => `<tr><td><b>${esc(m.code)}</b> ${esc(m.title)}</td><td>${m.views ? m.views + '×' : '<span class="muted">—</span>'}</td><td>${m.watchMin} min</td><td>${m.activeMin} min</td><td>${dt(m.firstViewedAt) || '—'}</td><td>${dt(m.lastViewedAt) || '—'}</td><td class="${m.completed ? 'ok' : 'muted'}">${m.completed ? '✓ ' + (dt(m.completedAt) || '') : '—'}</td></tr>`).join('')}</table></div>
+        <div class="card p-4 space-y-2"><h3>Timeline</h3><ol class="text-xs space-y-1 list-decimal pl-5">${timeline.map((t) => `<li><span class="muted">${dt(t.at)}</span> — ${esc(t.what)}</li>`).join('') || '<li class="muted">nothing yet</li>'}</ol></div>
+        <div class="card p-4 space-y-2"><h3>Orders</h3>${orders.map((o) => `<div class="text-xs">${dt(o.paidAt || o.createdAt)} · <span class="pill ${o.status === 'paid' ? 'paid' : 'lead'}">${o.status === 'paid' ? 'paid' : 'lead'}</span> ${inr(o.amount)} · ${esc(o.source)}${o.campaign ? ' · ' + esc(o.campaign) : ''} · <a class="underline" onclick="openOrder('${esc(o.id)}')">${esc(o.id)}</a></div>`).join('')}</div>`;
+      $('drawer').classList.add('open');
     }
 
     function renderSources() {

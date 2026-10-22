@@ -12,7 +12,7 @@ module.exports = wrap(async (req, res) => {
   if (type === 'orders') body = admin.csv(data.orders.filter((o) => o.status === 'paid'), ORDER_COLS);
   else if (type === 'leads') body = admin.csv(data.orders.filter((o) => o.status !== 'paid'), ORDER_COLS);
   else if (type === 'all') body = admin.csv(data.orders, ORDER_COLS);
-  else if (type === 'students') body = admin.csv(data.students, ['name', 'email', 'phone', 'purchasedAt', 'paid', 'orders', 'completed', 'total', 'lastActive', 'certificate', 'hasPassword']);
+  else if (type === 'students') body = admin.csv(data.students, ['name', 'email', 'phone', 'status', 'purchasedAt', 'paid', 'orders', 'completed', 'total', 'completionPct', 'viewed', 'watchMin', 'activeMin', 'loginCount', 'firstLoginAt', 'lastLoginAt', 'lastActive', 'lastModule', 'certificate', 'hasPassword']);
   else if (type === 'google-offline') body = admin.googleOfflineCsv(data.orders);
   else if (type === 'meta-offline') body = admin.metaOfflineCsv(data.orders);
   else return fail(res, 400, 'type must be orders, leads, all, students, google-offline or meta-offline');

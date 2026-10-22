@@ -97,13 +97,10 @@ async function overview({ days = 30, force = false } = {}) {
     series.push({ date: d, checkouts: dc.length, paid: dp.length, revenue: sum(dp) });
   }
   const certByHash = new Map(certs.map((c) => [c.emailHash, c]));
-  const students = users.filter((u) => (u.purchases || []).length).map((u) => ({
-    name: u.name, email: u.email, phone: u.phone, purchasedAt: (u.purchases[u.purchases.length - 1] || {}).at, paid: u.purchases.reduce((s, p) => s + (p.amount || 0), 0), orders: u.purchases.length,
-    completed: ((u.progress && u.progress.completed) || []).length, total: CURRICULUM.length, lastActive: u.progress && u.progress.updatedAt, hasPassword: !!u.passwordHash,
-    certificate: (u.certificate && u.certificate.id) || (certByHash.get(auth.userKey(u.email)) || {}).id || null, createdAt: u.createdAt,
-  })).sort((a, b) => new Date(b.purchasedAt || 0) - new Date(a.purchasedAt || 0));
+  const students = users.filter((u) => (u.purchases || []).length).map((u) => studentRow(u, certByHash)).sort((a, b) => new Date(b.purchasedAt || 0) - new Date(a.purchasedAt || 0));
+  const engagement = engagementSummary(students);
   return {
-    stats, series, orders: rows, students,
+    stats, series, orders: rows, students, engagement,
     bySource: group(rows, (r) => `${r.source}|${r.medium}`, (r) => ({ source: r.source, medium: r.medium })),
     byCampaign: group(rows, (r) => `${r.source}|${r.medium}|${r.campaign}|${r.term}|${r.content}`, (r) => ({ source: r.source, medium: r.medium, campaign: r.campaign, term: r.term, content: r.content })),
     byPlatform: group(rows, (r) => r.platform || 'no click id', (r) => ({ platform: r.platform || 'no click id' })),
@@ -113,6 +110,62 @@ async function overview({ days = 30, force = false } = {}) {
     byReferrer: group(rows.filter((r) => r.referrer), (r) => r.referrer, (r) => ({ referrer: r.referrer })),
     settings: settingsHealth(),
   };
+}
+
+function studentRow(u, certByHash) {
+  const p = u.progress || {}; const mods = p.modules || {};
+  const perModule = CURRICULUM.map((m) => { const x = mods[m.id] || {}; return { id: m.id, code: m.code, title: m.title, views: x.views || 0, watchMin: Math.round((x.watchSeconds || 0) / 60), activeMin: Math.round((x.activeSeconds || 0) / 60), firstViewedAt: x.firstViewedAt || null, lastViewedAt: x.lastViewedAt || null, completedAt: x.completedAt || null, completed: (p.completed || []).includes(m.id) }; });
+  const watchMin = perModule.reduce((n, m) => n + m.watchMin, 0), activeMin = perModule.reduce((n, m) => n + m.activeMin, 0);
+  const last = u.purchases[u.purchases.length - 1] || {};
+  const lastActive = [p.updatedAt, u.lastLoginAt].filter(Boolean).sort().pop() || null;
+  const completed = (p.completed || []).length;
+  return {
+    name: u.name, email: u.email, phone: u.phone, purchasedAt: last.at, paid: u.purchases.reduce((n, x) => n + (x.amount || 0), 0), orders: u.purchases.length,
+    completed, total: CURRICULUM.length, completionPct: Math.round((completed / CURRICULUM.length) * 100), viewed: perModule.filter((m) => m.views > 0).length,
+    watchMin, activeMin, lastActive, lastLoginAt: u.lastLoginAt || null, firstLoginAt: u.firstLoginAt || null, loginCount: u.loginCount || 0, failedLogins: u.failedLogins || 0, lockedUntil: u.lockedUntil || null,
+    hasPassword: !!u.passwordHash, passwordSetAt: u.passwordSetAt || null, certificate: (u.certificate && u.certificate.id) || (certByHash.get(auth.userKey(u.email)) || {}).id || null, certificateAt: u.certificate && u.certificate.issuedAt,
+    createdAt: u.createdAt, lastModule: p.lastModule || null, perModule,
+    status: !u.passwordHash ? 'no password' : completed === CURRICULUM.length ? 'completed' : lastActive && Date.now() - new Date(lastActive) < 7 * 86400000 ? 'active' : lastActive && Date.now() - new Date(lastActive) < 30 * 86400000 ? 'idle' : 'inactive',
+  };
+}
+
+function engagementSummary(students) {
+  const now = Date.now(), day = 86400000;
+  const within = (iso, d) => iso && now - new Date(iso).getTime() < d * day;
+  const n = students.length || 1;
+  const modules = CURRICULUM.map((m) => {
+    const rows = students.map((s) => s.perModule.find((x) => x.id === m.id));
+    const viewed = rows.filter((x) => x.views > 0).length, completed = rows.filter((x) => x.completed).length;
+    const mins = rows.filter((x) => x.watchMin > 0).map((x) => x.watchMin);
+    return { id: m.id, code: m.code, title: m.title, viewed, completed, viewedPct: Math.round((viewed / n) * 100), completedPct: Math.round((completed / n) * 100), avgWatchMin: mins.length ? Math.round(mins.reduce((a, b) => a + b, 0) / mins.length) : 0, totalWatchMin: rows.reduce((a, x) => a + x.watchMin, 0) };
+  });
+  return {
+    students: students.length,
+    activeToday: students.filter((s) => within(s.lastActive, 1)).length, active7: students.filter((s) => within(s.lastActive, 7)).length, active30: students.filter((s) => within(s.lastActive, 30)).length,
+    neverLoggedIn: students.filter((s) => !s.loginCount).length, noPassword: students.filter((s) => !s.hasPassword).length,
+    notStarted: students.filter((s) => s.viewed === 0).length, completedAll: students.filter((s) => s.completed === CURRICULUM.length).length,
+    avgCompletionPct: Math.round(students.reduce((a, s) => a + s.completionPct, 0) / n), avgWatchMin: Math.round(students.reduce((a, s) => a + s.watchMin, 0) / n), totalWatchMin: students.reduce((a, s) => a + s.watchMin, 0),
+    totalLogins: students.reduce((a, s) => a + s.loginCount, 0), lockedOut: students.filter((s) => s.lockedUntil && new Date(s.lockedUntil) > new Date()).length,
+    modules,
+  };
+}
+
+async function studentDetail(email) {
+  const { orders, users, certs } = await loadAll(false);
+  const u = users.find((x) => auth.normalizeEmail(x.email) === auth.normalizeEmail(email));
+  if (!u) return null;
+  const certByHash = new Map(certs.map((c) => [c.emailHash, c]));
+  const row = studentRow(u, certByHash);
+  const theirOrders = orders.filter((o) => auth.normalizeEmail(o.customer?.email) === auth.normalizeEmail(email)).map(flat);
+  const timeline = [];
+  for (const o of theirOrders) { timeline.push({ at: o.createdAt, what: `Checkout started (${o.source}${o.campaign ? ' · ' + o.campaign : ''})` }); if (o.paidAt) timeline.push({ at: o.paidAt, what: `Paid ${o.amount} via ${o.gateway}` }); }
+  if (u.passwordSetAt) timeline.push({ at: u.passwordSetAt, what: 'Password set' });
+  if (u.firstLoginAt) timeline.push({ at: u.firstLoginAt, what: 'First login' });
+  if (u.lastLoginAt && u.lastLoginAt !== u.firstLoginAt) timeline.push({ at: u.lastLoginAt, what: `Last login (${u.loginCount || 0} total)` });
+  for (const m of row.perModule) { if (m.firstViewedAt) timeline.push({ at: m.firstViewedAt, what: `Started ${m.code} ${m.title}` }); if (m.completedAt) timeline.push({ at: m.completedAt, what: `Completed ${m.code}` }); }
+  if (u.certificate && u.certificate.issuedAt) timeline.push({ at: u.certificate.issuedAt, what: `Certificate ${u.certificate.id}` });
+  timeline.sort((a, b) => new Date(a.at) - new Date(b.at));
+  return { student: row, orders: theirOrders, timeline, lastLoginUa: u.lastLoginUa || '' };
 }
 
 function settingsHealth() {
@@ -154,4 +207,4 @@ function metaOfflineCsv(rows) {
   return csv(paid, [(r) => sha(r.email), (r) => sha('91' + String(r.phone).replace(/\D/g, '')), () => 'Purchase', (r) => Math.floor(new Date(r.paidAt).getTime() / 1000), (r) => r.amount, () => 'INR', (r) => r.id, (r) => r.fbc ? 'yes' : ''], ['email', 'phone', 'event_name', 'event_time', 'value', 'currency', 'order_id', 'had_fbc']);
 }
 
-module.exports = { checkPassword, setAdminSession, clearAdminSession, requireAdmin, overview, orderDetail, csv, googleOfflineCsv, metaOfflineCsv, settingsHealth, invalidate, flat };
+module.exports = { checkPassword, setAdminSession, clearAdminSession, requireAdmin, overview, orderDetail, studentDetail, csv, googleOfflineCsv, metaOfflineCsv, settingsHealth, invalidate, flat };

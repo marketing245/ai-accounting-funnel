@@ -23,6 +23,7 @@ const ROUTES = {
   'admin/overview': () => require('../src/handlers/admin/overview'),
   'admin/export': () => require('../src/handlers/admin/export'),
   'admin/order': () => require('../src/handlers/admin/order'),
+  'admin/student': () => require('../src/handlers/admin/student'),
 };
 
 module.exports = async (req, res) => {
