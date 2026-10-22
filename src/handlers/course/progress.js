@@ -1,7 +1,7 @@
 'use strict';
-const { readJson, send, fail, allow, wrap } = require('../_lib/http');
-const auth = require('../_lib/auth');
-const { CURRICULUM } = require('../_lib/course');
+const { readJson, send, fail, allow, wrap } = require('../../lib/http');
+const auth = require('../../lib/auth');
+const { CURRICULUM } = require('../../lib/course');
 
 module.exports = wrap(async (req, res) => {
   if (!allow(req, res, ['POST'])) return;

@@ -5,11 +5,10 @@ Runs on Vercel: static pages in `public/`, serverless functions in `api/`, data 
 
 ```
 public/            landing (index), login, thank-you, portal, privacy, terms, refund, contact
-api/checkout/      config · create-order · verify · webhook · order
-api/auth/          login · logout · me · set-password
-api/course/        lessons (gated) · progress
-api/certificate*   certificate status/issue · pdf (pdfkit) · verify (public, used by /verify)
-api/_lib/          config (prices) · course (5 modules + Bunny video ids — edit here to change videos) · store (Blob JSON) · auth · razorpay · bunny · fulfil
+api/[...path].js   the ONE serverless function (Hobby plan limit) — routes /api/* to src/handlers
+src/handlers/      checkout (config · create-order · verify · webhook · order) · auth (login · logout · me · set-password)
+                   course (lessons · progress) · certificate (status/issue · pdf · verify) · health
+src/lib/           config (prices) · course (5 modules + Bunny video ids — edit here to change videos) · store (Blob JSON) · auth · razorpay · bunny · fulfil · certificate
 server.js          local dev server (node server.js) — mirrors Vercel routing
 scripts/smoke.js   end-to-end test: node scripts/smoke.js [baseUrl]
 ```

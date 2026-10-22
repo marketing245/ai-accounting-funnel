@@ -1,9 +1,9 @@
 'use strict';
 // GET /api/certificate — status for the logged-in student; issues the certificate once all modules are complete.
-const { send, fail, allow, wrap } = require('./_lib/http');
-const auth = require('./_lib/auth');
-const cert = require('./_lib/certificate');
-const { CURRICULUM } = require('./_lib/course');
+const { send, fail, allow, wrap } = require('../lib/http');
+const auth = require('../lib/auth');
+const cert = require('../lib/certificate');
+const { CURRICULUM } = require('../lib/course');
 
 module.exports = wrap(async (req, res) => {
   if (!allow(req, res, ['GET'])) return;

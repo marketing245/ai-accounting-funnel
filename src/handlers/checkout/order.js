@@ -1,7 +1,7 @@
 'use strict';
-const { send, fail, allow, wrap, getQuery } = require('../_lib/http');
-const store = require('../_lib/store');
-const auth = require('../_lib/auth');
+const { send, fail, allow, wrap, getQuery } = require('../../lib/http');
+const store = require('../../lib/store');
+const auth = require('../../lib/auth');
 
 // Order summary for the thank-you page. Only the buyer (logged-in session) can read it.
 module.exports = wrap(async (req, res) => {

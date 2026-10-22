@@ -1,8 +1,8 @@
 'use strict';
 // GET /api/certificate/pdf — the logged-in student's certificate as a downloadable PDF.
-const { fail, allow, wrap } = require('../_lib/http');
-const auth = require('../_lib/auth');
-const cert = require('../_lib/certificate');
+const { fail, allow, wrap } = require('../../lib/http');
+const auth = require('../../lib/auth');
+const cert = require('../../lib/certificate');
 
 module.exports = wrap(async (req, res) => {
   if (!allow(req, res, ['GET'])) return;

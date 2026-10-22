@@ -1,9 +1,9 @@
 'use strict';
-const { send, fail, allow, wrap } = require('../_lib/http');
-const auth = require('../_lib/auth');
-const { CURRICULUM, publicCurriculum } = require('../_lib/course');
-const bunny = require('../_lib/bunny');
-const { PRODUCT } = require('../_lib/config');
+const { send, fail, allow, wrap } = require('../../lib/http');
+const auth = require('../../lib/auth');
+const { CURRICULUM, publicCurriculum } = require('../../lib/course');
+const bunny = require('../../lib/bunny');
+const { PRODUCT } = require('../../lib/config');
 
 // Everything the portal needs, in one authenticated call. Video embed URLs are generated per request (signed when enabled).
 module.exports = wrap(async (req, res) => {

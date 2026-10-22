@@ -1,9 +1,9 @@
 'use strict';
-const { readJson, send, fail, allow, wrap } = require('../_lib/http');
-const store = require('../_lib/store');
-const auth = require('../_lib/auth');
-const rzp = require('../_lib/razorpay');
-const { fulfil } = require('../_lib/fulfil');
+const { readJson, send, fail, allow, wrap } = require('../../lib/http');
+const store = require('../../lib/store');
+const auth = require('../../lib/auth');
+const rzp = require('../../lib/razorpay');
+const { fulfil } = require('../../lib/fulfil');
 
 module.exports = wrap(async (req, res) => {
   if (!allow(req, res, ['POST'])) return;

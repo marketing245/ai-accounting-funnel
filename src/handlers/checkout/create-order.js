@@ -1,10 +1,10 @@
 'use strict';
 const crypto = require('crypto');
-const { readJson, send, fail, allow, wrap, clientIp } = require('../_lib/http');
-const { PRODUCT, computeAmount, paymentMode } = require('../_lib/config');
-const store = require('../_lib/store');
-const auth = require('../_lib/auth');
-const rzp = require('../_lib/razorpay');
+const { readJson, send, fail, allow, wrap, clientIp } = require('../../lib/http');
+const { PRODUCT, computeAmount, paymentMode } = require('../../lib/config');
+const store = require('../../lib/store');
+const auth = require('../../lib/auth');
+const rzp = require('../../lib/razorpay');
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const PHONE_RE = /^[6-9]\d{9}$/;

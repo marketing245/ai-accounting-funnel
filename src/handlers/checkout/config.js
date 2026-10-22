@@ -1,7 +1,7 @@
 'use strict';
-const { send, allow, wrap } = require('../_lib/http');
-const { PRICING, PRODUCT, computeAmount, paymentMode } = require('../_lib/config');
-const rzp = require('../_lib/razorpay');
+const { send, allow, wrap } = require('../../lib/http');
+const { PRICING, PRODUCT, computeAmount, paymentMode } = require('../../lib/config');
+const rzp = require('../../lib/razorpay');
 
 module.exports = wrap(async (req, res) => {
   if (!allow(req, res, ['GET'])) return;

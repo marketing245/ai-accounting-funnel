@@ -1,10 +1,10 @@
 'use strict';
 // Razorpay webhook (Dashboard > Settings > Webhooks > URL: https://<domain>/api/checkout/webhook, events: payment.captured, order.paid).
 // Grants access even if the customer closed the browser before the checkout handler ran.
-const { readRaw, send, fail, allow, wrap } = require('../_lib/http');
-const store = require('../_lib/store');
-const rzp = require('../_lib/razorpay');
-const { fulfil } = require('../_lib/fulfil');
+const { readRaw, send, fail, allow, wrap } = require('../../lib/http');
+const store = require('../../lib/store');
+const rzp = require('../../lib/razorpay');
+const { fulfil } = require('../../lib/fulfil');
 
 async function handler(req, res) {
   if (!allow(req, res, ['POST'])) return;

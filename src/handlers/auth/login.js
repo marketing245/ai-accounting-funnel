@@ -1,6 +1,6 @@
 'use strict';
-const { readJson, send, fail, allow, wrap } = require('../_lib/http');
-const auth = require('../_lib/auth');
+const { readJson, send, fail, allow, wrap } = require('../../lib/http');
+const auth = require('../../lib/auth');
 
 const MAX_ATTEMPTS = 6, LOCK_MINUTES = 15;
 

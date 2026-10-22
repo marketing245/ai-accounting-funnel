@@ -1,5 +1,5 @@
 /**
- * Local development server — mirrors Vercel: static files from /public (clean URLs) + api/*.js functions.
+ * Local development server — mirrors Vercel: static files from /public (clean URLs) + the api/[...path].js function.
  * Usage: node server.js   (reads .env.local if present)
  * Production runs on Vercel; this file is not used there.
  */
@@ -38,23 +38,10 @@ function resolveStatic(pathname) {
   return null;
 }
 
-async function runApi(req, res, pathname) {
-  const rel = pathname.replace(/^\/api\//, '').replace(/\/+$/, '');
-  if (!/^[a-z0-9_\-\/]+$/i.test(rel)) { res.writeHead(404); return res.end('Not found'); }
-  const file = path.join(API_DIR, rel + '.js');
-  if (!file.startsWith(API_DIR) || !fs.existsSync(file) || rel.startsWith('_lib')) { res.writeHead(404, { 'Content-Type': 'application/json' }); return res.end('{"ok":false,"error":"Not found"}'); }
-  delete require.cache[require.resolve(file)]; // hot reload in dev
-  const mod = require(file);
-  const handler = typeof mod === 'function' ? mod : mod.default;
-  // Vercel-style conveniences
-  const u = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-  req.query = Object.fromEntries(u.searchParams.entries());
-  const parse = !(mod.config && mod.config.api && mod.config.api.bodyParser === false);
-  if (parse && (req.headers['content-type'] || '').includes('application/json')) {
-    const chunks = []; for await (const c of req) chunks.push(c);
-    const raw = Buffer.concat(chunks).toString('utf8');
-    try { req.body = raw ? JSON.parse(raw) : {}; } catch { req.body = {}; }
-  }
+async function runApi(req, res) {
+  // Same entry as Vercel: one catch-all function routes to src/handlers. Hot-reload api/ and src/ in dev.
+  for (const k of Object.keys(require.cache)) if (k.startsWith(API_DIR) || k.startsWith(path.join(__dirname, 'src'))) delete require.cache[k];
+  const handler = require(path.join(API_DIR, '[...path].js'));
   await handler(req, res);
 }
 
@@ -63,13 +50,13 @@ const server = http.createServer(async (req, res) => {
   try {
     // DEV ONLY (never runs on Vercel): /dev/login-as?email=x sets a session cookie for an existing user, for screenshots/QA.
     if (u.pathname === '/dev/login-as' && process.env.VERCEL !== '1') {
-      const auth = require('./api/_lib/auth');
+      const auth = require('./src/lib/auth');
       const user = await auth.getUser(u.searchParams.get('email') || '');
       if (!user) { res.writeHead(404); return res.end('no such user'); }
       auth.setSession(res, req, user);
       res.writeHead(302, { Location: u.searchParams.get('next') || '/portal' }); return res.end();
     }
-    if (u.pathname.startsWith('/api/')) return await runApi(req, res, u.pathname);
+    if (u.pathname.startsWith('/api/')) return await runApi(req, res);
     const f = resolveStatic(u.pathname);
     if (!f) { res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' }); return res.end('<h1>404</h1>'); }
     const ext = path.extname(f).toLowerCase();
