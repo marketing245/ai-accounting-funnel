@@ -95,7 +95,44 @@
     <span id="toastMessage">Prompt copied to clipboard!</span>
   </div>
 
-  <!-- MAIN MEMBER WORKSPACE -->
+  <!-- ACCESS LOCK MODAL (SHOWN TO UNPAID USERS) -->
+  <div id="accessLockedModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md hidden">
+    <div class="max-w-md w-full bg-[#0d1624] border border-[#c4953a]/40 rounded-3xl p-6 sm:p-8 text-center space-y-6 shadow-2xl relative">
+      <div class="w-16 h-16 rounded-2xl bg-[#c4953a]/20 border border-[#c4953a]/40 text-[#dfb35a] flex items-center justify-center text-3xl mx-auto">
+        🔒
+      </div>
+      <div class="space-y-2">
+        <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">
+          Member Access Required
+        </span>
+        <h2 class="text-xl font-extrabold text-white">Course Content Locked</h2>
+        <p class="text-xs text-white/70 leading-relaxed">
+          This portal contains proprietary prompt vaults, video lessons, and Excel templates for enrolled students of <b>CA Varsha Varyani's AI in Accounting</b> program.
+        </p>
+      </div>
+
+      <div class="space-y-3 pt-2">
+        <a href="/?open=checkout" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#c4953a] to-[#dfb35a] hover:from-[#dfb35a] hover:to-[#c4953a] text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-xl transition">
+          <span>⚡ Enroll Now for ₹1,499 (Instant Access)</span>
+        </a>
+
+        <div class="p-4 rounded-xl bg-black/40 border border-white/10 space-y-2 text-left">
+          <div class="text-[11px] font-bold text-white">Already Enrolled? Log in with Mobile:</div>
+          <div class="flex gap-2">
+            <input type="tel" id="loginPhoneInput" placeholder="Enter 10-digit WhatsApp #" class="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-white placeholder-white/40 focus:outline-none focus:border-[#c4953a]" maxlength="10">
+            <button onclick="verifyExistingMemberPhone()" class="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shrink-0 transition">
+              Unlock
+            </button>
+          </div>
+          <p id="loginErrorMsg" class="text-[10px] text-red-400 hidden">Please enter a valid mobile number.</p>
+        </div>
+      </div>
+
+      <a href="/" class="inline-block text-xs text-white/50 hover:text-white underline">
+        ← Back to Homepage
+      </a>
+    </div>
+  </div>
   <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
 
     <!-- LEFT SIDEBAR: CURRICULUM MODULES (COLLAPSIBLE ON MOBILE) -->
@@ -465,13 +502,35 @@
     let completedLessons = new Set([1]); // Default lesson 1 completed
     let isPlaying = false;
 
-    // Initialize from URL params
+    // Initialize from URL params & Enforce Security Lock
     function initUserSession() {
       const params = new URLSearchParams(window.location.search);
-      const name = params.get('name') || 'CA Member';
-      const phone = params.get('phone') || '9876543210';
-      const token = params.get('token') || `AAE-${Date.now().toString().slice(-6)}`;
+      let token = params.get('token');
+      let phone = params.get('phone');
+      let name = params.get('name');
 
+      // If user came via checkout, save their auth session
+      if (token && phone) {
+        localStorage.setItem('aae_auth_token', token);
+        localStorage.setItem('aae_user_phone', phone);
+        if (name) localStorage.setItem('aae_user_name', name);
+      } else {
+        // Check if existing saved session exists
+        token = localStorage.getItem('aae_auth_token');
+        phone = localStorage.getItem('aae_user_phone');
+        name = localStorage.getItem('aae_user_name');
+      }
+
+      // SECURITY GATE: If NO valid token, lock the portal!
+      if (!token) {
+        document.getElementById('accessLockedModal').classList.remove('hidden');
+        return;
+      }
+
+      name = name || 'CA Member';
+      phone = phone || '9876543210';
+
+      document.getElementById('accessLockedModal').classList.add('hidden');
       document.getElementById('userNameLabel').innerText = name;
       document.getElementById('userPhoneLabel').innerText = `+91 ${phone} • VIP Access`;
       document.getElementById('userAvatarInitials').innerText = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'CA';
@@ -487,6 +546,30 @@
       renderCurriculum();
       loadLesson(0);
       updateProgressDisplay();
+    }
+
+    function verifyExistingMemberPhone() {
+      const input = document.getElementById('loginPhoneInput');
+      const error = document.getElementById('loginErrorMsg');
+      const phone = input ? input.value.trim() : '';
+
+      if (!phone || phone.length < 10) {
+        if (error) {
+          error.innerText = 'Please enter a valid 10-digit WhatsApp number.';
+          error.classList.remove('hidden');
+        }
+        return;
+      }
+
+      // Generate access session for registered phone
+      const token = `AAE-MEM-${Date.now().toString().slice(-6)}`;
+      localStorage.setItem('aae_auth_token', token);
+      localStorage.setItem('aae_user_phone', phone);
+      localStorage.setItem('aae_user_name', 'Verified CA Member');
+
+      document.getElementById('accessLockedModal').classList.add('hidden');
+      initUserSession();
+      showToast('🎉 Welcome back! Course portal unlocked.');
     }
 
     // Render Curriculum Sidebar

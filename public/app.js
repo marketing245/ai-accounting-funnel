@@ -20,57 +20,16 @@ let state = {
 };
 
 // ==========================================
-// 📡 META SIGNALS TRACKER (PIXEL & CAPI)
+// 📡 META TRACKER (PIXEL & CAPI READY)
 // ==========================================
 
 function trackMetaSignal(eventName, payload) {
-  const time = new Date().toLocaleTimeString('en-IN', { hour12: false });
-
-  // 1. Fire to official Meta Pixel if present
+  // Fire to official Meta Pixel if present in future
   if (typeof fbq === 'function') {
     try {
       fbq('track', eventName, payload);
     } catch (e) {
       console.warn('Meta Pixel dispatch error:', e);
-    }
-  }
-
-  // 2. Log visually to On-Screen Meta Signal Inspector
-  const logContainer = document.getElementById('metaSignalsLog');
-  const countEl = document.getElementById('metaEventCount');
-
-  if (logContainer) {
-    const entry = document.createElement('div');
-    entry.className = 'text-emerald-400 border-b border-white/5 pb-1';
-    
-    let summary = '';
-    if (eventName === 'Lead') {
-      summary = `(Role: ${payload.role}, Score: ${payload.lead_quality}, Phone: Verified)`;
-    } else if (eventName === 'InitiateCheckout') {
-      summary = `(Amount: ₹${payload.value}, Currency: INR)`;
-    } else if (eventName === 'Purchase') {
-      summary = `(Amount: ₹${payload.value}, Txn: ${payload.transaction_id})`;
-    }
-
-    entry.innerHTML = `✓ [${time}] <b>${eventName}</b> ${summary}`;
-    logContainer.prepend(entry);
-  }
-
-  state.metaEvents++;
-  if (countEl) countEl.innerText = state.metaEvents;
-}
-
-function toggleMetaInspector() {
-  const log = document.getElementById('metaSignalsLog');
-  const icon = document.getElementById('inspectorToggleIcon');
-  if (log) {
-    const isHidden = log.classList.contains('hidden');
-    if (isHidden) {
-      log.classList.remove('hidden');
-      if (icon) icon.innerText = '▼';
-    } else {
-      log.classList.add('hidden');
-      if (icon) icon.innerText = '▲';
     }
   }
 }
@@ -315,6 +274,12 @@ function initTimer() {
 
 window.addEventListener('DOMContentLoaded', () => {
   initTimer();
-  // Fire PageView signal log
+  // Fire PageView signal log if present
   trackMetaSignal('PageView', { url: window.location.href });
+
+  // Auto-open checkout if requested (e.g. from /portal redirect)
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('open') === 'checkout') {
+    startUnifiedFunnel();
+  }
 });
