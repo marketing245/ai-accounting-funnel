@@ -22,6 +22,7 @@ const ROUTES = {
   'admin/logout': () => require('../src/handlers/admin/logout'),
   'admin/overview': () => require('../src/handlers/admin/overview'),
   'admin/export': () => require('../src/handlers/admin/export'),
+  'admin/order': () => require('../src/handlers/admin/order'),
 };
 
 module.exports = async (req, res) => {

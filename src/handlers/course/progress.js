@@ -12,7 +12,12 @@ module.exports = wrap(async (req, res) => {
   if (!completed) return fail(res, 400, 'completed must be an array of module ids.');
   const user = await auth.getUser(session.email);
   if (!user) return fail(res, 401, 'Session expired.');
-  user.progress = { completed, updatedAt: new Date().toISOString(), lastModule: Number(body.lastModule) || null };
-  await auth.saveUser(user);
+  const lastModule = Number(body.lastModule) || null;
+  const prev = user.progress || {};
+  const same = JSON.stringify([...(prev.completed || [])].sort()) === JSON.stringify([...completed].sort()) && (prev.lastModule || null) === lastModule;
+  if (!same) { // skip the write when nothing changed (Blob operations are metered)
+    user.progress = { completed, updatedAt: new Date().toISOString(), lastModule };
+    await auth.saveUser(user);
+  }
   send(res, 200, { ok: true, progress: user.progress });
 });

@@ -25,7 +25,9 @@ async function readJson(pathname) {
   return text ? JSON.parse(text) : null;
 }
 
+let onWrite = null;
 async function writeJson(pathname, obj) {
+  if (onWrite) { try { onWrite(pathname); } catch {} }
   const body = JSON.stringify(obj, null, 0);
   if (!hasBlob) {
     const f = path.join(LOCAL_DIR, pathname);
@@ -64,4 +66,4 @@ async function listJson(folder, { limit = 2000 } = {}) {
   return out;
 }
 
-module.exports = { readJson, writeJson, listJson, PREFIX, hasBlob };
+module.exports = { readJson, writeJson, listJson, PREFIX, hasBlob, setOnWrite: (fn) => { onWrite = fn; } };

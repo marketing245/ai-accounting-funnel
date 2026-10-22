@@ -40,6 +40,18 @@ Varsha can also upload in the Bunny dashboard: title the video `M03: …` and th
 `node scripts/videos.js setup --account-key <key>` → `vercel --prod` → `node scripts/videos.js upload-folder <videos>`. Nothing else changes.
 
 ## Admin panel — `/admin`
+Tabs: Overview (revenue, paid, checkouts, leads, conversion, AOV, time-to-buy, per-day chart, funnel), Paid orders, Leads (WhatsApp link per row),
+Students (progress, certificate), Traffic sources (by source/medium/campaign/term/content, ad platform, landing page, device/OS, country/city, referrer),
+Conversion signals (Google Ads offline-conversion CSV with gclid/gbraid/wbraid, Meta offline CSV, CAPI status), Settings & health. Click any order for the full record
+(all touches, click ids, device, geo, signal results, raw JSON). Date range 7/30/90/365/all.
+
+**Conversion signals**: browser → GA4 (`purchase` with transaction_id), Google Ads tag with enhanced conversions, Meta pixel with `eventID` = order id.
+Server → Meta Conversions API `InitiateCheckout` (on checkout) and `Purchase` (on payment) when `META_PIXEL_ID` + `META_CAPI_TOKEN` are set (optional `META_TEST_EVENT_CODE`).
+Google Ads server-side upload is manual: download the offline CSV and upload it under Conversions → Uploads (needs auto-tagging on; name via `GOOGLE_OFFLINE_CONVERSION_NAME`, default "Course Purchase").
+
+**Storage quota (Hobby):** Vercel Blob includes only 2,000 advanced operations (writes/lists) and 10,000 simple operations per month; over the limit Blob is blocked for 30 days.
+Each paid student costs ~10 writes, each lead 1, each admin load 3 list ops (cached 60 s). Fine for a demo; **before real ad traffic move orders/users to a database (Supabase/Neon) or upgrade Vercel** — see `src/lib/store.js`.
+
 Password from `ADMIN_PASSWORD`. Shows revenue/orders (7 / 30 days / all), **leads** (people who typed name, email, phone but did not pay — each row has a WhatsApp link),
 students with progress and certificates, and **where every order came from**: UTM source/medium/campaign, gclid/fbclid or referrer, captured on the visitor's first and last visit
 (`localStorage` in `public/analytics.js`, stored on the order at checkout). CSV export for orders, leads and students. Only Google Ads links need UTMs or auto-tagging; GA4 keeps its own data.
@@ -53,6 +65,8 @@ students with progress and certificates, and **where every order came from**: UT
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | live | from Razorpay dashboard → Account & Settings → API keys |
 | `RAZORPAY_WEBHOOK_SECRET` | live | set when creating the webhook `https://<domain>/api/checkout/webhook` |
 | `ADMIN_PASSWORD` | yes | password for `/admin` |
+| `META_PIXEL_ID`, `META_CAPI_TOKEN` | ads | Meta Conversions API (Events Manager → Settings → Generate access token); `META_TEST_EVENT_CODE` optional |
+| `GOOGLE_OFFLINE_CONVERSION_NAME` | optional | conversion action name in the Google Ads offline CSV |
 | `SITE_URL` | recommended | canonical URL, e.g. `https://course.aiaccountingengineer.com` |
 | `BUNNY_LIBRARY_ID` | optional | defaults to `786834` |
 | `BUNNY_STREAM_API_KEY` | yes | the library's API key (Stream → library → API) — lets the portal list videos |

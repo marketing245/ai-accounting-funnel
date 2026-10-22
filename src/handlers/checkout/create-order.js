@@ -26,9 +26,19 @@ module.exports = wrap(async (req, res) => {
   const amount = computeAmount();
   const items = [{ id: PRODUCT.id, name: PRODUCT.name, price: amount.base, qty: 1 }];
 
-  const clean = (t) => t && typeof t === 'object' ? Object.fromEntries(['source', 'medium', 'campaign', 'term', 'content', 'gclid', 'fbclid', 'referrer', 'landing', 'at'].map((k) => [k, String(t[k] || '').slice(0, 200)])) : null;
+  // Attribution: everything the browser remembered (see public/analytics.js) + what the request itself tells us.
+  const str = (v, n = 200) => String(v == null ? '' : v).slice(0, n);
+  const TOUCH_KEYS = ['at', 'landing', 'referrer', 'referrerHost', 'source', 'medium', 'campaign', 'term', 'content', 'id', 'gclid', 'gbraid', 'wbraid', 'dclid', 'fbclid', 'ttclid', 'msclkid', 'li_fat_id', 'twclid', 'sclid'];
+  const cleanTouch = (t) => t && typeof t === 'object' ? Object.fromEntries(TOUCH_KEYS.map((k) => [k, str(t[k], k === 'referrer' || k === 'landing' ? 300 : 200)])) : null;
   const a = body.attribution && typeof body.attribution === 'object' ? body.attribution : {};
-  const attribution = { first: clean(a.first), last: clean(a.last), page: String(a.page || '').slice(0, 300), screen: String(a.screen || '').slice(0, 20), userAgent: String(req.headers['user-agent'] || '').slice(0, 200) };
+  const ua = require('../../lib/ua').parse(req.headers['user-agent']);
+  const attribution = {
+    vid: str(a.vid, 40), firstSeen: str(a.firstSeen, 40), sessions: Number(a.sessions) || 0, pageviews: Number(a.pageviews) || 0,
+    first: cleanTouch(a.first), last: cleanTouch(a.last), touches: Array.isArray(a.touches) ? a.touches.slice(-10).map(cleanTouch).filter(Boolean) : [],
+    page: str(a.page, 300), screen: str(a.screen, 20), tz: str(a.tz, 60), lang: str(a.lang, 20), fbp: str(a.fbp, 100), fbc: str(a.fbc, 300), ga: str(a.ga, 100),
+    userAgent: str(req.headers['user-agent'], 300), ...ua,
+    geo: { country: str(req.headers['x-vercel-ip-country'], 8), region: str(req.headers['x-vercel-ip-country-region'], 40), city: str(req.headers['x-vercel-ip-city'] ? decodeURIComponent(req.headers['x-vercel-ip-city']) : '', 60) },
+  };
 
   const order = {
     id: null, gateway: mode, status: 'created',
@@ -37,6 +47,7 @@ module.exports = wrap(async (req, res) => {
     createdAt: new Date().toISOString(), paidAt: null, paymentId: null,
     ip: clientIp(req),
     attribution,
+    signals: {},
   };
 
   let response;
@@ -54,6 +65,8 @@ module.exports = wrap(async (req, res) => {
     response = { gateway: 'test', orderId: order.id, amountPaise: amount.totalPaise, currency: 'INR', testToken: auth.signTestPayment(order.id) };
   }
 
+  const meta = require('../../lib/meta');
+  if (meta.configured()) { order.signals.metaInitiateCheckout = await meta.sendEvent(order, 'InitiateCheckout'); }
   await store.writeJson(`orders/${order.id}.json`, order);
   send(res, 200, { ok: true, ...response, amount });
 });

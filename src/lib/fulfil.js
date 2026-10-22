@@ -7,6 +7,9 @@ async function fulfil(order, paymentId, source) {
   const now = new Date().toISOString();
   if (order.status !== 'paid') {
     order.status = 'paid'; order.paidAt = now; order.paymentId = paymentId; order.paidVia = source;
+    order.signals = order.signals || {};
+    const meta = require('./meta');
+    order.signals.metaPurchase = meta.configured() ? await meta.sendEvent(order, 'Purchase', { eventTime: now }) : { status: 'not_configured' };
     await store.writeJson(`orders/${order.id}.json`, order);
   }
   const email = auth.normalizeEmail(order.customer.email);

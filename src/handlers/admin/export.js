@@ -1,19 +1,24 @@
 'use strict';
 const { allow, wrap, getQuery, fail } = require('../../lib/http');
 const admin = require('../../lib/admin');
+const ORDER_COLS = ['createdAt', 'paidAt', 'status', 'name', 'email', 'phone', 'amount', 'gst', 'gateway', 'paymentId', 'platform', 'source', 'medium', 'campaign', 'term', 'content', 'utmId', 'firstSource', 'firstMedium', 'firstCampaign', 'firstAt', 'referrer', 'landing', 'gclid', 'gbraid', 'wbraid', 'fbclid', 'ttclid', 'msclkid', 'device', 'os', 'browser', 'inApp', 'country', 'city', 'sessions', 'pageviews', 'touches', 'hoursToPurchase', 'metaPurchase', 'metaInitiateCheckout', 'id'];
 module.exports = wrap(async (req, res) => {
   if (!allow(req, res, ['GET'])) return;
   if (!admin.requireAdmin(req, res)) return;
-  const type = String(getQuery(req).type || 'orders');
-  const data = await admin.overview();
-  let rows, cols;
-  if (type === 'students') { rows = data.students; cols = ['name', 'email', 'phone', 'purchasedAt', 'paid', 'completed', 'total', 'certificate', 'hasPassword']; }
-  else if (type === 'leads') { rows = data.orders.filter((o) => o.status !== 'paid'); cols = ['createdAt', 'name', 'email', 'phone', 'amount', 'source', 'medium', 'campaign', 'landing', 'device', 'id']; }
-  else if (type === 'orders') { rows = data.orders; cols = ['createdAt', 'paidAt', 'status', 'name', 'email', 'phone', 'amount', 'gst', 'gateway', 'paymentId', 'source', 'medium', 'campaign', 'term', 'content', 'referrer', 'landing', 'device', 'id']; }
-  else return fail(res, 400, 'type must be orders, leads or students');
+  const q = getQuery(req); const type = String(q.type || 'orders');
+  const days = q.days === 'all' || !q.days ? 'all' : Math.max(1, Math.min(365, parseInt(q.days, 10) || 30));
+  const data = await admin.overview({ days });
+  let body, name = type;
+  if (type === 'orders') body = admin.csv(data.orders.filter((o) => o.status === 'paid'), ORDER_COLS);
+  else if (type === 'leads') body = admin.csv(data.orders.filter((o) => o.status !== 'paid'), ORDER_COLS);
+  else if (type === 'all') body = admin.csv(data.orders, ORDER_COLS);
+  else if (type === 'students') body = admin.csv(data.students, ['name', 'email', 'phone', 'purchasedAt', 'paid', 'orders', 'completed', 'total', 'lastActive', 'certificate', 'hasPassword']);
+  else if (type === 'google-offline') body = admin.googleOfflineCsv(data.orders);
+  else if (type === 'meta-offline') body = admin.metaOfflineCsv(data.orders);
+  else return fail(res, 400, 'type must be orders, leads, all, students, google-offline or meta-offline');
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-  res.setHeader('Content-Disposition', `attachment; filename="aiae-${type}-${new Date().toISOString().slice(0, 10)}.csv"`);
+  res.setHeader('Content-Disposition', `attachment; filename="aiae-${name}-${days}d-${new Date().toISOString().slice(0, 10)}.csv"`);
   res.setHeader('Cache-Control', 'private, no-store');
-  res.end('﻿' + admin.csv(rows, cols));
+  res.end('﻿' + body);
 });

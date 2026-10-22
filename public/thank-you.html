@@ -97,6 +97,7 @@
         try {
           var key = 'aae_purchase_tracked_' + order.id;
           if (!localStorage.getItem(key) && window.aaeTrack) {
+            try { if (window.gtag) gtag('set', 'user_data', { email: me.email, phone_number: '+91' + String(me.phone || '').replace(/\D/g, '').slice(-10), address: { first_name: (me.name || '').split(' ')[0], last_name: (me.name || '').split(' ').slice(1).join(' '), country: 'IN' } }); } catch (e) {}
             aaeTrack('purchase', { transaction_id: order.id, value: order.amount.total, tax: order.amount.gst, currency: 'INR',
               items: order.items.map(function (i) { return { item_id: i.id, item_name: i.name, price: i.price, quantity: i.qty }; }) });
             localStorage.setItem(key, '1');

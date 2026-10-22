@@ -7,87 +7,161 @@
   <title>Admin — AI Accounting Engineer</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="site-config.js"></script>
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; background: #070c14; color: #faf8f3; }
     .card { background: rgba(15,25,39,.85); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    th { text-align: left; font-weight: 600; color: rgba(255,255,255,.5); padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,.1); white-space: nowrap; }
-    td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,.05); white-space: nowrap; }
-    tr:hover td { background: rgba(255,255,255,.03); }
+    th { text-align: left; font-weight: 600; color: rgba(255,255,255,.5); padding: 7px 9px; border-bottom: 1px solid rgba(255,255,255,.1); white-space: nowrap; position: sticky; top: 0; background: #0f1927; }
+    td { padding: 7px 9px; border-bottom: 1px solid rgba(255,255,255,.05); white-space: nowrap; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+    tr.row:hover td { background: rgba(255,255,255,.04); cursor: pointer; }
     .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
-    .paid { background: rgba(52,211,153,.15); color: #6ee7b7; } .created { background: rgba(251,191,36,.15); color: #fcd34d; }
-    .kpi { font-size: 26px; font-weight: 800; color: #dfb35a; } .kpi-sub { font-size: 11px; color: rgba(255,255,255,.5); }
-    .tab { padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 700; color: rgba(255,255,255,.6); cursor: pointer; }
+    .paid { background: rgba(52,211,153,.15); color: #6ee7b7; } .lead { background: rgba(251,191,36,.15); color: #fcd34d; }
+    .ok { color: #6ee7b7; } .warn { color: #fcd34d; } .bad { color: #fca5a5; } .muted { color: rgba(255,255,255,.45); }
+    .kpi { font-size: 24px; font-weight: 800; color: #dfb35a; line-height: 1.1; } .kpi-sub { font-size: 11px; color: rgba(255,255,255,.5); }
+    .tab { padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 700; color: rgba(255,255,255,.6); cursor: pointer; white-space: nowrap; }
     .tab.active { background: rgba(196,149,58,.2); color: #dfb35a; border: 1px solid rgba(196,149,58,.5); }
     input, select { background: #0a1320; border: 1px solid rgba(255,255,255,.15); border-radius: 8px; padding: 8px 10px; color: #fff; font-size: 13px; }
     input:focus, select:focus { outline: none; border-color: #c4953a; }
-    .btn { background: #c4953a; color: #000; font-weight: 700; border-radius: 10px; padding: 9px 14px; font-size: 12px; }
-    .btn-ghost { background: rgba(255,255,255,.08); color: #fff; font-weight: 600; border-radius: 10px; padding: 8px 12px; font-size: 12px; }
-    .bar { height: 42px; display: flex; align-items: flex-end; gap: 2px; }
-    .bar div { flex: 1; background: rgba(196,149,58,.45); border-radius: 2px 2px 0 0; min-height: 2px; }
+    .btn { background: #c4953a; color: #000; font-weight: 700; border-radius: 10px; padding: 9px 14px; font-size: 12px; display: inline-block; }
+    .btn-ghost { background: rgba(255,255,255,.08); color: #fff; font-weight: 600; border-radius: 10px; padding: 8px 12px; font-size: 12px; display: inline-block; }
+    .bars { height: 90px; display: flex; align-items: flex-end; gap: 2px; }
+    .bars > div { flex: 1; position: relative; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
+    .bars .c { background: rgba(255,255,255,.12); border-radius: 2px 2px 0 0; } .bars .p { background: #c4953a; border-radius: 2px 2px 0 0; position: absolute; left: 0; right: 0; bottom: 0; }
+    .funnel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .funnel div { background: rgba(255,255,255,.04); border-radius: 10px; padding: 10px 12px; }
+    .drawer { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.6); display: none; }
+    .drawer.open { display: flex; justify-content: flex-end; }
+    .drawer .panel { width: min(720px, 100%); height: 100%; overflow: auto; background: #0d1624; border-left: 1px solid rgba(255,255,255,.1); padding: 20px; }
+    .kv { display: grid; grid-template-columns: 170px 1fr; gap: 4px 12px; font-size: 12px; } .kv b { color: rgba(255,255,255,.55); font-weight: 600; }
+    pre { font-size: 11px; background: #070c14; padding: 10px; border-radius: 8px; overflow: auto; max-height: 360px; }
+    h3 { font-size: 13px; font-weight: 700; }
   </style>
 </head>
 <body class="min-h-screen">
-  <!-- LOGIN -->
   <div id="loginView" class="min-h-screen flex items-center justify-center p-6">
     <form id="loginForm" class="card p-7 w-full max-w-sm space-y-4">
       <div class="flex items-center gap-2"><div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#c4953a] to-[#8a6520] flex items-center justify-center font-bold text-black text-sm">AI</div><div class="font-bold">Admin panel</div></div>
-      <p class="text-xs text-white/60">Orders, leads, students and where they came from.</p>
+      <p class="text-xs text-white/60">Orders, leads, students, traffic sources and conversion signals.</p>
       <input type="password" id="pw" placeholder="Admin password" autocomplete="current-password" class="w-full">
       <div id="loginErr" class="hidden text-xs text-red-300"></div>
       <button class="btn w-full" type="submit">Log in</button>
     </form>
   </div>
 
-  <!-- DASHBOARD -->
   <div id="dashView" class="hidden">
-    <header class="sticky top-0 z-10 px-5 py-3 flex items-center justify-between border-b border-white/10 bg-[#070c14]/90 backdrop-blur">
-      <div class="flex items-center gap-2"><div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#c4953a] to-[#8a6520] flex items-center justify-center font-bold text-black text-sm">AI</div><div><div class="font-bold text-sm">AI Accounting Engineer — Admin</div><div id="meta" class="text-[10px] text-white/40"></div></div></div>
-      <div class="flex items-center gap-2">
-        <a href="/" target="_blank" class="btn-ghost">Site ↗</a>
-        <button onclick="load()" class="btn-ghost">Refresh</button>
-        <button onclick="logout()" class="btn-ghost">Log out</button>
-      </div>
+    <header class="sticky top-0 z-20 px-5 py-3 flex flex-wrap items-center gap-3 border-b border-white/10 bg-[#070c14]/95 backdrop-blur">
+      <div class="flex items-center gap-2 mr-auto"><div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#c4953a] to-[#8a6520] flex items-center justify-center font-bold text-black text-sm">AI</div><div><div class="font-bold text-sm">AI Accounting Engineer — Admin</div><div id="meta" class="text-[10px] text-white/40"></div></div></div>
+      <select id="range" onchange="load()"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last 12 months</option><option value="all">All time</option></select>
+      <a href="/" target="_blank" class="btn-ghost">Site ↗</a>
+      <button onclick="load(true)" class="btn-ghost">Refresh</button>
+      <button onclick="logout()" class="btn-ghost">Log out</button>
     </header>
 
-    <main class="p-5 space-y-5 max-w-[1400px] mx-auto">
+    <main class="p-5 space-y-4 max-w-[1500px] mx-auto">
       <div id="modeBanner" class="hidden text-xs rounded-xl px-4 py-2 bg-amber-900/40 border border-amber-500/40 text-amber-200"></div>
+      <nav class="flex gap-1 overflow-auto pb-1" id="tabs">
+        <span class="tab active" data-tab="overview">Overview</span><span class="tab" data-tab="orders">Paid orders</span><span class="tab" data-tab="leads">Leads</span>
+        <span class="tab" data-tab="students">Students</span><span class="tab" data-tab="sources">Traffic sources</span><span class="tab" data-tab="signals">Conversion signals</span><span class="tab" data-tab="settings">Settings & health</span>
+      </nav>
 
-      <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3" id="kpis"></section>
-
-      <section class="grid lg:grid-cols-3 gap-4">
-        <div class="card p-4 lg:col-span-2">
-          <div class="flex items-center justify-between mb-2"><h3 class="text-sm font-bold">Last 30 days — paid orders per day</h3><span id="dailySummary" class="text-[11px] text-white/50"></span></div>
-          <div class="bar" id="dailyBars"></div>
+      <!-- OVERVIEW -->
+      <section id="tab-overview" class="space-y-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3" id="kpis"></div>
+        <div class="grid lg:grid-cols-3 gap-4">
+          <div class="card p-4 lg:col-span-2">
+            <div class="flex items-center justify-between mb-2"><h3>Per day — <span class="text-[#dfb35a]">paid</span> vs <span class="text-white/50">checkouts started</span></h3><span id="seriesSummary" class="text-[11px] text-white/50"></span></div>
+            <div class="bars" id="bars"></div>
+          </div>
+          <div class="card p-4">
+            <h3 class="mb-2">Funnel</h3>
+            <div class="funnel" id="funnel"></div>
+            <p class="text-[11px] text-white/40 mt-3">Visitors who never opened checkout are not stored here (see GA4 → Acquisition). Everyone who typed their details is.</p>
+          </div>
         </div>
-        <div class="card p-4">
-          <h3 class="text-sm font-bold mb-2">Where they came from</h3>
-          <p class="text-[11px] text-white/50 mb-2">Source / medium / campaign from the link the visitor arrived on (UTM, gclid, fbclid or referrer).</p>
-          <div class="overflow-auto max-h-56"><table id="sourceTable"></table></div>
+        <div class="grid lg:grid-cols-2 gap-4">
+          <div class="card p-4"><h3 class="mb-2">By source / medium</h3><div class="overflow-auto max-h-72"><table id="t-source"></table></div></div>
+          <div class="card p-4"><h3 class="mb-2">Top campaigns</h3><div class="overflow-auto max-h-72"><table id="t-campaign-top"></table></div></div>
         </div>
       </section>
 
-      <section class="card p-4">
-        <div class="flex flex-wrap items-center gap-2 mb-3">
-          <span class="tab active" data-tab="paid" onclick="setTab('paid')">Paid orders</span>
-          <span class="tab" data-tab="leads" onclick="setTab('leads')">Leads (started checkout, didn't pay)</span>
-          <span class="tab" data-tab="students" onclick="setTab('students')">Students & progress</span>
-          <input id="search" placeholder="Search name, email, phone…" class="ml-auto w-64" oninput="render()">
-          <a id="exportBtn" class="btn" href="/api/admin/export?type=orders">Export CSV</a>
+      <!-- ORDERS / LEADS -->
+      <section id="tab-orders" class="hidden card p-4 space-y-3">
+        <div class="flex flex-wrap items-center gap-2"><h3 id="ordersTitle">Paid orders</h3><p id="ordersHelp" class="text-[11px] text-white/50 mr-auto"></p><input id="search" placeholder="Search name, email, phone, campaign, click id…" class="w-72" oninput="renderOrders()"><a id="exportOrders" class="btn">Export CSV</a></div>
+        <div class="overflow-auto max-h-[70vh]"><table id="t-orders"></table></div>
+      </section>
+
+      <!-- STUDENTS -->
+      <section id="tab-students" class="hidden card p-4 space-y-3">
+        <div class="flex flex-wrap items-center gap-2"><h3>Students</h3><p class="text-[11px] text-white/50 mr-auto">Everyone with course access. Progress = modules marked complete.</p><input id="searchStudents" placeholder="Search…" class="w-56" oninput="renderStudents()"><a id="exportStudents" class="btn">Export CSV</a></div>
+        <div class="overflow-auto max-h-[70vh]"><table id="t-students"></table></div>
+      </section>
+
+      <!-- SOURCES -->
+      <section id="tab-sources" class="hidden space-y-4">
+        <div class="card p-4"><h3 class="mb-1">Campaign breakdown (UTM source / medium / campaign / term / content)</h3><p class="text-[11px] text-white/50 mb-2">Last touch before checkout. Google Ads: use the tracking template with utm_campaign etc. (or auto-tagging — gclid alone shows as google / cpc).</p><div class="overflow-auto max-h-96"><table id="t-campaign"></table></div></div>
+        <div class="grid lg:grid-cols-2 gap-4">
+          <div class="card p-4"><h3 class="mb-2">By ad platform (click id)</h3><div class="overflow-auto max-h-64"><table id="t-platform"></table></div></div>
+          <div class="card p-4"><h3 class="mb-2">By landing page</h3><div class="overflow-auto max-h-64"><table id="t-landing"></table></div></div>
+          <div class="card p-4"><h3 class="mb-2">By device / OS</h3><div class="overflow-auto max-h-64"><table id="t-device"></table></div></div>
+          <div class="card p-4"><h3 class="mb-2">By location</h3><div class="overflow-auto max-h-64"><table id="t-country"></table></div></div>
+          <div class="card p-4 lg:col-span-2"><h3 class="mb-2">Referring sites</h3><div class="overflow-auto max-h-64"><table id="t-referrer"></table></div></div>
         </div>
-        <p id="tabHelp" class="text-[11px] text-white/50 mb-2"></p>
-        <div class="overflow-auto"><table id="mainTable"></table></div>
+      </section>
+
+      <!-- SIGNALS -->
+      <section id="tab-signals" class="hidden space-y-4">
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-3" id="signalKpis"></div>
+        <div class="grid lg:grid-cols-2 gap-4">
+          <div class="card p-4 space-y-2">
+            <h3>Google Ads</h3>
+            <div id="googleStatus" class="text-xs space-y-1"></div>
+            <p class="text-[11px] text-white/50">Offline conversion upload: download the file and upload it in Google Ads → Goals → Conversions → Uploads (format "Conversions from clicks"). Rows need a gclid/gbraid/wbraid, so Google Ads auto-tagging must stay ON.</p>
+            <a id="exportGoogle" class="btn">Download Google Ads offline conversions CSV</a>
+          </div>
+          <div class="card p-4 space-y-2">
+            <h3>Meta (Facebook / Instagram)</h3>
+            <div id="metaStatus" class="text-xs space-y-1"></div>
+            <p class="text-[11px] text-white/50">With META_PIXEL_ID + META_CAPI_TOKEN set, every checkout sends <b>InitiateCheckout</b> and every payment sends <b>Purchase</b> server-side (Conversions API) with hashed email, phone, name, fbp/fbc, IP and user agent — de-duplicated with the browser pixel by event id. The CSV is the fallback for manual offline uploads.</p>
+            <a id="exportMeta" class="btn">Download Meta offline events CSV</a>
+          </div>
+          <div class="card p-4 space-y-2 lg:col-span-2">
+            <h3>What fires on every order</h3>
+            <div class="text-xs space-y-1 text-white/80">
+              <div>• <b>GA4</b> (browser): page_view, begin_checkout, add_payment_info, purchase (with transaction_id, value, tax, items) → import "purchase" into Google Ads as a conversion.</div>
+              <div>• <b>Google Ads tag</b> (browser): conversion event with transaction_id + enhanced conversions (hashed email/phone/name) — needs GOOGLE_ADS_ID + label in site-config.js.</div>
+              <div>• <b>Meta pixel</b> (browser): InitiateCheckout, AddPaymentInfo, Purchase with eventID = order id — needs META_PIXEL_ID in site-config.js.</div>
+              <div>• <b>Meta CAPI</b> (server): InitiateCheckout + Purchase — see status above; per-order result is in the order drawer.</div>
+              <div>• <b>Stored on every order</b>: utm_source/medium/campaign/term/content/id, gclid, gbraid, wbraid, fbclid, ttclid, msclkid, referrer, landing page, first touch + last touch + up to 10 touches, device/OS/browser, country/city, sessions &amp; pageviews before buying, hours from first visit to purchase.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section id="tab-settings" class="hidden card p-4 space-y-3">
+        <h3>Health checklist</h3>
+        <div id="health" class="kv"></div>
       </section>
     </main>
   </div>
 
+  <!-- ORDER DRAWER -->
+  <div id="drawer" class="drawer" onclick="if(event.target===this)closeDrawer()">
+    <div class="panel space-y-4">
+      <div class="flex items-center justify-between"><h3 id="dTitle">Order</h3><button onclick="closeDrawer()" class="btn-ghost">Close</button></div>
+      <div id="dBody" class="space-y-4"></div>
+    </div>
+  </div>
+
   <script>
-    let DATA = null, TAB = 'paid';
+    let DATA = null, TAB = 'overview', ORDERS_MODE = 'paid';
     const $ = (id) => document.getElementById(id);
     const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const inr = (n) => '₹' + Number(n || 0).toLocaleString('en-IN');
     const dt = (iso) => iso ? new Date(iso).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
-
+    const pct = (n) => (n == null ? '—' : n + '%');
+    const cfg = window.AAE_CONFIG || {};
     async function api(path, opts) { const r = await fetch(path, Object.assign({ cache: 'no-store' }, opts || {})); return { status: r.status, data: await r.json().catch(() => null) }; }
 
     $('loginForm').addEventListener('submit', async (e) => {
@@ -96,49 +170,127 @@
       if (r.data && r.data.ok) { $('pw').value = ''; load(); } else { $('loginErr').textContent = (r.data && r.data.error) || 'Login failed'; $('loginErr').classList.remove('hidden'); }
     });
     async function logout() { await api('/api/admin/logout', { method: 'POST' }); location.reload(); }
+    document.querySelectorAll('#tabs .tab').forEach((t) => t.addEventListener('click', () => { location.hash = t.dataset.tab; setTab(t.dataset.tab); }));
+    function setTab(t) {
+      TAB = t; document.querySelectorAll('#tabs .tab').forEach((el) => el.classList.toggle('active', el.dataset.tab === t));
+      ['overview', 'orders', 'students', 'sources', 'signals', 'settings'].forEach((k) => $('tab-' + k).classList.toggle('hidden', !(k === t || (k === 'orders' && t === 'leads'))));
+      if (t === 'orders' || t === 'leads') { ORDERS_MODE = t === 'orders' ? 'paid' : 'leads'; renderOrders(); }
+    }
 
-    async function load() {
-      const r = await api('/api/admin/overview');
+    async function load(force) {
+      const days = $('range').value;
+      const r = await api('/api/admin/overview?days=' + days + (force ? '&refresh=1' : ''));
       if (r.status === 401) { $('loginView').classList.remove('hidden'); $('dashView').classList.add('hidden'); return; }
       if (!r.data || !r.data.ok) { alert((r.data && r.data.error) || 'Could not load'); return; }
       DATA = r.data;
       $('loginView').classList.add('hidden'); $('dashView').classList.remove('hidden');
-      $('meta').textContent = 'Updated ' + dt(DATA.generatedAt) + ' · payment mode: ' + DATA.paymentMode;
-      if (DATA.paymentMode !== 'razorpay') { $('modeBanner').textContent = 'Payment mode is "' + DATA.paymentMode + '": orders here are test orders (no real money). Switch to Razorpay keys before running ads.'; $('modeBanner').classList.remove('hidden'); }
-      const s = DATA.stats;
-      $('kpis').innerHTML = [
-        ['Revenue (30 days)', inr(s.revenue30), s.paid30 + ' paid orders'],
-        ['Revenue (7 days)', inr(s.revenue7), s.paid7 + ' paid orders'],
-        ['Revenue (all time)', inr(s.revenueAll), s.paidAll + ' paid orders'],
-        ['Leads (unpaid checkouts)', s.leadsAll, s.leads7 + ' in last 7 days'],
-        ['Checkout → paid', s.checkoutConversion + '%', 'of started checkouts'],
-        ['Students', s.students, s.certificates + ' certificates issued'],
-      ].map((k) => `<div class="card p-4"><div class="kpi">${esc(k[1])}</div><div class="text-xs font-semibold mt-1">${esc(k[0])}</div><div class="kpi-sub">${esc(k[2])}</div></div>`).join('');
-      const max = Math.max(1, ...DATA.daily.map((d) => d.paid));
-      $('dailyBars').innerHTML = DATA.daily.map((d) => `<div title="${d.date}: ${d.paid} paid, ${d.checkouts} checkouts, ${inr(d.revenue)}" style="height:${Math.round((d.paid / max) * 100)}%"></div>`).join('');
-      $('dailySummary').textContent = DATA.daily.reduce((n, d) => n + d.paid, 0) + ' paid · ' + DATA.daily.reduce((n, d) => n + d.checkouts, 0) + ' checkouts started';
-      $('sourceTable').innerHTML = '<tr><th>Source</th><th>Medium</th><th>Campaign</th><th>Leads</th><th>Paid</th><th>Revenue</th></tr>' + DATA.bySource.map((b) => `<tr><td>${esc(b.source)}</td><td>${esc(b.medium)}</td><td>${esc(b.campaign || '—')}</td><td>${b.leads}</td><td>${b.paid}</td><td>${inr(b.revenue)}</td></tr>`).join('');
-      render();
+      $('meta').textContent = 'Updated ' + dt(DATA.generatedAt) + ' · payment mode: ' + DATA.settings.paymentMode + ' · range: ' + (days === 'all' ? 'all time' : 'last ' + days + ' days');
+      $('modeBanner').classList.toggle('hidden', DATA.settings.paymentMode === 'razorpay');
+      $('modeBanner').textContent = 'Payment mode is "' + DATA.settings.paymentMode + '" — orders here are test orders (no real money). Add Razorpay keys and set PAYMENT_MODE=razorpay before running ads.';
+      ['exportOrders', 'exportStudents', 'exportGoogle', 'exportMeta'].forEach((id) => { const t = { exportOrders: ORDERS_MODE === 'paid' ? 'orders' : 'leads', exportStudents: 'students', exportGoogle: 'google-offline', exportMeta: 'meta-offline' }[id]; $(id).href = '/api/admin/export?type=' + t + '&days=' + days; });
+      renderOverview(); renderOrders(); renderStudents(); renderSources(); renderSignals(); renderSettings();
+      const h = (location.hash || '').slice(1); if (h && document.querySelector('#tabs .tab[data-tab="' + h + '"]')) setTab(h);
     }
 
-    function setTab(t) { TAB = t; document.querySelectorAll('.tab').forEach((el) => el.classList.toggle('active', el.dataset.tab === t)); render(); }
-    function render() {
+    function renderOverview() {
+      const s = DATA.stats;
+      $('kpis').innerHTML = [
+        ['Revenue', inr(s.revenue), s.paid + ' paid · GST ' + inr(s.gst)], ['Paid orders', s.paid, 'all time ' + s.paidAll],
+        ['Checkouts started', s.checkouts, 'entered details'], ['Leads (unpaid)', s.leads, 'follow up on WhatsApp'],
+        ['Checkout → paid', pct(s.conversion), 'conversion rate'], ['Avg order value', inr(s.aov), 'incl. GST'],
+        ['Time to buy', s.medianHoursToPurchase == null ? '—' : (s.medianHoursToPurchase < 48 ? s.medianHoursToPurchase + ' h' : Math.round(s.medianHoursToPurchase / 24) + ' d'), 'median, first visit → paid'],
+        ['Students', s.students, s.activeStudents7d + ' active · ' + s.certificates + ' certified'],
+      ].map((k) => `<div class="card p-3"><div class="kpi">${esc(k[1])}</div><div class="text-xs font-semibold mt-1">${esc(k[0])}</div><div class="kpi-sub">${esc(k[2])}</div></div>`).join('');
+      const max = Math.max(1, ...DATA.series.map((d) => d.checkouts));
+      $('bars').innerHTML = DATA.series.map((d) => `<div title="${d.date}: ${d.paid} paid, ${d.checkouts} checkouts, ${inr(d.revenue)}"><div class="c" style="height:${Math.round((d.checkouts / max) * 100)}%"></div><div class="p" style="height:${Math.round((d.paid / max) * 100)}%"></div></div>`).join('');
+      $('seriesSummary').textContent = DATA.series.reduce((n, d) => n + d.paid, 0) + ' paid · ' + DATA.series.reduce((n, d) => n + d.checkouts, 0) + ' checkouts';
+      $('funnel').innerHTML = [['Checkouts started', s.checkouts, '100%'], ['Leads (unpaid)', s.leads, s.checkouts ? Math.round((s.leads / s.checkouts) * 100) + '%' : '—'], ['Paid', s.paid, pct(s.conversion)]].map((f) => `<div><div class="kpi" style="font-size:20px">${f[1]}</div><div class="text-[11px] font-semibold">${f[0]}</div><div class="kpi-sub">${f[2]}</div></div>`).join('');
+      groupTable('t-source', DATA.bySource, [['source', 'Source'], ['medium', 'Medium']]);
+      groupTable('t-campaign-top', DATA.byCampaign.slice(0, 8), [['source', 'Source'], ['campaign', 'Campaign']]);
+    }
+    function groupTable(id, rows, labelCols) {
+      $(id).innerHTML = '<tr>' + labelCols.map((c) => `<th>${c[1]}</th>`).join('') + '<th>Checkouts</th><th>Leads</th><th>Paid</th><th>Conv.</th><th>Revenue</th></tr>' +
+        (rows.map((r) => '<tr>' + labelCols.map((c) => `<td>${esc(r[c[0]] || '—')}</td>`).join('') + `<td>${r.checkouts}</td><td>${r.leads}</td><td>${r.paid}</td><td>${pct(r.conversion)}</td><td>${inr(r.revenue)}</td></tr>`).join('') || '<tr><td class="muted" colspan="9">No data in this range</td></tr>');
+    }
+
+    function renderOrders() {
       if (!DATA) return;
       const q = ($('search').value || '').toLowerCase();
-      const match = (o) => !q || [o.name, o.email, o.phone, o.campaign, o.source, o.id].some((v) => String(v || '').toLowerCase().includes(q));
-      $('exportBtn').href = '/api/admin/export?type=' + (TAB === 'paid' ? 'orders' : TAB);
-      if (TAB === 'students') {
-        $('tabHelp').textContent = 'Everyone with course access. Progress = modules marked complete.';
-        const rows = DATA.students.filter(match);
-        $('mainTable').innerHTML = '<tr><th>Joined</th><th>Name</th><th>Email</th><th>Phone</th><th>Paid</th><th>Progress</th><th>Password</th><th>Certificate</th></tr>' +
-          rows.map((u) => `<tr><td>${dt(u.purchasedAt)}</td><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${esc(u.phone)}</td><td>${inr(u.paid)}</td><td>${u.completed}/${u.total}</td><td>${u.hasPassword ? 'set' : '<span class="text-amber-300">not set</span>'}</td><td>${u.certificate ? esc(u.certificate) : '—'}</td></tr>`).join('') || '<tr><td class="text-white/40">No students yet</td></tr>';
-        return;
-      }
-      const rows = DATA.orders.filter((o) => (TAB === 'paid' ? o.status === 'paid' : o.status !== 'paid')).filter(match);
-      $('tabHelp').textContent = TAB === 'paid' ? 'Completed payments. Source = where the buyer first arrived from.' : 'People who entered name, email and phone but did not finish paying — worth a WhatsApp follow-up.';
-      $('mainTable').innerHTML = '<tr><th>When</th><th>Status</th><th>Name</th><th>Email</th><th>Phone</th><th>Amount</th><th>Source</th><th>Campaign</th><th>Landing page</th><th>Device</th><th>Gateway</th><th>Payment ID</th></tr>' +
-        rows.map((o) => `<tr><td>${dt(o.paidAt || o.createdAt)}</td><td><span class="pill ${o.status === 'paid' ? 'paid' : 'created'}">${o.status === 'paid' ? 'paid' : 'lead'}</span></td><td>${esc(o.name)}</td><td>${esc(o.email)}</td><td><a class="underline" href="https://wa.me/91${esc(o.phone)}" target="_blank">${esc(o.phone)}</a></td><td>${inr(o.amount)}</td><td>${esc(o.source)}${o.medium ? ' / ' + esc(o.medium) : ''}</td><td>${esc(o.campaign || '—')}</td><td title="${esc(o.landing)}">${esc((o.landing || '').slice(0, 40))}</td><td>${esc(o.device)}</td><td>${esc(o.gateway)}</td><td>${esc(o.paymentId || '')}</td></tr>`).join('') || '<tr><td class="text-white/40">Nothing here yet</td></tr>';
+      const rows = DATA.orders.filter((o) => (ORDERS_MODE === 'paid' ? o.status === 'paid' : o.status !== 'paid')).filter((o) => !q || [o.name, o.email, o.phone, o.campaign, o.source, o.id, o.gclid, o.fbclid, o.city].some((v) => String(v || '').toLowerCase().includes(q)));
+      $('ordersTitle').textContent = ORDERS_MODE === 'paid' ? 'Paid orders (' + rows.length + ')' : 'Leads (' + rows.length + ')';
+      $('ordersHelp').textContent = ORDERS_MODE === 'paid' ? 'Click a row for every detail, touches and signal status.' : 'Entered name, email and phone but did not pay. Click a row for details; phone opens WhatsApp.';
+      $('exportOrders').href = '/api/admin/export?type=' + (ORDERS_MODE === 'paid' ? 'orders' : 'leads') + '&days=' + $('range').value;
+      const click = (o) => [o.gclid && 'gclid', o.gbraid && 'gbraid', o.wbraid && 'wbraid', o.fbclid && 'fbclid', o.ttclid && 'ttclid', o.msclkid && 'msclkid'].filter(Boolean).join(', ');
+      $('t-orders').innerHTML = '<tr><th>When</th><th>Status</th><th>Name</th><th>Email</th><th>Phone</th><th>Amount</th><th>Platform</th><th>Source / medium</th><th>Campaign</th><th>Term · Content</th><th>First touch</th><th>Landing</th><th>Device</th><th>Location</th><th>Click id</th><th>Meta CAPI</th><th>Gateway</th><th>Payment ID</th></tr>' +
+        (rows.map((o) => `<tr class="row" onclick="openOrder('${esc(o.id)}')"><td>${dt(o.paidAt || o.createdAt)}</td><td><span class="pill ${o.status === 'paid' ? 'paid' : 'lead'}">${o.status === 'paid' ? 'paid' : 'lead'}</span></td><td>${esc(o.name)}</td><td>${esc(o.email)}</td><td><a class="underline" onclick="event.stopPropagation()" href="https://wa.me/91${esc(o.phone)}" target="_blank">${esc(o.phone)}</a></td><td>${inr(o.amount)}</td><td>${esc(o.platform || '—')}</td><td>${esc(o.source)}${o.medium ? ' / ' + esc(o.medium) : ''}</td><td>${esc(o.campaign || '—')}</td><td>${esc([o.term, o.content].filter(Boolean).join(' · ') || '—')}</td><td>${esc(o.firstSource ? o.firstSource + (o.firstCampaign ? ' · ' + o.firstCampaign : '') : '—')}</td><td title="${esc(o.landing)}">${esc((o.landing || '').split('?')[0] || '—')}</td><td>${esc([o.device, o.os].filter(Boolean).join(' · ') || '—')}</td><td>${esc([o.city, o.country].filter(Boolean).join(', ') || '—')}</td><td>${esc(click(o) || '—')}</td><td class="${o.metaPurchase === 'sent' ? 'ok' : o.metaPurchase === 'error' ? 'bad' : 'muted'}">${esc(o.status === 'paid' ? (o.metaPurchase || '—') : (o.metaInitiateCheckout || '—'))}</td><td>${esc(o.gateway)}</td><td>${esc(o.paymentId || '')}</td></tr>`).join('') || '<tr><td class="muted" colspan="18">Nothing here yet</td></tr>');
     }
+
+    function renderStudents() {
+      const q = ($('searchStudents').value || '').toLowerCase();
+      const rows = DATA.students.filter((u) => !q || [u.name, u.email, u.phone, u.certificate].some((v) => String(v || '').toLowerCase().includes(q)));
+      $('t-students').innerHTML = '<tr><th>Joined</th><th>Name</th><th>Email</th><th>Phone</th><th>Paid</th><th>Progress</th><th>Last active</th><th>Password</th><th>Certificate</th></tr>' +
+        (rows.map((u) => `<tr><td>${dt(u.purchasedAt)}</td><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td><a class="underline" href="https://wa.me/91${esc(u.phone)}" target="_blank">${esc(u.phone)}</a></td><td>${inr(u.paid)}</td><td>${u.completed}/${u.total}</td><td>${dt(u.lastActive) || '—'}</td><td>${u.hasPassword ? '<span class="ok">set</span>' : '<span class="warn">not set</span>'}</td><td>${esc(u.certificate || '—')}</td></tr>`).join('') || '<tr><td class="muted" colspan="9">No students yet</td></tr>');
+    }
+
+    function renderSources() {
+      groupTable('t-campaign', DATA.byCampaign, [['source', 'Source'], ['medium', 'Medium'], ['campaign', 'Campaign'], ['term', 'Term'], ['content', 'Content']]);
+      groupTable('t-platform', DATA.byPlatform, [['platform', 'Platform']]);
+      groupTable('t-landing', DATA.byLanding, [['landing', 'Landing page']]);
+      groupTable('t-device', DATA.byDevice, [['device', 'Device'], ['os', 'OS']]);
+      groupTable('t-country', DATA.byCountry, [['country', 'Country'], ['city', 'City']]);
+      groupTable('t-referrer', DATA.byReferrer, [['referrer', 'Referrer']]);
+    }
+
+    function renderSignals() {
+      const s = DATA.stats, st = DATA.settings;
+      $('signalKpis').innerHTML = [
+        ['Orders with an ad click id', s.withClickId + ' / ' + s.checkouts, 'gclid, fbclid, ttclid…'],
+        ['Meta CAPI purchases sent', s.metaSent + ' / ' + s.paid, st.metaCapi ? 'server-side' : 'CAPI not configured'],
+        ['GA4', cfg.GA4_ID ? 'ON' : 'OFF', cfg.GA4_ID || 'set GA4_ID in site-config.js'],
+        ['Google Ads tag', cfg.GOOGLE_ADS_ID && cfg.GOOGLE_ADS_PURCHASE_LABEL ? 'ON' : 'OFF', cfg.GOOGLE_ADS_ID ? cfg.GOOGLE_ADS_ID : 'set GOOGLE_ADS_ID + label'],
+      ].map((k) => `<div class="card p-3"><div class="kpi" style="font-size:20px">${esc(k[1])}</div><div class="text-xs font-semibold mt-1">${esc(k[0])}</div><div class="kpi-sub">${esc(k[2])}</div></div>`).join('');
+      const line = (ok, label, detail) => `<div><span class="${ok === true ? 'ok' : ok === false ? 'bad' : 'warn'}">${ok === true ? '●' : ok === false ? '●' : '●'}</span> <b>${esc(label)}</b> <span class="muted">${esc(detail || '')}</span></div>`;
+      $('googleStatus').innerHTML = line(!!cfg.GA4_ID, 'GA4 purchase event (browser)', cfg.GA4_ID || 'missing') + line(!!(cfg.GOOGLE_ADS_ID && cfg.GOOGLE_ADS_PURCHASE_LABEL), 'Google Ads conversion tag + enhanced conversions', cfg.GOOGLE_ADS_ID ? cfg.GOOGLE_ADS_ID + ' / ' + (cfg.GOOGLE_ADS_PURCHASE_LABEL || 'label missing') : 'not set') + line(s.withClickId > 0 ? true : null, 'Click ids captured', s.withClickId + ' orders in range have gclid/gbraid/wbraid or other ids') + line(null, 'Offline conversion name', st.googleOfflineConversionName);
+      $('metaStatus').innerHTML = line(!!cfg.META_PIXEL_ID, 'Meta pixel (browser)', cfg.META_PIXEL_ID || 'set META_PIXEL_ID in site-config.js') + line(st.metaCapi, 'Conversions API (server)', st.metaCapi ? 'pixel ' + st.metaPixelIdServer + (st.metaTestEventCode ? ' · TEST EVENT CODE active' : '') : 'set META_PIXEL_ID + META_CAPI_TOKEN on Vercel') + line(s.metaSent > 0 ? true : null, 'Purchases sent via CAPI', s.metaSent + ' in range');
+    }
+
+    function renderSettings() {
+      const st = DATA.settings;
+      const row = (k, ok, v) => `<b>${esc(k)}</b><span class="${ok === true ? 'ok' : ok === false ? 'bad' : ''}">${esc(v)}</span>`;
+      $('health').innerHTML = [
+        row('Payment mode', st.paymentMode === 'razorpay', st.paymentMode + (st.paymentMode === 'razorpay' ? '' : ' (test gateway — no real money)')),
+        row('Razorpay keys', st.razorpayKeys, st.razorpayKeys ? 'configured' : 'missing (RAZORPAY_KEY_ID / SECRET)'),
+        row('Razorpay webhook secret', st.razorpayWebhook, st.razorpayWebhook ? 'configured' : 'missing — set RAZORPAY_WEBHOOK_SECRET and add the webhook URL /api/checkout/webhook'),
+        row('Site URL', !!st.siteUrl, st.siteUrl), row('Storage', true, st.storage + ' (' + st.blobPrefix + ')'),
+        row('Auth secret', st.authSecret, st.authSecret ? 'ok' : 'weak/missing'), row('Admin password', st.adminPassword, st.adminPassword ? 'set' : 'missing'),
+        row('Bunny video key', st.bunnyStreamKey, st.bunnyStreamKey ? 'configured' : 'missing'), row('Bunny token auth', st.bunnyTokenAuth, st.bunnyTokenAuth ? 'ON — video links expire' : 'OFF'),
+        row('WhatsApp group', st.whatsappGroup, st.whatsappGroup ? 'configured' : 'not set (WHATSAPP_GROUP_URL)'),
+        row('GA4 id', !!cfg.GA4_ID, cfg.GA4_ID || 'missing'), row('Google Ads id / label', !!(cfg.GOOGLE_ADS_ID && cfg.GOOGLE_ADS_PURCHASE_LABEL), (cfg.GOOGLE_ADS_ID || '—') + ' / ' + (cfg.GOOGLE_ADS_PURCHASE_LABEL || '—')),
+        row('Meta pixel (browser)', !!cfg.META_PIXEL_ID, cfg.META_PIXEL_ID || 'missing'), row('Meta CAPI (server)', st.metaCapi, st.metaCapi ? 'configured' : 'missing'),
+      ].join('');
+    }
+
+    async function openOrder(id) {
+      const r = await api('/api/admin/order?id=' + encodeURIComponent(id));
+      if (!r.data || !r.data.ok) return alert('Could not load order');
+      const { order: o, flat: f, user: u, certificate: c } = r.data;
+      const kv = (pairs) => '<div class="kv">' + pairs.map((p) => `<b>${esc(p[0])}</b><span>${p[1] == null || p[1] === '' ? '<span class="muted">—</span>' : esc(p[1])}</span>`).join('') + '</div>';
+      const touches = (o.attribution && o.attribution.touches) || [];
+      $('dTitle').textContent = (f.status === 'paid' ? 'Paid order ' : 'Lead ') + o.id;
+      $('dBody').innerHTML = `
+        <div class="card p-4 space-y-2"><h3>Customer</h3>${kv([['Name', f.name], ['Email', f.email], ['Phone', f.phone], ['Amount', inr(f.amount) + ' (GST ' + inr(f.gst) + ')'], ['Status', f.status + (f.paidAt ? ' · ' + dt(f.paidAt) + ' via ' + f.paidVia : '')], ['Created', dt(f.createdAt)], ['Gateway / payment id', f.gateway + ' · ' + (f.paymentId || '—')]])}
+          <div class="pt-2"><a class="btn-ghost" href="https://wa.me/91${esc(f.phone)}?text=${encodeURIComponent('Hi ' + (f.name || '').split(' ')[0] + ', ')}" target="_blank">WhatsApp</a> <a class="btn-ghost" href="mailto:${esc(f.email)}">Email</a></div></div>
+        <div class="card p-4 space-y-2"><h3>Attribution (last touch)</h3>${kv([['Platform', f.platform], ['Source / medium', f.source + ' / ' + f.medium], ['Campaign', f.campaign], ['Term', f.term], ['Content', f.content], ['utm_id', f.utmId], ['gclid', f.gclid], ['gbraid / wbraid', [f.gbraid, f.wbraid].filter(Boolean).join(' / ')], ['fbclid', f.fbclid], ['ttclid / msclkid', [f.ttclid, f.msclkid].filter(Boolean).join(' / ')], ['Referrer', f.referrer], ['Landing page', f.landing], ['Checkout page', f.page]])}</div>
+        <div class="card p-4 space-y-2"><h3>First touch & journey</h3>${kv([['First source', f.firstSource + (f.firstMedium ? ' / ' + f.firstMedium : '')], ['First campaign', f.firstCampaign], ['First seen', dt(f.firstAt)], ['Sessions before buying', f.sessions], ['Pageviews before buying', f.pageviews], ['Hours first visit → paid', f.hoursToPurchase]])}
+          ${touches.length ? '<div class="text-xs mt-2"><b class="muted">Touches</b><ol class="list-decimal pl-5 space-y-1 mt-1">' + touches.map((t) => `<li>${dt(t.at)} — ${esc(t.source)}${t.medium ? ' / ' + esc(t.medium) : ''}${t.campaign ? ' · ' + esc(t.campaign) : ''}${t.gclid ? ' · gclid' : ''}${t.fbclid ? ' · fbclid' : ''} → ${esc(t.landing)}</li>`).join('') + '</ol></div>' : ''}</div>
+        <div class="card p-4 space-y-2"><h3>Device & location</h3>${kv([['Device', f.device + ' · ' + f.os + ' · ' + f.browser + (f.inApp ? ' (' + f.inApp + ' in-app)' : '')], ['Screen / language / tz', [f.screen, f.lang, f.tz].filter(Boolean).join(' · ')], ['Location', [f.city, f.region, f.country].filter(Boolean).join(', ')], ['IP', f.ip], ['Meta cookies', (f.fbp ? '_fbp ' : '') + (f.fbc ? '_fbc' : '') || 'none']])}</div>
+        <div class="card p-4 space-y-2"><h3>Conversion signals</h3>${kv([['Meta CAPI InitiateCheckout', (o.signals && o.signals.metaInitiateCheckout && (o.signals.metaInitiateCheckout.status + (o.signals.metaInitiateCheckout.error ? ' — ' + o.signals.metaInitiateCheckout.error : ''))) || '—'], ['Meta CAPI Purchase', (o.signals && o.signals.metaPurchase && (o.signals.metaPurchase.status + (o.signals.metaPurchase.error ? ' — ' + o.signals.metaPurchase.error : ''))) || '—'], ['GA4 / Google Ads / Meta pixel', 'fired in the browser on the thank-you page (not stored)']])}</div>
+        ${u ? `<div class="card p-4 space-y-2"><h3>Student</h3>${kv([['Account created', dt(u.createdAt)], ['Password', u.hasPassword ? 'set ' + dt(u.passwordSetAt) : 'not set'], ['Progress', ((u.progress && u.progress.completed) || []).length + ' modules · last active ' + (dt(u.progress && u.progress.updatedAt) || '—')], ['Purchases', u.purchases.length], ['Certificate', (u.certificate && u.certificate.id) || (c && c.id) || '—']])}</div>` : ''}
+        <details><summary class="text-xs cursor-pointer muted">Raw order JSON</summary><pre>${esc(JSON.stringify(o, null, 2))}</pre></details>`;
+      $('drawer').classList.add('open');
+    }
+    function closeDrawer() { $('drawer').classList.remove('open'); }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
     load();
   </script>
 </body>

@@ -33,7 +33,7 @@ async function call(method, path, body, opts = {}) {
   r = await call('GET', '/api/checkout/config');
   check('checkout config', r.status === 200 && r.data.amount.total === 1769 && !('amounts' in r.data), JSON.stringify(r.data.amount));
 
-  r = await call('POST', '/api/checkout/create-order', { name: 'Smoke Tester', email, phone: '9876543210', bump: true /* must be ignored */, attribution: { first: { source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'x', landing: '/?utm_source=google' }, last: { source: 'google', medium: 'cpc', campaign: 'smoke_campaign', landing: '/?utm_source=google' }, page: 'http://x/', screen: '1x1' } });
+  r = await call('POST', '/api/checkout/create-order', { name: 'Smoke Tester', email, phone: '9876543210', bump: true /* must be ignored */, attribution: { first: { source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'x', landing: '/?utm_source=google' }, last: { source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'TeSt.gclid', landing: '/?utm_source=google' }, touches: [{ source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'TeSt.gclid', at: new Date().toISOString(), landing: '/' }], page: 'http://x/', screen: '1x1', vid: 'smokevid', sessions: 2, pageviews: 5 } });
   check('create order (test gateway)', r.status === 200 && r.data.gateway === 'test' && r.data.testToken, r.data?.orderId);
   const order = r.data;
 
@@ -133,8 +133,18 @@ async function call(method, path, body, opts = {}) {
     check('admin overview lists the order with attribution', r.status === 200 && mine && mine.status === 'paid' && mine.source === 'google' && mine.campaign === 'smoke_campaign' && typeof r.data.stats.revenueAll === 'number', mine && `${mine.source}/${mine.campaign}`);
     check('admin overview lists the student', (r.data?.students || []).some((u) => u.email === email && u.completed === 5 && u.certificate === certId));
     check('admin source table has google/cpc', (r.data?.bySource || []).some((b) => b.source === 'google' && b.paid >= 1));
+    check('admin overview has breakdowns + settings', Array.isArray(r.data.byCampaign) && Array.isArray(r.data.byPlatform) && Array.isArray(r.data.byDevice) && r.data.settings && typeof r.data.settings.paymentMode === 'string' && typeof r.data.stats.conversion === 'number');
+    check('admin order has geo/device/signals', mine && mine.platform === 'google_ads' && typeof mine.device === 'string' && ['not_configured', 'sent', 'error', ''].includes(mine.metaPurchase));
+    r = await call('GET', '/api/admin/overview?days=7');
+    check('admin overview date range', r.status === 200 && r.data.stats.days === 7);
+    r = await call('GET', `/api/admin/order?id=${order.orderId}`);
+    check('admin order detail', r.status === 200 && r.data.order.id === order.orderId && r.data.flat.campaign === 'smoke_campaign' && r.data.user && r.data.user.email === email);
     const e = await fetch(BASE + '/api/admin/export?type=orders', { headers: { Cookie: cookie } }); const csvText = await e.text();
-    check('admin csv export', e.status === 200 && /text\/csv/.test(e.headers.get('content-type')) && csvText.includes(order.orderId) && csvText.includes('smoke_campaign'));
+    check('admin csv export', e.status === 200 && /text\/csv/.test(e.headers.get('content-type')) && csvText.includes(order.orderId) && csvText.includes('smoke_campaign') && csvText.includes('gclid'));
+    const g = await fetch(BASE + '/api/admin/export?type=google-offline', { headers: { Cookie: cookie } }); const gText = await g.text();
+    check('google offline conversions csv', g.status === 200 && gText.replace(/^\ufeff/, '').startsWith('Google Click ID,GBRAID,WBRAID,Conversion Name,Conversion Time') && gText.includes('+05:30'));
+    const m = await fetch(BASE + '/api/admin/export?type=meta-offline', { headers: { Cookie: cookie } }); const mText = await m.text();
+    check('meta offline events csv', m.status === 200 && mText.includes('event_name') && mText.includes('Purchase'));
     r = await call('POST', '/api/admin/logout');
     cookie = '';
   } else console.log('skip  admin login checks (ADMIN_PASSWORD not in env)');
