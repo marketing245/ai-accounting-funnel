@@ -1,169 +1,160 @@
 /**
- * AIAccountingEngineer — 1-Step Fast Checkout & Student Portal Access Engine
- * Zero friction: Full Name, Email, WhatsApp Phone -> Direct UPI Payment -> Instant Course Portal Access
+ * AI Accounting Engineer — checkout (landing page)
+ * Flow: details → /api/checkout/create-order → Razorpay (or the clearly-labelled test gateway) → /api/checkout/verify → /thank-you
+ * Nothing here grants access; the server verifies the payment and sets the session cookie.
  */
+'use strict';
 
-const BASE_PRICE = 1499;
-const BUMP_PRICE = 399;
-const UPI_VPA = 'manakppc@okhdfcbank';
-const MERCHANT_NAME = 'AIAccountingEngineer';
+var CHECKOUT = null;      // server config (/api/checkout/config)
+var currentOrder = null;  // order returned by create-order
 
-let hasOrderBump = false;
+function $(id) { return document.getElementById(id); }
+function fmt(n) { return '₹' + Number(n || 0).toLocaleString('en-IN'); }
 
-// ── Open & Close Checkout Modal ──
-function startUnifiedFunnel() {
-  const modal = document.getElementById('unifiedFunnelModal');
-  if (modal) {
-    modal.classList.remove('hidden');
-    updateCheckoutDisplay();
-    // Scroll modal into view if needed
-    modal.scrollTop = 0;
-  }
+function amounts() {
+  var bump = !!($('orderBumpCheckbox') && $('orderBumpCheckbox').checked);
+  if (CHECKOUT && CHECKOUT.amounts) return bump ? CHECKOUT.amounts.withBump : CHECKOUT.amounts.withoutBump;
+  var base = 1499, b = bump ? 399 : 0, sub = base + b, gst = Math.round(sub * 0.18);
+  return { base: base, bump: b, subtotal: sub, gst: gst, total: sub + gst, gstPercent: 18 };
 }
 
-function closeUnifiedModal() {
-  const modal = document.getElementById('unifiedFunnelModal');
-  if (modal) {
-    modal.classList.add('hidden');
-  }
+function items(a) {
+  var list = [{ item_id: 'aiae-course', item_name: 'AI in Accounting Course', price: a.base, quantity: 1 }];
+  if (a.bump) list.push({ item_id: 'aiae-prompt-pack', item_name: '50+ Claude Prompts & SOP Pack', price: a.bump, quantity: 1 });
+  return list;
 }
 
-// ── Toggle Order Bump ──
-function toggleOrderBump() {
-  const checkbox = document.getElementById('orderBumpCheckbox');
-  hasOrderBump = checkbox ? checkbox.checked : false;
+async function loadCheckoutConfig() {
+  try { var r = await fetch('/api/checkout/config', { cache: 'no-store' }); CHECKOUT = await r.json(); } catch (e) { CHECKOUT = null; }
   updateCheckoutDisplay();
 }
 
-// ── Update Price, Dynamic UPI QR & App Links ──
 function updateCheckoutDisplay() {
-  const total = hasOrderBump ? (BASE_PRICE + BUMP_PRICE) : BASE_PRICE;
-  
-  // Update price labels
-  const totalEl = document.getElementById('checkoutTotalAmount');
-  if (totalEl) totalEl.innerText = `₹${total.toLocaleString('en-IN')}`;
-
-  // Generate real dynamic UPI intent string
-  const txnNote = `AAE Course ${hasOrderBump ? '+ Prompts' : ''}`;
-  const upiIntent = `upi://pay?pa=${encodeURIComponent(UPI_VPA)}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${total}&cu=INR&tn=${encodeURIComponent(txnNote)}`;
-
-  // Update Dynamic QR Code via high-resolution QR service
-  const qrImg = document.getElementById('checkoutQrImg');
-  if (qrImg) {
-    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(upiIntent)}&margin=4`;
-  }
-
-  // Update 1-Click UPI Mobile Buttons
-  const btnGpay = document.getElementById('btnGpay');
-  const btnPhonepe = document.getElementById('btnPhonepe');
-  const btnPaytm = document.getElementById('btnPaytm');
-
-  if (btnGpay) btnGpay.href = upiIntent;
-  if (btnPhonepe) btnPhonepe.href = upiIntent;
-  if (btnPaytm) btnPaytm.href = upiIntent;
+  var a = amounts();
+  document.querySelectorAll('[data-price="base"]').forEach(function (el) { el.textContent = fmt(a.base); });
+  document.querySelectorAll('[data-price="gst"]').forEach(function (el) { el.textContent = fmt(a.gst); });
+  document.querySelectorAll('[data-price="total"]').forEach(function (el) { el.textContent = fmt(a.total); });
+  if ($('checkoutTotalAmount')) $('checkoutTotalAmount').textContent = fmt(a.total);
+  if ($('checkoutPayBtn') && !$('checkoutPayBtn').disabled) $('checkoutPayBtn').textContent = 'Proceed to secure payment → ' + fmt(a.total);
+  var badge = $('paymentModeBadge');
+  if (badge) badge.classList.toggle('hidden', !(CHECKOUT && CHECKOUT.mode === 'test'));
 }
 
-// ── Complete Payment & Open Portal ──
-function completePaymentAndAccess() {
-  const nameInput = document.getElementById('custName');
-  const emailInput = document.getElementById('custEmail');
-  const phoneInput = document.getElementById('custPhone');
-  const errorEl = document.getElementById('checkoutError');
-
-  const name = nameInput ? nameInput.value.trim() : '';
-  const email = emailInput ? emailInput.value.trim() : '';
-  const phone = phoneInput ? phoneInput.value.trim() : '';
-
-  // Simple validation
-  if (!name || !email || !phone) {
-    if (errorEl) {
-      errorEl.innerText = 'Please enter your Full Name, Email, and WhatsApp number.';
-      errorEl.classList.remove('hidden');
-    }
-    return;
-  }
-
-  if (phone.length < 10) {
-    if (errorEl) {
-      errorEl.innerText = 'Please enter a valid 10-digit WhatsApp number.';
-      errorEl.classList.remove('hidden');
-    }
-    return;
-  }
-
-  if (errorEl) errorEl.classList.add('hidden');
-
-  // Generate unique member token
-  const token = `AAE-STU-${Date.now().toString().slice(-6)}`;
-  const total = hasOrderBump ? (BASE_PRICE + BUMP_PRICE) : BASE_PRICE;
-
-  // Save student session in localStorage
-  localStorage.setItem('aae_auth_token', token);
-  localStorage.setItem('aae_user_name', name);
-  localStorage.setItem('aae_user_email', email);
-  localStorage.setItem('aae_user_phone', phone);
-  localStorage.setItem('aae_order_bump', hasOrderBump ? 'true' : 'false');
-
-  // Track Meta conversion event if pixel exists
-  if (typeof fbq === 'function') {
-    try {
-      fbq('track', 'Purchase', {
-        value: total,
-        currency: 'INR',
-        content_name: 'AIAccountingEngineer Masterclass',
-        email: email,
-        phone: phone
-      });
-    } catch (e) {}
-  }
-
-  // Show Success Screen
-  const checkoutForm = document.getElementById('checkoutFormSection');
-  const successSection = document.getElementById('checkoutSuccessSection');
-  
-  if (checkoutForm) checkoutForm.classList.add('hidden');
-  if (successSection) {
-    successSection.classList.remove('hidden');
-    
-    // Fill success details
-    const finalName = document.getElementById('successName');
-    const finalPhone = document.getElementById('successPhone');
-    const finalAmount = document.getElementById('successAmount');
-    if (finalName) finalName.innerText = name;
-    if (finalPhone) finalPhone.innerText = `+91 ${phone}`;
-    if (finalAmount) finalAmount.innerText = `₹${total}`;
-
-    // Auto-redirect countdown
-    let secondsLeft = 3;
-    const countdownEl = document.getElementById('redirectCountdown');
-    const interval = setInterval(() => {
-      secondsLeft--;
-      if (countdownEl) countdownEl.innerText = secondsLeft;
-      if (secondsLeft <= 0) {
-        clearInterval(interval);
-        window.location.href = `/portal?token=${encodeURIComponent(token)}&name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}`;
-      }
-    }, 1000);
-  }
+function showStep(step) {
+  ['checkoutFormSection', 'testGatewaySection', 'checkoutProcessing'].forEach(function (id) { if ($(id)) $(id).classList.add('hidden'); });
+  var map = { form: 'checkoutFormSection', test: 'testGatewaySection', processing: 'checkoutProcessing' };
+  if ($(map[step])) $(map[step]).classList.remove('hidden');
 }
 
-// Direct button to skip waiting and go to portal immediately
-function goToPortalNow() {
-  const name = localStorage.getItem('aae_user_name') || 'Student Member';
-  const phone = localStorage.getItem('aae_user_phone') || '9876543210';
-  const token = localStorage.getItem('aae_auth_token') || 'AAE-ACTIVE-MEMBER';
-  window.location.href = `/portal?token=${encodeURIComponent(token)}&name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}`;
+function showError(msg) {
+  var el = $('checkoutError');
+  if (!el) return;
+  el.textContent = msg || 'Something went wrong. Please try again.';
+  el.classList.remove('hidden');
+}
+function clearError() { if ($('checkoutError')) $('checkoutError').classList.add('hidden'); }
+
+function setBusy(busy) {
+  var btn = $('checkoutPayBtn');
+  if (!btn) return;
+  btn.disabled = busy;
+  btn.textContent = busy ? 'Preparing secure payment…' : 'Proceed to secure payment → ' + fmt(amounts().total);
 }
 
-// Close modal on Escape key or outside click
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeUnifiedModal();
-});
+function startUnifiedFunnel() {
+  var modal = $('unifiedFunnelModal');
+  if (!modal) return;
+  modal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  clearError();
+  showStep('form');
+  updateCheckoutDisplay();
+  var a = amounts();
+  if (window.aaeTrack) aaeTrack('begin_checkout', { currency: 'INR', value: a.total, items: items(a) });
+  setTimeout(function () { if ($('custName')) $('custName').focus(); }, 50);
+}
 
-// Auto-open modal if requested via URL param (e.g. /?open=checkout)
-window.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('open') === 'checkout' || params.get('enroll') === 'true') {
-    startUnifiedFunnel();
-  }
+function closeUnifiedModal() {
+  var modal = $('unifiedFunnelModal');
+  if (modal) modal.classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+function backToDetails() { clearError(); setBusy(false); showStep('form'); }
+
+async function submitCheckout(ev) {
+  if (ev) ev.preventDefault();
+  clearError();
+  var name = ($('custName').value || '').trim();
+  var email = ($('custEmail').value || '').trim();
+  var phone = ($('custPhone').value || '').replace(/\D/g, '');
+  var bump = !!$('orderBumpCheckbox').checked;
+  if (name.length < 2) return showError('Please enter your full name.'), false;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return showError('Please enter a valid email — it becomes your student login.'), false;
+  if (!/^[6-9]\d{9}$/.test(phone)) return showError('Please enter a valid 10-digit mobile number.'), false;
+
+  setBusy(true);
+  var data;
+  try {
+    var r = await fetch('/api/checkout/create-order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, phone: phone, bump: bump }) });
+    data = await r.json();
+  } catch (e) { data = { ok: false, error: 'Network error. Please check your connection and try again.' }; }
+  if (!data || !data.ok) { setBusy(false); showError(data && data.error); return false; }
+
+  currentOrder = data;
+  var a = data.amount || amounts();
+  if (window.aaeTrack) aaeTrack('add_payment_info', { currency: 'INR', value: a.total, payment_type: data.gateway, items: items(a) });
+
+  if (data.gateway === 'razorpay') openRazorpay(data);
+  else { $('testOrderId').textContent = data.orderId; $('testOrderAmount').textContent = fmt(a.total); showStep('test'); }
+  return false;
+}
+
+function loadScript(src) {
+  return new Promise(function (resolve, reject) {
+    if (document.querySelector('script[src="' + src + '"]')) return resolve();
+    var s = document.createElement('script'); s.src = src; s.onload = resolve; s.onerror = function () { reject(new Error('Could not load payment library')); };
+    document.head.appendChild(s);
+  });
+}
+
+function openRazorpay(d) {
+  loadScript('https://checkout.razorpay.com/v1/checkout.js').then(function () {
+    var rz = new window.Razorpay({
+      key: d.keyId, amount: d.amountPaise, currency: d.currency || 'INR', order_id: d.orderId,
+      name: 'AI Accounting Engineer', description: d.description, prefill: d.prefill, theme: { color: '#c4953a' },
+      handler: function (resp) { verifyPayment({ orderId: d.orderId, paymentId: resp.razorpay_payment_id, signature: resp.razorpay_signature }); },
+      modal: { ondismiss: function () { backToDetails(); } }
+    });
+    rz.on('payment.failed', function (r) {
+      backToDetails();
+      showError('Payment failed' + (r && r.error && r.error.description ? ': ' + r.error.description : '') + '. Nothing has been charged — please try again or use another method.');
+    });
+    rz.open();
+  }).catch(function (e) { backToDetails(); showError(e.message); });
+}
+
+function simulateTestPayment() {
+  if (!currentOrder) return backToDetails();
+  verifyPayment({ orderId: currentOrder.orderId, testToken: currentOrder.testToken });
+}
+
+async function verifyPayment(payload) {
+  showStep('processing');
+  var data;
+  try {
+    var r = await fetch('/api/checkout/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    data = await r.json();
+  } catch (e) { data = { ok: false, error: 'Network error while confirming your payment. If money was deducted, email ' + ((window.AAE_CONFIG || {}).SUPPORT_EMAIL || 'support') + ' with your payment ID.' }; }
+  if (!data || !data.ok) { backToDetails(); showError(data && data.error); return; }
+  window.location.href = data.next || '/thank-you';
+}
+
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeUnifiedModal(); });
+window.addEventListener('DOMContentLoaded', function () {
+  loadCheckoutConfig();
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('open') === 'checkout' || params.get('enroll') === 'true') startUnifiedFunnel();
+  var overlay = $('unifiedFunnelModal');
+  if (overlay) overlay.addEventListener('click', function (e) { if (e.target === overlay) closeUnifiedModal(); });
 });

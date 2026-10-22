@@ -1,21 +1,25 @@
 {
   "name": "ai-accounting-funnel",
   "version": "1.0.0",
-  "description": "Multi-Variation Marketing Funnel & Unit Economics Engine for AI in Accounting Course",
+  "description": "AI Accounting Engineer \u2014 course funnel: landing page, Razorpay checkout, student portal (Vercel functions + private Blob store)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "test": "node scripts/smoke.js"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20"
   },
   "keywords": [
-    "marketing-funnel",
-    "ai-accounting",
-    "growth-engine",
-    "railway"
+    "course-funnel",
+    "razorpay",
+    "vercel",
+    "student-portal"
   ],
   "author": "Manak Sehgal",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@vercel/blob": "^2.8.2"
+  }
 }

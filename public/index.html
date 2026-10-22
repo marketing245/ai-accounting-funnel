@@ -33,19 +33,15 @@
 
   <!-- Official Brand Stylesheet -->
   <link rel="stylesheet" href="style.css">
+  <script src="site-config.js"></script>
+  <script src="analytics.js" defer></script>
 </head>
 <body>
 
-  <!-- ── 1. URGENCY STRIP ── -->
+  <!-- ── 1. OFFER STRIP ── -->
   <div class="urgency-strip">
     <div class="urgency-inner">
-      <span>Long Weekend Offer — ₹5,000 → ₹1,499 — ends in</span>
-      <div class="countdown">
-        <span class="unit" id="cd-h">47</span><span class="sep">:</span>
-        <span class="unit" id="cd-m">59</span><span class="sep">:</span>
-        <span class="unit" id="cd-s">32</span>
-      </div>
-      <span>— <strong>70% off founding seats</strong></span>
+      <span>Launch price <strong>₹1,499 + GST</strong> (regular ₹5,000) &middot; Lifetime access &middot; 5 recorded modules &middot; Certificate</span>
     </div>
   </div>
 
@@ -54,8 +50,8 @@
     <div class="wrap nav-inner">
       <a href="#top" class="brand"><span class="ai">AI</span>AccountingEngineer</a>
       <div style="display:flex;align-items:center;gap:12px;">
-        <a href="/portal" style="font-family:var(--mono);font-size:var(--text-sm);color:var(--gold);font-weight:600;padding:8px 16px;border:1px solid rgba(196,149,58,0.4);border-radius:4px;background:rgba(196,149,58,0.08);transition:all .2s ease;">🎓 Student Portal</a>
-        <button onclick="startUnifiedFunnel()" class="nav-cta">Enroll Now ₹1,499</button>
+        <a href="/login" style="font-family:var(--mono);font-size:var(--text-sm);color:var(--gold);font-weight:600;padding:8px 16px;border:1px solid rgba(196,149,58,0.4);border-radius:4px;background:rgba(196,149,58,0.08);transition:all .2s ease;">Student login</a>
+        <button onclick="startUnifiedFunnel()" class="nav-cta">Enroll Now</button>
       </div>
     </div>
   </nav>
@@ -73,8 +69,8 @@
           <p class="lede">The first course that teaches you to run real accounting work — bank reconciliation, GST, TDS, month-end close — with AI. The work on your desk right now, done in a fraction of the time.</p>
           
           <div class="hero-ctas" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-            <button onclick="startUnifiedFunnel()" class="btn btn-primary cta-link">Limited Spots — Enroll Now ₹1,499</button>
-            <a href="/portal" style="font-family:var(--mono);font-size:14px;color:var(--gold);font-weight:600;text-decoration:underline;text-underline-offset:4px;">Already Enrolled? Access Student Portal &rarr;</a>
+            <button onclick="startUnifiedFunnel()" class="btn btn-primary cta-link">Enroll Now — ₹1,499 + GST</button>
+            <a href="/login" style="font-family:var(--mono);font-size:14px;color:var(--gold);font-weight:600;text-decoration:underline;text-underline-offset:4px;">Already enrolled? Log in &rarr;</a>
           </div>
           
           <p class="built-for">Built for: <b>Chartered Accountants · Accountants · Finance MBAs · B.Com Graduates</b></p>
@@ -358,8 +354,8 @@
       <div class="wrap">
         
         <div class="section-head" style="margin:0 auto 28px;text-align:center">
-          <span class="eyebrow">Founding cohort</span>
-          <h2>Join now — Long Weekend Offer.</h2>
+          <span class="eyebrow">Enroll</span>
+          <h2>Join the course.</h2>
         </div>
 
         <!-- Varsha Ma'am Pointing Down -->
@@ -369,12 +365,13 @@
 
         <!-- Pricing Card -->
         <div class="price-card">
-          <div class="tier">Long Weekend Offer · Limited seats</div>
+          <div class="tier">Launch price · Lifetime access</div>
           <div class="price-row">
             <span class="price-now">₹1,499</span>
             <span class="price-was">₹5,000</span>
           </div>
-          <p class="price-save">You save ₹3,501 — 70% off the regular price</p>
+          <p class="price-save">70% off the regular price of ₹5,000</p>
+          <p class="price-gst">+ 18% GST at checkout &middot; total <strong data-price="total">₹1,769</strong> &middot; one-time payment, no subscription</p>
           
           <hr>
 
@@ -408,10 +405,10 @@
 
           <div class="vs-total">
             <span>Total value: <strong>₹21,000+</strong></span>
-            <span>You pay: <strong class="vs-price">₹1,499</strong></span>
+            <span>You pay: <strong class="vs-price">₹1,499 + GST</strong></span>
           </div>
 
-          <button onclick="startUnifiedFunnel()" class="btn btn-primary cta-link">Limited Spots — Enroll Now ₹1,499</button>
+          <button onclick="startUnifiedFunnel()" class="btn btn-primary cta-link">Enroll Now — ₹1,499 + GST</button>
 
           <div class="price-sub">
             <img src="secure-checkout.webp" alt="Secure checkout — UPI, RuPay, Visa, Mastercard" width="560" height="106" style="max-width:280px;height:auto;opacity:.75;margin:0 auto">
@@ -489,8 +486,8 @@
     <section class="section final">
       <div class="wrap">
         <h2>Every month you close the books the old way is a month someone else does it in half the time.</h2>
-        <p>Long Weekend Offer · ₹1,499 · Lifetime access.</p>
-        <button onclick="startUnifiedFunnel()" class="btn btn-primary cta-link" style="margin-top:32px">Limited Spots — Enroll Now ₹1,499</button>
+        <p>₹1,499 + GST &middot; Lifetime access &middot; Taught by CA Varsha Varyani.</p>
+        <button onclick="startUnifiedFunnel()" class="btn btn-primary cta-link" style="margin-top:32px">Enroll Now — ₹1,499 + GST</button>
       </div>
     </section>
 
@@ -501,133 +498,109 @@
     <div class="wrap foot-inner">
       <span class="brand"><span class="ai" style="color:var(--gold)">AI</span>AccountingEngineer</span>
       <span>&copy; 2026 &middot; AI skills for finance professionals</span>
-      <a href="/portal" style="color:var(--gold);font-weight:600;text-decoration:underline;">🎓 Student Learning Portal (Bunny HD Stream)</a>
-      <span>hello@aiaccountingengineer.com</span>
+      <span class="foot-links">
+        <a href="/login">Student login</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a href="/refund">Refunds</a>
+        <a href="/contact">Contact</a>
+      </span>
+      <a href="mailto:hello@aiaccountingengineer.com">hello@aiaccountingengineer.com</a>
     </div>
   </footer>
 
   <!-- ── 14. STICKY MOBILE BOTTOM CTA ── -->
   <div class="sticky-cta" id="stickyCta">
     <div class="sticky-cta-inner">
-      <div class="price-info">₹1,499 <span class="old">₹5,000</span></div>
-      <button onclick="startUnifiedFunnel()" class="btn btn-primary cta-link">Enroll Now ₹1,499</button>
+      <div class="price-info">₹1,499 <span class="old">₹5,000</span> <span class="gst-tag">+ GST</span></div>
+      <button onclick="startUnifiedFunnel()" class="btn btn-primary cta-link">Enroll Now</button>
     </div>
   </div>
 
-  <!-- ========================================================================= -->
-  <!-- 🎯 1-STEP FAST CHECKOUT MODAL (NAME + EMAIL + PHONE -> UPI -> PORTAL)     -->
-  <!-- ========================================================================= -->
-  <div id="unifiedFunnelModal" class="modal-overlay hidden">
+  <!-- ── CHECKOUT MODAL: details → secure payment (Razorpay) → /thank-you ── -->
+  <div id="unifiedFunnelModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
     <div class="modal-container">
-      
-      <!-- Close Button -->
       <button onclick="closeUnifiedModal()" class="modal-close" aria-label="Close">&times;</button>
 
-      <!-- ── SECTION 1: 1-STEP CHECKOUT FORM ── -->
-      <div id="checkoutFormSection" class="space-y-4">
+      <!-- Step 1: details -->
+      <form id="checkoutFormSection" class="space-y-4" novalidate onsubmit="return submitCheckout(event)">
         <div>
-          <span class="modal-step-badge">⚡ Instant 1-Step Checkout</span>
-          <h3 class="modal-title">Join AIAccountingEngineer™</h3>
-          <p class="modal-subtitle">Enter your details below to generate your dynamic UPI QR and unlock immediate access to CA Varsha Varyani's course.</p>
+          <span class="modal-step-badge">Step 1 of 2 · Your details</span>
+          <span id="paymentModeBadge" class="modal-step-badge hidden" style="background:#b45309;color:#fff;margin-left:6px">Test mode · no money is charged</span>
+          <h3 class="modal-title" id="checkoutTitle">Enroll in AI in Accounting</h3>
+          <p class="modal-subtitle">Your email becomes your student login. Payment is handled by Razorpay — UPI, cards and net banking.</p>
         </div>
 
-        <!-- Student Inputs -->
         <div class="space-y-3 pt-1 text-xs">
           <div>
-            <label class="block font-semibold text-white/90 mb-1">Full Name</label>
-            <input type="text" id="custName" value="Manak Sehgal" class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-white text-sm focus:outline-none focus:border-[#c4953a]" placeholder="CA Rahul Sharma">
+            <label for="custName" class="block font-semibold text-white/90 mb-1">Full name</label>
+            <input type="text" id="custName" name="name" autocomplete="name" required class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-white text-sm focus:outline-none focus:border-[#c4953a]" placeholder="e.g. Rahul Sharma">
           </div>
-
           <div>
-            <label class="block font-semibold text-white/90 mb-1">Work Email Address (for Credentials)</label>
-            <input type="email" id="custEmail" value="manakppc@gmail.com" class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-white text-sm focus:outline-none focus:border-[#c4953a]" placeholder="rahul@ey.com">
+            <label for="custEmail" class="block font-semibold text-white/90 mb-1">Email <span class="text-white/50 font-normal">(this becomes your login)</span></label>
+            <input type="email" id="custEmail" name="email" autocomplete="email" required class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-white text-sm focus:outline-none focus:border-[#c4953a]" placeholder="you@example.com">
           </div>
-
           <div>
-            <label class="block font-semibold text-white/90 mb-1">WhatsApp Mobile Number</label>
+            <label for="custPhone" class="block font-semibold text-white/90 mb-1">WhatsApp mobile number</label>
             <div class="flex gap-2">
               <span class="p-3 bg-white/5 border border-white/15 rounded-lg text-white font-mono text-sm">+91</span>
-              <input type="tel" id="custPhone" value="9876543210" maxlength="10" class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-white font-mono text-sm focus:outline-none focus:border-[#c4953a]" placeholder="9876543210">
+              <input type="tel" id="custPhone" name="phone" inputmode="numeric" autocomplete="tel-national" maxlength="10" required class="w-full p-3 rounded-lg border border-white/15 bg-[#0a1320] text-white font-mono text-sm focus:outline-none focus:border-[#c4953a]" placeholder="10-digit number">
             </div>
           </div>
         </div>
 
-        <!-- Error Notification -->
-        <div id="checkoutError" class="hidden p-2.5 rounded-lg bg-red-500/15 border border-red-500/40 text-red-300 text-xs text-center font-semibold"></div>
+        <div id="checkoutError" role="alert" class="hidden p-2.5 rounded-lg bg-red-500/15 border border-red-500/40 text-red-300 text-xs text-center font-semibold"></div>
 
-        <!-- Pricing & Order Bump Box -->
         <div class="p-3.5 bg-white/5 border border-white/10 rounded-xl space-y-2.5 text-xs">
           <div class="flex justify-between items-center text-white">
-            <span class="font-medium">Founding Member Seat (Lifetime Access)</span>
-            <span class="font-mono font-bold text-[#c4953a]">₹1,499</span>
+            <span class="font-medium">AI in Accounting course · lifetime access</span>
+            <span class="font-mono font-bold text-[#c4953a]" data-price="base">₹1,499</span>
           </div>
-
-          <!-- Order Bump Toggle -->
           <div class="pt-2 border-t border-white/10 flex items-start gap-2.5 bg-[#c4953a]/10 p-2.5 rounded-lg border border-[#c4953a]/30">
-            <input type="checkbox" id="orderBumpCheckbox" onchange="toggleOrderBump()" class="mt-0.5 w-4 h-4 accent-[#c4953a] cursor-pointer">
+            <input type="checkbox" id="orderBumpCheckbox" onchange="updateCheckoutDisplay()" class="mt-0.5 w-4 h-4 accent-[#c4953a] cursor-pointer">
             <label for="orderBumpCheckbox" class="cursor-pointer text-[11px] text-white/90 leading-tight">
-              <strong class="text-[#c4953a]">ADD: 50+ Production Claude SOP Prompts + Excel Templates</strong>
-              <div class="text-white/60 mt-0.5">Instant copy-paste prompts for GL scrutiny &amp; fixed asset schedule (+₹399 only)</div>
+              <strong class="text-[#c4953a]">Add: 50+ Claude prompts &amp; SOP pack (+₹399)</strong>
+              <div class="text-white/60 mt-0.5">Copy-paste prompts for GL scrutiny, GST notices and fixed-asset schedules.</div>
             </label>
           </div>
-
+          <div class="flex justify-between items-center text-white/70">
+            <span>GST (18%)</span>
+            <span class="font-mono" data-price="gst">₹270</span>
+          </div>
           <div class="pt-2 border-t border-white/10 flex justify-between items-center text-sm font-bold text-white">
-            <span>Total Payable:</span>
-            <span id="checkoutTotalAmount" class="text-lg font-mono text-[#c4953a]">₹1,499</span>
+            <span>Total payable</span>
+            <span id="checkoutTotalAmount" class="text-lg font-mono text-[#c4953a]">₹1,769</span>
           </div>
         </div>
 
-        <!-- Dynamic QR Display -->
-        <div class="text-center p-4 bg-white/5 rounded-xl border border-white/10">
-          <p class="text-xs font-semibold text-white/80 mb-2">Scan with Any UPI App (GPay, PhonePe, Paytm, CRED)</p>
-          <div class="w-44 h-44 mx-auto bg-white p-2 rounded-xl shadow-lg">
-            <img id="checkoutQrImg" src="" alt="Dynamic UPI QR Code" class="w-full h-full object-contain">
-          </div>
-          <div class="mt-2 text-[11px] text-white/50 font-mono">
-            VPA: <span class="text-[#c4953a]">manakppc@okhdfcbank</span> · Instant Auto-Approval
-          </div>
-        </div>
-
-        <!-- 1-Click Mobile UPI Buttons -->
-        <div class="grid grid-cols-3 gap-2">
-          <a id="btnGpay" href="#" class="p-2.5 text-center text-xs font-bold rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/15 transition">GPay</a>
-          <a id="btnPhonepe" href="#" class="p-2.5 text-center text-xs font-bold rounded-lg bg-[#5f259f]/50 hover:bg-[#5f259f]/80 text-white border border-[#5f259f] transition">PhonePe</a>
-          <a id="btnPaytm" href="#" class="p-2.5 text-center text-xs font-bold rounded-lg bg-[#00baf2]/30 hover:bg-[#00baf2]/60 text-white border border-[#00baf2] transition">Paytm</a>
-        </div>
-
-        <!-- Payment Confirmation & Immediate Unlock Button -->
-        <button type="button" onclick="completePaymentAndAccess()" class="w-full btn btn-primary py-3.5 text-sm font-bold shadow-xl transition">
-          I Have Paid · Open Student Portal Now &rarr;
-        </button>
+        <button type="submit" id="checkoutPayBtn" class="w-full btn btn-primary py-3.5 text-sm font-bold shadow-xl transition">Proceed to secure payment →</button>
 
         <p class="text-[11px] text-center text-white/50">
-          🔒 Secure 256-Bit Encrypted Direct Bank Settlement. Instant course access granted upon clicking above.
+          By enrolling you agree to the <a href="/terms" target="_blank" class="underline">Terms</a> and <a href="/refund" target="_blank" class="underline">Refund policy</a>.
+          Payments are processed by Razorpay; we never see your card or UPI details.
         </p>
+      </form>
+
+      <!-- Step 2 (test mode only): simulated gateway, clearly labelled -->
+      <div id="testGatewaySection" class="hidden space-y-4">
+        <div>
+          <span class="modal-step-badge" style="background:#b45309;color:#fff">Test mode · no money is charged</span>
+          <h3 class="modal-title">Simulated payment</h3>
+          <p class="modal-subtitle">This stands in for the Razorpay window. With live Razorpay keys, the real UPI / card / net-banking window opens here and nothing else changes.</p>
+        </div>
+        <div class="p-3.5 bg-white/5 border border-white/10 rounded-xl text-xs text-white/80 space-y-1.5 font-mono">
+          <div>Order: <span id="testOrderId" class="text-white"></span></div>
+          <div>Amount: <span id="testOrderAmount" class="text-[#c4953a] font-bold"></span></div>
+        </div>
+        <button type="button" id="testPayBtn" onclick="simulateTestPayment()" class="w-full btn btn-primary py-3.5 text-sm font-bold">Simulate successful payment →</button>
+        <button type="button" onclick="backToDetails()" class="w-full py-2 text-xs text-white/60 underline">Cancel and go back</button>
       </div>
 
-      <!-- ── SECTION 2: PAYMENT SUCCESS & AUTO-REDIRECT ── -->
-      <div id="checkoutSuccessSection" class="text-center space-y-4 py-4 hidden">
-        <div class="w-16 h-16 mx-auto rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-3xl font-bold">
-          ✓
-        </div>
-        <h3 class="modal-title">Payment Confirmed! Welcome Aboard</h3>
-        <p class="text-xs text-white/80 max-w-sm mx-auto">Your founding membership is active. Video lessons and prompt vaults are unlocked.</p>
-
-        <div class="p-3 bg-white/5 rounded-xl border border-white/10 text-xs font-mono text-left space-y-1.5 text-white/80">
-          <div>Student: <span id="successName" class="text-white font-bold"></span></div>
-          <div>WhatsApp: <span id="successPhone" class="text-emerald-400 font-bold"></span></div>
-          <div>Amount: <span id="successAmount" class="text-[#c4953a] font-bold">₹1,499</span></div>
-        </div>
-
-        <div class="text-xs text-[#c4953a] font-semibold animate-pulse">
-          Redirecting to Course Portal in <span id="redirectCountdown">3</span> seconds...
-        </div>
-
-        <button type="button" onclick="goToPortalNow()" class="w-full btn btn-primary py-3.5 text-sm font-bold">
-          Enter Student Portal Immediately &rarr;
-        </button>
+      <!-- Step 3: confirming -->
+      <div id="checkoutProcessing" class="hidden text-center space-y-4 py-8">
+        <div class="w-12 h-12 mx-auto rounded-full border-2 border-[#c4953a] border-t-transparent animate-spin"></div>
+        <p class="text-sm text-white/80">Confirming your payment with the server…</p>
       </div>
-
     </div>
   </div>
 
@@ -644,31 +617,6 @@
       });
     });
 
-    // ── Countdown Timer (48-hour persistent) ──
-    var CD_KEY = 'aae_cd_end_live';
-    var CD_HOURS = 48;
-    var stored = localStorage.getItem(CD_KEY);
-    var endTime;
-    if (stored && parseInt(stored) > Date.now()) {
-      endTime = parseInt(stored);
-    } else {
-      endTime = Date.now() + CD_HOURS * 60 * 60 * 1000;
-      localStorage.setItem(CD_KEY, endTime);
-    }
-    var cdH = document.getElementById('cd-h');
-    var cdM = document.getElementById('cd-m');
-    var cdS = document.getElementById('cd-s');
-    function updateCD() {
-      var diff = Math.max(0, endTime - Date.now());
-      var h = Math.floor(diff / 3600000);
-      var m = Math.floor((diff % 3600000) / 60000);
-      var s = Math.floor((diff % 60000) / 1000);
-      if (cdH) cdH.textContent = h < 10 ? '0' + h : h;
-      if (cdM) cdM.textContent = m < 10 ? '0' + m : m;
-      if (cdS) cdS.textContent = s < 10 ? '0' + s : s;
-    }
-    updateCD();
-    setInterval(updateCD, 1000);
 
     // ── Sticky Mobile CTA Observer ──
     var sticky = document.getElementById('stickyCta');

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Payment confirmed — AI Accounting Engineer</title>
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link href="https://api.fontshare.com/v2/css?f[]=sentient@400,500,600,700&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="site-config.js"></script>
+  <script src="analytics.js" defer></script>
+</head>
+<body class="page-simple">
+  <nav>
+    <div class="wrap nav-inner">
+      <a href="/" class="brand"><span class="ai">AI</span>AccountingEngineer</a>
+      <div style="display:flex;align-items:center;gap:12px;"><a href="/portal" style="font-family:var(--mono);font-size:var(--text-sm);color:var(--gold);font-weight:600;">Student portal &rarr;</a></div>
+    </div>
+  </nav>
+  <main>
+    <div class="auth-wrap" style="max-width:520px">
+      <div class="auth-card" id="card">
+        <span class="ok-badge">✓ Payment confirmed</span>
+        <h1 style="margin-top:14px">Welcome aboard, <span id="firstName">there</span>.</h1>
+        <p class="sub">Your enrollment is complete. Your login email is <strong id="emailLabel" style="color:#fff"></strong>.</p>
+
+        <div class="order-box" id="orderBox">
+          <div class="row"><span>Order</span><span id="orderId" style="font-family:var(--mono)">…</span></div>
+          <div id="orderItems"></div>
+          <div class="row"><span>GST (18%)</span><span id="orderGst"></span></div>
+          <div class="row total"><span>Paid</span><span id="orderTotal"></span></div>
+          <div class="row" style="font-size:12px;color:rgba(250,248,243,.6)"><span>Payment ID</span><span id="paymentId" style="font-family:var(--mono)"></span></div>
+        </div>
+
+        <div id="pwSection">
+          <p class="sub" style="margin-bottom:4px"><strong style="color:#fff">One last step:</strong> create a password so you can log in from any device.</p>
+          <form id="pwForm" novalidate>
+            <label for="pw">Create a password <span style="opacity:.6;font-weight:400">(at least 8 characters)</span></label>
+            <input type="password" id="pw" autocomplete="new-password" minlength="8" required placeholder="Choose a password">
+            <label for="pw2">Repeat password</label>
+            <input type="password" id="pw2" autocomplete="new-password" minlength="8" required placeholder="Repeat it">
+            <div id="err" class="err" role="alert"></div>
+            <button type="submit" id="btn" class="btn btn-primary">Save password &amp; open the portal &rarr;</button>
+          </form>
+        </div>
+
+        <div id="readySection" style="display:none">
+          <a href="/portal" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:18px">Open your student portal &rarr;</a>
+        </div>
+
+        <p class="foot">A GST invoice for this payment can be requested at <a href="mailto:hello@aiaccountingengineer.com">hello@aiaccountingengineer.com</a>.</p>
+      </div>
+    </div>
+  <script>
+    (async function () {
+      var orderId = new URLSearchParams(location.search).get('order') || '';
+      var me, order;
+      try {
+        var r = await fetch('/api/auth/me', { cache: 'no-store' });
+        if (r.status === 401) { location.replace('/login?next=' + encodeURIComponent(location.pathname + location.search)); return; }
+        me = (await r.json()).user;
+        if (orderId) { var o = await fetch('/api/checkout/order?id=' + encodeURIComponent(orderId), { cache: 'no-store' }); if (o.ok) order = (await o.json()).order; }
+      } catch (e) {}
+      if (!me) { location.replace('/login'); return; }
+
+      document.getElementById('firstName').textContent = (me.name || '').split(' ')[0] || 'there';
+      document.getElementById('emailLabel').textContent = me.email;
+      var fmt = function (n) { return '₹' + Number(n || 0).toLocaleString('en-IN'); };
+      if (order) {
+        document.getElementById('orderId').textContent = order.id;
+        document.getElementById('orderItems').innerHTML = order.items.map(function (i) { return '<div class="row"><span>' + i.name + '</span><span>' + fmt(i.price) + '</span></div>'; }).join('');
+        document.getElementById('orderGst').textContent = fmt(order.amount.gst);
+        document.getElementById('orderTotal').textContent = fmt(order.amount.total);
+        document.getElementById('paymentId').textContent = order.paymentId || '';
+        // Conversion tracking: once per order
+        try {
+          var key = 'aae_purchase_tracked_' + order.id;
+          if (!localStorage.getItem(key) && window.aaeTrack) {
+            aaeTrack('purchase', { transaction_id: order.id, value: order.amount.total, tax: order.amount.gst, currency: 'INR',
+              items: order.items.map(function (i) { return { item_id: i.id, item_name: i.name, price: i.price, quantity: i.qty }; }) });
+            localStorage.setItem(key, '1');
+          }
+        } catch (e) {}
+      } else { document.getElementById('orderBox').style.display = 'none'; }
+
+      if (me.hasPassword) { document.getElementById('pwSection').style.display = 'none'; document.getElementById('readySection').style.display = 'block'; }
+
+      var form = document.getElementById('pwForm'), err = document.getElementById('err'), btn = document.getElementById('btn');
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault(); err.classList.remove('show');
+        var pw = document.getElementById('pw').value, pw2 = document.getElementById('pw2').value;
+        if (pw.length < 8) { err.textContent = 'Use at least 8 characters.'; err.classList.add('show'); return; }
+        if (pw !== pw2) { err.textContent = 'The two passwords do not match.'; err.classList.add('show'); return; }
+        btn.disabled = true; btn.textContent = 'Saving…';
+        var data;
+        try { var r2 = await fetch('/api/auth/set-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pw }) }); data = await r2.json(); }
+        catch (e2) { data = { ok: false, error: 'Network error. Please try again.' }; }
+        if (data.ok) { location.href = '/portal'; return; }
+        err.textContent = data.error || 'Could not save password.'; err.classList.add('show'); btn.disabled = false; btn.textContent = 'Save password & open the portal →';
+      });
+    })();
+  </script>
+  </main>
+  <footer>
+    <div class="wrap foot-inner">
+      <span class="brand"><span class="ai" style="color:var(--gold)">AI</span>AccountingEngineer</span>
+      <span>&copy; 2026 &middot; AI skills for finance professionals</span>
+      <span class="foot-links"><a href="/login">Student login</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/refund">Refunds</a><a href="/contact">Contact</a></span>
+      <a href="mailto:hello@aiaccountingengineer.com">hello@aiaccountingengineer.com</a>
+    </div>
+  </footer>
+</body>
+</html>

@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Accounting Engineer — Member Learning Portal</title>
+  <title>AI Accounting Engineer — Student Portal</title>
+  <meta name="robots" content="noindex">
+  <script src="site-config.js"></script>
+  <script src="analytics.js" defer></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -67,23 +70,24 @@
     <div class="hidden md:flex items-center gap-4 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 text-xs">
       <span class="text-white/60">Progress:</span>
       <div class="w-32 h-2 bg-black/40 rounded-full overflow-hidden border border-white/10">
-        <div id="topProgressBar" class="h-full bg-gradient-to-r from-[#c4953a] to-emerald-400 rounded-full transition-all duration-500" style="width: 20%;"></div>
+        <div id="topProgressBar" class="h-full bg-gradient-to-r from-[#c4953a] to-emerald-400 rounded-full transition-all duration-500" style="width: 0%;"></div>
       </div>
-      <span id="topProgressText" class="font-bold text-[#dfb35a]">1/5 Completed (20%)</span>
+      <span id="topProgressText" class="font-bold text-[#dfb35a]">…</span>
     </div>
 
     <!-- Member Profile & Actions -->
     <div class="flex items-center gap-3">
-      <a href="https://chat.whatsapp.com/" target="_blank" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition">
-        <span>💬 VIP WhatsApp Group</span>
+      <a id="whatsappLink" href="#" target="_blank" rel="noopener" style="display:none" class="sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition">
+        <span>💬 WhatsApp group</span>
       </a>
+      <button type="button" onclick="logout()" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 hover:text-white border border-white/10 text-xs font-semibold transition">Log out</button>
       <div class="flex items-center gap-2 pl-2 border-l border-white/10 text-xs">
         <div class="w-7 h-7 rounded-full bg-[#c4953a]/25 border border-[#c4953a]/50 flex items-center justify-center text-[11px] font-bold text-[#dfb35a]" id="userAvatarInitials">
           CA
         </div>
         <div class="hidden xl:block text-left">
-          <div class="text-[11px] font-bold text-white leading-tight" id="userNameLabel">Chartered Accountant</div>
-          <div class="text-[9px] text-emerald-400 font-mono" id="userPhoneLabel">+91 Verified Member</div>
+          <div class="text-[11px] font-bold text-white leading-tight" id="userNameLabel">…</div>
+          <div class="text-[9px] text-emerald-400 font-mono" id="userPhoneLabel"></div>
         </div>
       </div>
     </div>
@@ -95,42 +99,11 @@
     <span id="toastMessage">Prompt copied to clipboard!</span>
   </div>
 
-  <!-- ACCESS LOCK MODAL (SHOWN TO UNPAID USERS) -->
-  <div id="accessLockedModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md hidden">
-    <div class="max-w-md w-full bg-[#0d1624] border border-[#c4953a]/40 rounded-3xl p-6 sm:p-8 text-center space-y-6 shadow-2xl relative">
-      <div class="w-16 h-16 rounded-2xl bg-[#c4953a]/20 border border-[#c4953a]/40 text-[#dfb35a] flex items-center justify-center text-3xl mx-auto">
-        🔒
-      </div>
-      <div class="space-y-2">
-        <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">
-          Member Access Required
-        </span>
-        <h2 class="text-xl font-extrabold text-white">Course Content Locked</h2>
-        <p class="text-xs text-white/70 leading-relaxed">
-          This portal contains proprietary prompt vaults, video lessons, and Excel templates for enrolled students of <b>CA Varsha Varyani's AI in Accounting</b> program.
-        </p>
-      </div>
-
-      <div class="space-y-3 pt-2">
-        <a href="/?open=checkout" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#c4953a] to-[#dfb35a] hover:from-[#dfb35a] hover:to-[#c4953a] text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-xl transition">
-          <span>⚡ Enroll Now for ₹1,499 (Instant Access)</span>
-        </a>
-
-        <div class="p-4 rounded-xl bg-black/40 border border-white/10 space-y-2 text-left">
-          <div class="text-[11px] font-bold text-white">Already Enrolled? Log in with Mobile:</div>
-          <div class="flex gap-2">
-            <input type="tel" id="loginPhoneInput" placeholder="Enter 10-digit WhatsApp #" class="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-white placeholder-white/40 focus:outline-none focus:border-[#c4953a]" maxlength="10">
-            <button onclick="verifyExistingMemberPhone()" class="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shrink-0 transition">
-              Unlock
-            </button>
-          </div>
-          <p id="loginErrorMsg" class="text-[10px] text-red-400 hidden">Please enter a valid mobile number.</p>
-        </div>
-      </div>
-
-      <a href="/" class="inline-block text-xs text-white/50 hover:text-white underline">
-        ← Back to Homepage
-      </a>
+  <!-- AUTH GATE: shown until /api/course/lessons confirms the session; unauthenticated users are sent to /login -->
+  <div id="authGate" class="fixed inset-0 z-50 flex items-center justify-center bg-[#070c14]">
+    <div class="text-center space-y-3">
+      <div id="authGateSpinner" class="w-10 h-10 mx-auto rounded-full border-2 border-[#c4953a] border-t-transparent animate-spin"></div>
+      <p id="authGateText" class="text-xs text-white/60">Checking your access…</p>
     </div>
   </div>
   <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
@@ -153,10 +126,10 @@
       </div>
 
       <!-- Order Bump Bonus Box -->
-      <div class="p-4 m-3 rounded-xl bg-gradient-to-br from-[#c4953a]/20 to-black/40 border border-[#c4953a]/30 space-y-2">
+      <div id="bumpBox" class="hidden p-4 m-3 rounded-xl bg-gradient-to-br from-[#c4953a]/20 to-black/40 border border-[#c4953a]/30 space-y-2">
         <div class="flex items-center justify-between">
-          <span class="text-[10px] font-extrabold tracking-wider uppercase text-[#dfb35a] bg-[#c4953a]/20 px-2 py-0.5 rounded">Order Bump Unlocked</span>
-          <span class="text-xs text-emerald-400 font-bold">₹399 Pack Included</span>
+          <span class="text-[10px] font-extrabold tracking-wider uppercase text-[#dfb35a] bg-[#c4953a]/20 px-2 py-0.5 rounded">Included in your order</span>
+          <span class="text-xs text-emerald-400 font-bold">Prompt &amp; SOP pack</span>
         </div>
         <h4 class="text-xs font-bold text-white">50+ Ready Claude Prompts & SOP Pack</h4>
         <p class="text-[11px] text-white/70 leading-relaxed">
@@ -177,19 +150,17 @@
           <div class="flex items-center gap-2 text-xs text-[#dfb35a] font-semibold mb-1">
             <span id="currentModuleBadge">Module 1</span>
             <span>•</span>
-            <span id="currentDurationBadge" class="text-white/60">28 Minutes</span>
+            <span id="currentDurationBadge" class="text-white/60"></span>
             <span>•</span>
             <span class="text-emerald-400 font-medium">Hands-on Implementation</span>
           </div>
-          <h1 class="text-xl lg:text-2xl font-bold text-white" id="currentLessonTitle">
-            Foundations: Setting up Claude 3.5 Sonnet for Indian CA Firm Practice
-          </h1>
+          <h1 class="text-xl lg:text-2xl font-bold text-white" id="currentLessonTitle">Loading…</h1>
         </div>
 
         <div class="flex items-center gap-3">
           <button id="markCompleteBtn" onclick="toggleCurrentLessonCompletion()" class="px-4 py-2 rounded-xl text-xs font-bold border transition flex items-center gap-2 bg-white/5 border-white/10 hover:border-emerald-500 text-white">
             <span id="completeCheckIcon">○</span>
-            <span id="completeBtnText">Mark Lesson as Complete</span>
+            <span id="completeBtnText">Mark as complete</span>
           </button>
         </div>
       </div>
@@ -199,12 +170,13 @@
         <div class="relative w-full rounded-2xl overflow-hidden bg-black border border-white/10 shadow-2xl aspect-video max-h-[520px] mx-auto">
           <iframe
             id="bunnyPlayerIframe"
-            src="https://iframe.mediadelivery.net/embed/786834/4e8cdcac-b9ab-42db-9b72-bdc1d0a58b52?autoplay=false&loop=false&muted=false&preload=true&responsive=true"
+            src="about:blank"
             loading="lazy"
             style="border:0;position:absolute;top:0;left:0;height:100%;width:100%;"
             allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;"
             allowfullscreen="true">
           </iframe>
+          <div id="videoUnavailable" class="hidden absolute inset-0 flex items-center justify-center text-xs text-white/60 bg-black/80">This lesson's video is being uploaded.</div>
         </div>
       </div>
 
@@ -230,12 +202,10 @@
         <div id="tabContent-prompts" class="tab-content py-5 space-y-4">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-sm font-bold text-white">Module Ready-To-Use AI Prompts</h3>
-              <p class="text-xs text-white/60">Click any prompt to instantly copy it formatted for Claude 3.5 Sonnet or ChatGPT.</p>
+              <h3 class="text-sm font-bold text-white">Ready-to-use AI prompts for this module</h3>
+              <p class="text-xs text-white/60">Copy a prompt and paste it into Claude (or another AI assistant) with your own documents.</p>
             </div>
-            <span class="text-xs font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-3 py-1 rounded-full">
-              4 Tested Prompts for this Lesson
-            </span>
+            <span id="promptCountBadge" class="text-xs font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-3 py-1 rounded-full"></span>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="promptsContainer">
@@ -247,52 +217,10 @@
         <div id="tabContent-templates" class="tab-content hidden py-5 space-y-4">
           <div>
             <h3 class="text-sm font-bold text-white">Downloadable Implementation Files</h3>
-            <p class="text-xs text-white/60">Raw templates used by CA Varsha Varyani in the live demonstration.</p>
+            <p class="text-xs text-white/60">Templates used by CA Varsha Varyani in the lessons.</p>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="templatesContainer">
-            <!-- Template 1 -->
-            <div class="p-4 rounded-xl bg-black/40 border border-white/10 hover:border-[#c4953a]/50 transition space-y-3">
-              <div class="w-10 h-10 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-lg">
-                📊
-              </div>
-              <div>
-                <h4 class="text-xs font-bold text-white">Bank_Reconciliation_Master_Engine.xlsx</h4>
-                <p class="text-[11px] text-white/60 mt-0.5">Pre-built formulas with Fuzzy Lookup & Narration Extractor.</p>
-              </div>
-              <button onclick="downloadMock('Bank_Reconciliation_Master_Engine.xlsx')" class="w-full py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold text-xs flex items-center justify-center gap-2 transition">
-                <span>⬇ Download Sheet (.xlsx)</span>
-              </button>
-            </div>
-
-            <!-- Template 2 -->
-            <div class="p-4 rounded-xl bg-black/40 border border-white/10 hover:border-[#c4953a]/50 transition space-y-3">
-              <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg">
-                ⚙️
-              </div>
-              <div>
-                <h4 class="text-xs font-bold text-white">Tally_XML_Voucher_Generator.xml</h4>
-                <p class="text-[11px] text-white/60 mt-0.5">Bulk import purchase vouchers directly into TallyPrime.</p>
-              </div>
-              <button onclick="downloadMock('Tally_XML_Voucher_Generator.xml')" class="w-full py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold text-xs flex items-center justify-center gap-2 transition">
-                <span>⬇ Download XML Template</span>
-              </button>
-            </div>
-
-            <!-- Template 3 -->
-            <div class="p-4 rounded-xl bg-black/40 border border-white/10 hover:border-[#c4953a]/50 transition space-y-3">
-              <div class="w-10 h-10 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-lg">
-                📑
-              </div>
-              <div>
-                <h4 class="text-xs font-bold text-white">CA_Firm_Client_AI_SOP_Handbook.pdf</h4>
-                <p class="text-[11px] text-white/60 mt-0.5">Step-by-step SOP for articles and junior accountants.</p>
-              </div>
-              <button onclick="downloadMock('CA_Firm_Client_AI_SOP_Handbook.pdf')" class="w-full py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold text-xs flex items-center justify-center gap-2 transition">
-                <span>⬇ Download PDF SOP</span>
-              </button>
-            </div>
-          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="templatesContainer"><!-- rendered by JS --></div>
         </div>
 
         <!-- TAB 3: LESSON NOTES & SOP -->
@@ -309,7 +237,7 @@
             </div>
             <h4 class="text-xs font-bold text-white pt-2">Standard Implementation SOP:</h4>
             <ul class="space-y-2 list-disc pl-5 text-white/70">
-              <li>Open Claude 3.5 Sonnet (free or Pro tier) or your preferred AI assistant.</li>
+              <li>Open Claude (free or Pro plan) or your preferred AI assistant.</li>
               <li>Copy the tested prompt from the <b>Prompt Vault</b> tab.</li>
               <li>Upload your source document (Invoice, Bank CSV, GSTR-2B extract).</li>
               <li>Review and cross-verify totals before final posting in your accounting software.</li>
@@ -322,16 +250,14 @@
           <div class="p-6 rounded-2xl bg-gradient-to-r from-emerald-950/40 to-black/60 border border-emerald-500/30 flex flex-col md:flex-row items-center justify-between gap-6">
             <div class="space-y-2 text-center md:text-left">
               <span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-[11px] font-bold border border-emerald-500/30">
-                Direct Mentorship & Cohort Doubt Solving
+                Mentorship &amp; doubt solving
               </span>
               <h3 class="text-lg font-bold text-white">Got Stuck On A Client File?</h3>
               <p class="text-xs text-white/70 max-w-xl">
-                Join our private WhatsApp cohort group with CA Varsha Varyani. Share your bank statement or GST query and get response within 4 hours.
+                Join the private WhatsApp group with CA Varsha Varyani and fellow students. Share your bank statement or GST query and get a response within one working day.
               </p>
             </div>
-            <a href="https://chat.whatsapp.com/" target="_blank" class="px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shrink-0 flex items-center gap-2 shadow-xl shadow-emerald-950 transition">
-              <span>💬 Join Private WhatsApp VIP Community</span>
-            </a>
+            <a id="communityJoinBtn" href="#" target="_blank" rel="noopener" class="px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shrink-0 flex items-center gap-2 shadow-xl shadow-emerald-950 transition">💬 Join the WhatsApp group</a>
           </div>
         </div>
 
@@ -341,441 +267,203 @@
 
   </div>
 
-  <!-- PORTAL SCRIPT -->
+  <!-- PORTAL SCRIPT — all content comes from /api/course/lessons after the server checks the session cookie -->
   <script>
-    // Bunny.net Stream Video Library Configuration
-    const BUNNY_LIBRARY_ID = '786834';
-
-    // Course Curriculum Data — Exactly Matched with Superprofile / CA Varsha Varyani Course
-    const CURRICULUM = [
-      {
-        id: 1,
-        code: "M01",
-        title: "Claude 101 — Foundation",
-        duration: "45 Min",
-        category: "Foundation",
-        unlockSchedule: "Unlocks Instantly",
-        isUnlocked: true,
-        bunnyVideoId: "4e8cdcac-b9ab-42db-9b72-bdc1d0a58b52",
-        description: "Before we touch any workflow, you need to understand how to actually talk to AI — because it's nothing like a Google search. This module covers how to frame your work for Claude, what to ask, how to check what comes back, and why that skill is the foundation everything else is built on.",
-        result: "You go from 'I don't know what to ask' to giving Claude work and getting usable output back — in your first session.",
-        poster: "https://media-cdn.cosmofeed.com/chat/native-products/691ad2ab1e76fb001325bd21/88f0c6d28b2bbc76272400976fecb811a3c53a593edc926e.png",
-        prompts: [
-          {
-            title: "Claude Accounting Framework Master Prompt",
-            useCase: "Set in Claude Projects or System Prompt before work",
-            content: "You are an expert Indian Chartered Accountant with 11+ years of experience across Big 4 (EY), global MNCs, and high-growth finance teams. In this session, I will provide you with financial source documents (trial balances, invoices, bank dumps, GST returns). Your role is to: 1) Extract clean structured data, 2) Apply Indian Accounting Standards (Ind AS / AS) rules, 3) Highlight exceptions rather than repeating matched rows, and 4) Provide reviewable outputs with clear audit trails. Never hallucinate missing ledger accounts or transaction dates."
-          },
-          {
-            title: "Prompt Validation & Output Cross-Check",
-            useCase: "Verify AI output before approving and posting to books",
-            content: "Perform a self-audit on the output generated above. Verify: 1) Do total debits exactly equal total credits? 2) Are any dates outside the financial period? 3) Flag any high-value transactions (> ₹50,000) that require mandatory TDS or GST e-invoicing compliance. Return a structured verification scorecard."
-          }
-        ]
-      },
-      {
-        id: 2,
-        code: "M02",
-        title: "Journal entries",
-        duration: "52 Min",
-        category: "Ledger",
-        unlockSchedule: "Drips after 5 days",
-        isUnlocked: true,
-        bunnyVideoId: "9c632bf7-9220-430b-a00f-77f6684d81bb",
-        description: "You take an invoice, a bank statement, a vendor bill — and Claude reads it and gives you the journal entry, correctly classified, with narration. You review, approve, post.",
-        result: "20 minutes per entry → 2 minutes. You review instead of type.",
-        poster: "https://media-cdn.cosmofeed.com/chat/native-products/6176b3d141ed2447e4e37e90/7c920decbde58110e2231a64dcd394118c721983372820ba.jpeg",
-        prompts: [
-          {
-            title: "Invoice & Source Document to Journal Entry Parser",
-            useCase: "Convert PDF/Image invoice text into 3-column voucher",
-            content: "Read the attached vendor invoice / expense claim text. Extract: Vendor Name, Invoice Date, Invoice #, Base Amount, CGST, SGST, IGST, and Total Amount. Determine the correct Expense Ledger Account under standard Chart of Accounts. Generate the complete Journal Entry with standard professional narration: 'Being [Expense Description] against Invoice #[InvoiceNo] dated [Date] approved for payment.' Format as a clean table with Debit and Credit columns."
-          },
-          {
-            title: "Bulk Invoices Narration & Classification Engine",
-            useCase: "Process batch expenses in one prompt",
-            content: "Analyze the attached 25 vendor expense rows. Classify each row into its appropriate accounting head: [Rent, Cloud Infrastructure, Legal & Professional Fees, Office Supplies, Travel]. Flag any invoice requiring TDS deduction under Section 194C, 194J, or 194I with the applicable threshold and rate."
-          }
-        ]
-      },
-      {
-        id: 3,
-        code: "M03",
-        title: "Bank reconciliation & fixed asset depreciation",
-        duration: "58 Min",
-        category: "Ledger",
-        unlockSchedule: "Drips after 5 days",
-        isUnlocked: true,
-        bunnyVideoId: "f66542f3-9a50-4f8e-a521-a6b7d7681667",
-        description: "Paste your bank data and let Claude do the matching. You spend your time on the items that actually don't reconcile — not the ones that do. Depreciation schedules work the same way.",
-        result: "Hours of matching → minutes. Depreciation schedules you can hand to anyone, generated in one pass.",
-        poster: "https://media-cdn.cosmofeed.com/chat/native-products/6176b3d141ed2447e4e37e90/fa74ee5188d0f973efc2af53188ce02948816d1eff4af7e6.jpeg",
-        prompts: [
-          {
-            title: "Bank Statement Matching & Exception Extractor",
-            useCase: "Reconcile Bank Dump vs General Ledger Cash Book in Excel",
-            content: "I have provided two tables: Table 1 (Bank Statement) and Table 2 (Books of Accounts). Perform automated reconciliation by matching date (within +/- 3 days buffer), exact amount, and reference numbers. Separate output into: 1) Matched Entries (total count and value), 2) Outstanding Cheques Issued but Not Presented, 3) Uncredited Deposits, 4) Bank Charges & Interest not booked in ledger with suggested adjustment journal entries."
-          },
-          {
-            title: "Companies Act Schedule II Fixed Asset Depreciation",
-            useCase: "Generate SLM/WDV depreciation schedules",
-            content: "Generate a complete Fixed Asset Register Depreciation Schedule under Companies Act 2013 (Schedule II) using the Written Down Value (WDV) method. For each asset class [Computers (3 yrs), Plant & Machinery (15 yrs), Furniture (10 yrs)], calculate: Opening WDV, Additions during the year (split into >180 days and <180 days), Depreciation for the year, and Closing WDV. Also show the deferred tax impact comparison with Income Tax Act rules (Section 32)."
-          }
-        ]
-      },
-      {
-        id: 4,
-        code: "M04",
-        title: "GST reconciliation",
-        duration: "60 Min",
-        category: "Compliance",
-        unlockSchedule: "Drips after 5 days",
-        isUnlocked: true,
-        bunnyVideoId: "7785eb45-321b-4200-8ad7-fc8c82bcd4bd",
-        description: "Claude runs the 2A vs 2B comparison, flags the mismatches, and gives you a clean exception list. You know exactly what needs attention and what doesn't.",
-        result: "A full day of GST matching → one hour of focused review.",
-        poster: "https://media-cdn.cosmofeed.com/chat/native-products/6176b3d141ed2447e4e37e90/8ab9b6c13697c930fcc9b35cfbd08b788e98d8188435a37d.jpeg",
-        prompts: [
-          {
-            title: "GSTR-2B vs Purchase Register 2-Way Matcher",
-            useCase: "Identify missing ITC and vendor filing discrepancies",
-            content: "Compare the attached GSTR-2B government portal extract against our internal Purchase Register. Reconcile on GSTIN, Invoice Number, Invoice Date, and Taxable Value (allow +/- ₹1 rounding tolerance). Categorize each invoice into: 1) Matched (Eligible for ITC in Table 4A5 of GSTR-3B), 2) In GSTR-2B but Missing in Books, 3) In Books but Missing in GSTR-2B (Ineligible ITC under Sec 16(2)(aa)), 4) Tax Amount Mismatches. Format as an audit-ready summary."
-          },
-          {
-            title: "Automated Vendor ITC Follow-up Notice",
-            useCase: "Email/WhatsApp notice for defaulting suppliers",
-            content: "Generate a professional, firm compliance communication for Vendor [Vendor Name], GSTIN [GSTIN]. State that [Count] invoices totaling ₹[Total Tax] are currently not reflecting in our GSTR-2B for the period [Month Year], blocking our input tax credit under Section 16(2)(aa). Request them to confirm filing of GSTR-1 before the 11th of this month to avoid payment withholding."
-          }
-        ]
-      },
-      {
-        id: 5,
-        code: "M05",
-        title: "Month-end close (Capstone)",
-        duration: "65 Min",
-        category: "Capstone",
-        unlockSchedule: "Drips after 5 days",
-        isUnlocked: true,
-        bunnyVideoId: "e26a756b-7495-4fe5-9a98-b041362956f1",
-        description: "GL scrutiny, tie-outs, flux notes — this module brings everything together into a close that finishes on time. The capstone where hours saved across every module compound.",
-        result: "Close on Day 5 instead of Day 15. The single biggest career unlock in this course.",
-        poster: "https://media-cdn.cosmofeed.com/chat/native-products/6176b3d141ed2447e4e37e90/a47afdd6c1ab2002cd45b834d198e1c55ffc640cb22c0a4d.jpeg",
-        prompts: [
-          {
-            title: "GL Scrutiny & Unusual Movement Anomaly Detector",
-            useCase: "Scan trial balance for balance sheet audit",
-            content: "Review the attached closing Trial Balance. Conduct detailed General Ledger scrutiny: 1) Identify abnormal balances (e.g., negative cash, debit balance in trade creditors, credit balance in trade receivables), 2) Flag any expense ledger showing > 25% fluctuation month-over-month (Flux Analysis) and require explanations, 3) Verify that all clearing accounts (GR/IR, payroll clearing, bank transit) are zeroed out. Produce an Executive Close Checklist."
-          },
-          {
-            title: "Day 5 Executive Close & Flux Note Summary",
-            useCase: "Prepare management deck commentary",
-            content: "You are the Financial Controller preparing the Day 5 month-end close deck for the CFO and Board. Based on the finalized P&L and Balance Sheet figures attached, draft the Monthly Management Flux Commentary covering: 1) Revenue drivers vs budget, 2) Gross margin walk, 3) Operating expense variances, 4) Working capital days (DSO, DPO, DIO). Keep it punchy, professional, and data-backed."
-          }
-        ]
-      }
-    ];
-
+    let CURRICULUM = [];
+    let RESOURCES = [];
+    let USER = null;
     let currentModuleIndex = 0;
-    let completedLessons = new Set([1]); // Default lesson 1 completed
-    let isPlaying = false;
+    let completedLessons = new Set();
+    let saveTimer = null;
 
-    // Initialize from URL params & Enforce Security Lock
-    function initUserSession() {
-      const params = new URLSearchParams(window.location.search);
-      let token = params.get('token');
-      let phone = params.get('phone');
-      let name = params.get('name');
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-      // If user came via checkout, save their auth session
-      if (token && phone) {
-        localStorage.setItem('aae_auth_token', token);
-        localStorage.setItem('aae_user_phone', phone);
-        if (name) localStorage.setItem('aae_user_name', name);
-      } else {
-        // Check if existing saved session exists
-        token = localStorage.getItem('aae_auth_token');
-        phone = localStorage.getItem('aae_user_phone');
-        name = localStorage.getItem('aae_user_name');
-      }
+    function goLogin() { location.replace('/login?next=' + encodeURIComponent('/portal')); }
 
-      // If no token exists, auto-grant member access for instant playback
-      if (!token) {
-        token = 'AAE-ACTIVE-MEMBER';
-        name = name || 'Enrolled Student';
-        phone = phone || '9876543210';
-        localStorage.setItem('aae_auth_token', token);
-        localStorage.setItem('aae_user_phone', phone);
-        localStorage.setItem('aae_user_name', name);
-      }
-
-      name = name || 'CA Member';
-      phone = phone || '9876543210';
-
-      document.getElementById('accessLockedModal').classList.add('hidden');
-      document.getElementById('userNameLabel').innerText = name;
-      document.getElementById('userPhoneLabel').innerText = `+91 ${phone} • VIP Access`;
-      document.getElementById('userAvatarInitials').innerText = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'CA';
-
-      // Load progress from localStorage if available
+    async function initPortal() {
+      let data;
       try {
-        const saved = localStorage.getItem('aae_completed_lessons');
-        if (saved) {
-          completedLessons = new Set(JSON.parse(saved));
-        }
-      } catch (e) {}
-
-      renderCurriculum();
-      loadLesson(0);
-      updateProgressDisplay();
-    }
-
-    function verifyExistingMemberPhone() {
-      const input = document.getElementById('loginPhoneInput');
-      const error = document.getElementById('loginErrorMsg');
-      const phone = input ? input.value.trim() : '';
-
-      if (!phone || phone.length < 10) {
-        if (error) {
-          error.innerText = 'Please enter a valid 10-digit WhatsApp number.';
-          error.classList.remove('hidden');
-        }
+        const r = await fetch('/api/course/lessons', { cache: 'no-store' });
+        if (r.status === 401) return goLogin();
+        data = await r.json();
+      } catch (e) { data = null; }
+      if (!data || !data.ok) {
+        $('authGateText').textContent = (data && data.error) || 'Could not load the course. Please refresh.';
+        $('authGateSpinner').style.display = 'none';
+        if (data && data.code === 'NO_ACCESS') setTimeout(() => { location.href = '/?open=checkout'; }, 2500);
         return;
       }
+      USER = data.user;
+      CURRICULUM = data.course.modules;
+      RESOURCES = data.course.resources || [];
+      completedLessons = new Set((data.progress && data.progress.completed) || []);
+      const last = data.progress && data.progress.lastModule;
+      currentModuleIndex = Math.max(0, CURRICULUM.findIndex((m) => m.id === last));
 
-      // Generate access session for registered phone
-      const token = `AAE-MEM-${Date.now().toString().slice(-6)}`;
-      localStorage.setItem('aae_auth_token', token);
-      localStorage.setItem('aae_user_phone', phone);
-      localStorage.setItem('aae_user_name', 'Verified CA Member');
+      $('userNameLabel').textContent = USER.name || 'Student';
+      $('userPhoneLabel').textContent = USER.email;
+      $('userAvatarInitials').textContent = (USER.name || 'S').split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
+      if (data.course.whatsappGroupUrl) { $('whatsappLink').href = data.course.whatsappGroupUrl; $('whatsappLink').style.display=''; $('communityJoinBtn').href = data.course.whatsappGroupUrl; }
+      else { $('communityJoinBtn').href = 'mailto:' + (data.course.supportEmail || 'hello@aiaccountingengineer.com'); $('communityJoinBtn').textContent = '✉ Email the mentor team'; }
+      if (USER.hasBump) $('bumpBox').classList.remove('hidden');
 
-      document.getElementById('accessLockedModal').classList.add('hidden');
-      initUserSession();
-      showToast('🎉 Welcome back! Course portal unlocked.');
+      renderCurriculum();
+      renderResources();
+      loadLesson(currentModuleIndex);
+      updateProgressDisplay();
+      $('authGate').classList.add('hidden');
     }
 
-    // Render Curriculum Sidebar
-    function renderCurriculum() {
-      const list = document.getElementById('curriculumList');
-      list.innerHTML = '';
+    async function logout() {
+      try { await fetch('/api/auth/logout', { method: 'POST' }); } catch (e) {}
+      location.href = '/login';
+    }
 
+    function renderCurriculum() {
+      const list = $('curriculumList');
+      list.innerHTML = '';
       CURRICULUM.forEach((mod, idx) => {
         const isActive = idx === currentModuleIndex;
         const isCompleted = completedLessons.has(mod.id);
-
-        const card = document.createElement('div');
-        card.className = `p-3.5 rounded-xl cursor-pointer border transition text-left ${
-          isActive 
-            ? 'bg-[#c4953a]/15 border-[#c4953a] shadow-lg' 
-            : 'bg-black/30 border-white/5 hover:border-white/20'
-        }`;
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = `w-full p-3.5 rounded-xl cursor-pointer border transition text-left ${isActive ? 'bg-[#c4953a]/15 border-[#c4953a] shadow-lg' : 'bg-black/30 border-white/5 hover:border-white/20'}`;
         card.onclick = () => loadLesson(idx);
-
         card.innerHTML = `
           <div class="flex items-start justify-between gap-2">
-            <span class="text-[10px] font-bold uppercase tracking-wider ${isActive ? 'text-[#dfb35a]' : 'text-white/40'}">
-              ${mod.code} • ${mod.duration}
-            </span>
-            <span class="text-xs ${isCompleted ? 'text-emerald-400 font-bold' : 'text-white/30'}">
-              ${isCompleted ? '✓ Done' : mod.unlockSchedule}
-            </span>
+            <span class="text-[10px] font-bold uppercase tracking-wider ${isActive ? 'text-[#dfb35a]' : 'text-white/40'}">${esc(mod.code)} • ${esc(mod.duration)}</span>
+            <span class="text-xs ${isCompleted ? 'text-emerald-400 font-bold' : 'text-white/30'}">${isCompleted ? '✓ Done' : esc(mod.unlockSchedule)}</span>
           </div>
-          <h4 class="text-xs font-bold mt-1 text-white leading-snug line-clamp-2">
-            ${mod.title}
-          </h4>
+          <h4 class="text-xs font-bold mt-1 text-white leading-snug line-clamp-2">${esc(mod.title)}</h4>
           <div class="mt-2 flex items-center justify-between text-[11px] text-white/50">
-            <span>${mod.category}</span>
-            <span class="${isActive ? 'text-[#dfb35a] font-bold' : 'text-white/40'}">
-              ${isActive ? '▶ Playing' : 'Watch'}
-            </span>
-          </div>
-        `;
+            <span>${esc(mod.category)}</span>
+            <span class="${isActive ? 'text-[#dfb35a] font-bold' : 'text-white/40'}">${isActive ? '▶ Playing' : 'Watch'}</span>
+          </div>`;
         list.appendChild(card);
       });
     }
 
-    // Load Specific Lesson & Stream from Bunny.net
+    function renderResources() {
+      const c = $('templatesContainer');
+      c.innerHTML = '';
+      if (!RESOURCES.length) { c.innerHTML = '<p class="text-xs text-white/60">Downloadable files will appear here as the instructor uploads them.</p>'; return; }
+      RESOURCES.forEach((r) => {
+        const mod = CURRICULUM.find((m) => m.id === r.moduleId);
+        const card = document.createElement('div');
+        card.className = 'p-4 rounded-xl bg-black/40 border border-white/10 space-y-3';
+        card.innerHTML = `
+          <div class="text-[10px] font-bold uppercase tracking-wider text-white/40">${mod ? esc(mod.code) + ' · ' + esc(mod.title) : 'Course resource'}</div>
+          <div><h4 class="text-xs font-bold text-white">${esc(r.title)}</h4><p class="text-[11px] text-white/60 mt-0.5">${esc(r.description || '')}</p></div>
+          ${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener" class="block text-center w-full py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold text-xs transition">⬇ Download</a>`
+                  : `<div class="w-full py-2 rounded-lg bg-white/5 text-white/40 font-semibold text-xs text-center border border-dashed border-white/10">Coming soon — being prepared by the instructor</div>`}`;
+        c.appendChild(card);
+      });
+    }
+
     function loadLesson(idx) {
       currentModuleIndex = idx;
       const mod = CURRICULUM[idx];
-
-      document.getElementById('currentModuleBadge').innerText = `${mod.code}: ${mod.category}`;
-      document.getElementById('currentDurationBadge').innerText = mod.duration;
-      document.getElementById('currentLessonTitle').innerText = mod.title;
-
-      // Update Bunny.net Stream Embed Iframe
-      const bunnyIframe = document.getElementById('bunnyPlayerIframe');
-      if (bunnyIframe && mod.bunnyVideoId) {
-        bunnyIframe.src = `https://iframe.mediadelivery.net/embed/${BUNNY_LIBRARY_ID}/${mod.bunnyVideoId}?autoplay=false&loop=false&muted=false&preload=true&responsive=true`;
-      }
-
-      // Update Focus & Outcome in Notes tab
-      const focusEl = document.getElementById('lessonFocusDescription');
-      if (focusEl) focusEl.innerHTML = `<b>Workflow Scope:</b> ${mod.description}`;
-      const resEl = document.getElementById('lessonResultOutcome');
-      if (resEl) resEl.innerHTML = `<b>Target Outcome:</b> ${mod.result}`;
-
-      // Update completion button state
+      if (!mod) return;
+      $('currentModuleBadge').textContent = `${mod.code}: ${mod.category}`;
+      $('currentDurationBadge').textContent = mod.duration;
+      $('currentLessonTitle').textContent = mod.title;
+      const iframe = $('bunnyPlayerIframe');
+      if (mod.embedUrl) { iframe.src = mod.embedUrl; $('videoUnavailable').classList.add('hidden'); }
+      else { iframe.src = 'about:blank'; $('videoUnavailable').classList.remove('hidden'); }
+      $('lessonFocusDescription').innerHTML = `<b>Workflow scope:</b> ${esc(mod.description)}`;
+      $('lessonResultOutcome').innerHTML = `<b>Target outcome:</b> ${esc(mod.result)}`;
+      $('promptCountBadge').textContent = `${(mod.prompts || []).length} tested prompts for this lesson`;
       updateCompleteBtnState();
-
-      // Render Prompts for this lesson
-      renderPrompts(mod.prompts);
-
-      // Re-render curriculum highlight
+      renderPrompts(mod.prompts || []);
       renderCurriculum();
+      queueSave();
     }
 
-    // Toggle Lesson Completion
     function toggleCurrentLessonCompletion() {
-      const currentMod = CURRICULUM[currentModuleIndex];
-      if (completedLessons.has(currentMod.id)) {
-        completedLessons.delete(currentMod.id);
-      } else {
-        completedLessons.add(currentMod.id);
-        showToast(`🎉 Module ${currentMod.id} marked as complete!`);
-      }
-
-      try {
-        localStorage.setItem('aae_completed_lessons', JSON.stringify([...completedLessons]));
-      } catch (e) {}
-
+      const mod = CURRICULUM[currentModuleIndex];
+      if (completedLessons.has(mod.id)) completedLessons.delete(mod.id);
+      else { completedLessons.add(mod.id); showToast(`🎉 ${mod.code} marked as complete`); }
       updateCompleteBtnState();
       updateProgressDisplay();
       renderCurriculum();
+      queueSave();
+    }
+
+    function queueSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(async () => {
+        try {
+          const r = await fetch('/api/course/progress', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ completed: [...completedLessons], lastModule: CURRICULUM[currentModuleIndex]?.id }) });
+          if (r.status === 401) goLogin();
+        } catch (e) {}
+      }, 600);
     }
 
     function updateCompleteBtnState() {
-      const currentMod = CURRICULUM[currentModuleIndex];
-      const isCompleted = completedLessons.has(currentMod.id);
-      const btn = document.getElementById('markCompleteBtn');
-      const icon = document.getElementById('completeCheckIcon');
-      const text = document.getElementById('completeBtnText');
-
-      if (isCompleted) {
-        btn.className = 'px-4 py-2 rounded-xl text-xs font-bold border transition flex items-center gap-2 bg-emerald-950/60 border-emerald-500 text-emerald-300';
-        icon.innerText = '✓';
-        text.innerText = 'Completed';
-      } else {
-        btn.className = 'px-4 py-2 rounded-xl text-xs font-bold border transition flex items-center gap-2 bg-white/5 border-white/10 hover:border-emerald-500 text-white';
-        icon.innerText = '○';
-        text.innerText = 'Mark as Complete';
-      }
+      const mod = CURRICULUM[currentModuleIndex];
+      const done = mod && completedLessons.has(mod.id);
+      $('markCompleteBtn').className = done
+        ? 'px-4 py-2 rounded-xl text-xs font-bold border transition flex items-center gap-2 bg-emerald-950/60 border-emerald-500 text-emerald-300'
+        : 'px-4 py-2 rounded-xl text-xs font-bold border transition flex items-center gap-2 bg-white/5 border-white/10 hover:border-emerald-500 text-white';
+      $('completeCheckIcon').textContent = done ? '✓' : '○';
+      $('completeBtnText').textContent = done ? 'Completed' : 'Mark as complete';
     }
 
     function updateProgressDisplay() {
-      const total = CURRICULUM.length;
-      const done = completedLessons.size;
+      const total = CURRICULUM.length || 1;
+      const done = [...completedLessons].filter((id) => CURRICULUM.some((m) => m.id === id)).length;
       const pct = Math.min(100, Math.round((done / total) * 100));
-
-      const bar = document.getElementById('topProgressBar');
-      const text = document.getElementById('topProgressText');
-      if (bar) bar.style.width = `${pct}%`;
-      if (text) text.innerText = `${done}/${total} Completed (${pct}%)`;
+      $('topProgressBar').style.width = `${pct}%`;
+      $('topProgressText').textContent = `${done}/${total} completed (${pct}%)`;
     }
 
-    // Render Prompts
     function renderPrompts(prompts) {
-      const container = document.getElementById('promptsContainer');
+      const container = $('promptsContainer');
       container.innerHTML = '';
-
       prompts.forEach((p, i) => {
         const card = document.createElement('div');
         card.className = 'p-4 rounded-xl bg-black/40 border border-white/10 flex flex-col justify-between space-y-3';
-        
         card.innerHTML = `
           <div>
             <div class="flex items-center justify-between text-xs font-bold text-white mb-1">
-              <span class="text-[#dfb35a]">⚡ ${p.title}</span>
-              <span class="text-[10px] text-white/50 font-normal">${p.useCase}</span>
+              <span class="text-[#dfb35a]">⚡ ${esc(p.title)}</span>
+              <span class="text-[10px] text-white/50 font-normal">${esc(p.useCase)}</span>
             </div>
-            <div class="p-3 rounded-lg bg-black/60 border border-white/5 font-mono text-[11px] text-white/80 line-clamp-4 select-all leading-relaxed">
-              ${p.content}
-            </div>
+            <div class="p-3 rounded-lg bg-black/60 border border-white/5 font-mono text-[11px] text-white/80 line-clamp-4 select-all leading-relaxed">${esc(p.content)}</div>
           </div>
-          <button onclick="copyPromptText('${encodeURIComponent(p.content)}', this)" class="w-full py-2 rounded-lg bg-[#c4953a]/20 hover:bg-[#c4953a] border border-[#c4953a]/40 text-[#dfb35a] hover:text-black font-bold text-xs flex items-center justify-center gap-2 transition">
-            <span>📋 Copy Prompt to Clipboard</span>
-          </button>
-        `;
+          <button type="button" data-i="${i}" class="copy-btn w-full py-2 rounded-lg bg-[#c4953a]/20 hover:bg-[#c4953a] border border-[#c4953a]/40 text-[#dfb35a] hover:text-black font-bold text-xs flex items-center justify-center gap-2 transition"><span>📋 Copy prompt</span></button>`;
+        card.querySelector('.copy-btn').addEventListener('click', (ev) => copyPromptText(p.content, ev.currentTarget));
         container.appendChild(card);
       });
     }
 
-    // Copy to Clipboard
-    function copyPromptText(encodedText, btn) {
-      const text = decodeURIComponent(encodedText);
+    function copyPromptText(text, btn) {
       navigator.clipboard.writeText(text).then(() => {
-        showToast('Prompt copied to clipboard! Paste into Claude.');
-        const original = btn.innerHTML;
-        btn.innerHTML = '<span>✓ Copied to Clipboard!</span>';
-        btn.className = 'w-full py-2 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-2 transition';
-        setTimeout(() => {
-          btn.innerHTML = original;
-          btn.className = 'w-full py-2 rounded-lg bg-[#c4953a]/20 hover:bg-[#c4953a] border border-[#c4953a]/40 text-[#dfb35a] hover:text-black font-bold text-xs flex items-center justify-center gap-2 transition';
-        }, 2000);
-      });
+        showToast('Prompt copied — paste it into Claude.');
+        const original = btn.innerHTML, cls = btn.className;
+        btn.innerHTML = '<span>✓ Copied</span>';
+        btn.className = 'copy-btn w-full py-2 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-2 transition';
+        setTimeout(() => { btn.innerHTML = original; btn.className = cls; }, 2000);
+      }).catch(() => showToast('Could not copy — select the text and copy manually.'));
     }
 
     function showToast(msg) {
-      const toast = document.getElementById('portalToast');
-      const text = document.getElementById('toastMessage');
-      text.innerText = msg;
-      toast.classList.remove('hidden');
-      setTimeout(() => {
-        toast.classList.add('hidden');
-      }, 3000);
+      $('toastMessage').textContent = msg;
+      $('portalToast').classList.remove('hidden');
+      setTimeout(() => $('portalToast').classList.add('hidden'), 3000);
     }
 
-    // Switch Tabs
     function switchTab(tab) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.className = 'tab-btn px-4 py-2 rounded-xl text-xs font-bold transition bg-white/5 border border-white/10 text-white/70 hover:text-white';
-      });
-
-      const activeContent = document.getElementById(`tabContent-${tab}`);
-      const activeBtn = document.getElementById(`tabBtn-${tab}`);
-      if (activeContent) activeContent.classList.remove('hidden');
-      if (activeBtn) activeBtn.className = 'tab-btn px-4 py-2 rounded-xl text-xs font-bold transition bg-[#c4953a]/20 border border-[#c4953a] text-[#dfb35a]';
+      document.querySelectorAll('.tab-content').forEach((el) => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach((btn) => { btn.className = 'tab-btn px-4 py-2 rounded-xl text-xs font-bold transition bg-white/5 border border-white/10 text-white/70 hover:text-white'; });
+      const content = $(`tabContent-${tab}`), btn = $(`tabBtn-${tab}`);
+      if (content) content.classList.remove('hidden');
+      if (btn) btn.className = 'tab-btn px-4 py-2 rounded-xl text-xs font-bold transition bg-[#c4953a]/20 border border-[#c4953a] text-[#dfb35a]';
     }
 
-    // Video Player Play/Pause simulation
-    function togglePlayState() {
-      isPlaying = !isPlaying;
-      const mainBtn = document.getElementById('mainPlayBtn');
-      const bottomBtn = document.getElementById('bottomPlayBtn');
-      const tag = document.getElementById('videoStatusTag');
-
-      if (isPlaying) {
-        mainBtn.style.opacity = '0';
-        bottomBtn.innerText = '⏸ Pause';
-        tag.innerText = 'Playing Stream (1080p 60fps)';
-        showToast('▶ Playing lesson stream...');
-      } else {
-        mainBtn.style.opacity = '1';
-        bottomBtn.innerText = '▶ Play';
-        tag.innerText = 'Paused • 1080p Full HD';
-      }
-    }
-
-    function toggleFullscreen() {
-      const el = document.getElementById('videoContainer');
-      if (!document.fullscreenElement) {
-        el.requestFullscreen().catch(() => {});
-      } else {
-        document.exitFullscreen().catch(() => {});
-      }
-    }
-
-    function downloadMock(filename) {
-      showToast(`⬇ Starting secure download: ${filename}`);
-      // Create lightweight simulated blob download
-      const blob = new Blob([`AI Accounting Engineer — Official Resource: ${filename}\nGenerated for CA Varsha Varyani Course.\nAll Rights Reserved.`], { type: 'text/plain' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = filename;
-      a.click();
-    }
-
-    window.addEventListener('DOMContentLoaded', initUserSession);
+    window.addEventListener('DOMContentLoaded', initPortal);
   </script>
 </body>
 </html>
