@@ -1069,6 +1069,120 @@ footer {
   white-space: nowrap;
 }
 
+/* ── 1:1 CONSULTATION & CORPORATE WEBINARS (MINAL / ROHIT / NANDINI STYLE) ── */
+.advisory-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+.advisory-card {
+  background: var(--navy-deep);
+  border: 1px solid rgba(196, 149, 58, 0.3);
+  border-radius: 14px;
+  padding: 36px 32px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+.advisory-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(196, 149, 58, 0.6);
+}
+.featured-advisory {
+  border: 1px solid var(--gold);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(196, 149, 58, 0.15);
+}
+.advisory-badge {
+  display: inline-block;
+  align-self: flex-start;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 5px 12px;
+  border-radius: 4px;
+  color: var(--gold);
+  background: rgba(196, 149, 58, 0.15);
+  border: 1px solid rgba(196, 149, 58, 0.35);
+  margin-bottom: 16px;
+}
+.badge-gold {
+  color: #0f1b2d;
+  background: var(--gold);
+  border-color: var(--gold);
+}
+.advisory-card h3 {
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--cream);
+  line-height: 1.25;
+}
+.advisory-sub {
+  font-size: 14px;
+  color: var(--muted-on-dark);
+  margin-top: 10px;
+  line-height: 1.6;
+}
+.advisory-features {
+  margin: 28px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  flex: 1;
+}
+.adv-feat {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.adv-ic {
+  font-size: 20px;
+  line-height: 1.2;
+}
+.adv-feat strong {
+  display: block;
+  font-size: 14px;
+  color: var(--cream);
+  font-weight: 600;
+}
+.adv-feat p {
+  font-size: 12px;
+  color: var(--muted-on-dark);
+  margin-top: 3px;
+  line-height: 1.5;
+}
+.advisory-footer {
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px solid rgba(250, 248, 243, 0.1);
+}
+.adv-price {
+  font-family: var(--display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 14px;
+}
+.adv-price span {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--muted-on-dark);
+  font-weight: normal;
+}
+.adv-slots {
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted-on-dark);
+  margin-top: 10px;
+}
+
 /* ── INTERACTIVE QUALIFIER & PAYMENT MODAL ── */
 .modal-overlay {
   position: fixed;
@@ -1163,6 +1277,10 @@ footer {
   .shift-grid, .inst-grid {
     grid-template-columns: 1fr;
     gap: 32px;
+  }
+  .advisory-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
   }
   .portrait {
     max-width: 100%;

@@ -146,11 +146,59 @@ async function verifyPayment(payload) {
   window.location.href = data.next || '/thank-you';
 }
 
-document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeUnifiedModal(); });
+// ── 1:1 Consultation & Corporate Webinar Booking Modal ──
+function openBookingModal(type) {
+  var modal = $('bookingModal');
+  if (!modal) return;
+  modal.classList.remove('hidden');
+  if ($('bookingType')) $('bookingType').value = type || '1:1 Strategic AI Consultation';
+  if ($('bookingModalTitle')) $('bookingModalTitle').textContent = type || 'Schedule 1:1 Consultation';
+  if ($('bookingFormWrap')) $('bookingFormWrap').classList.remove('hidden');
+  if ($('bookingSuccessWrap')) $('bookingSuccessWrap').classList.add('hidden');
+}
+
+function closeBookingModal() {
+  var modal = $('bookingModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function submitBookingInquiry(e) {
+  if (e) e.preventDefault();
+  var name = ($('bookName') && $('bookName').value.trim()) || '';
+  var email = ($('bookEmail') && $('bookEmail').value.trim()) || '';
+  var phone = ($('bookPhone') && $('bookPhone').value.trim()) || '';
+  var type = ($('bookingType') && $('bookingType').value) || '1:1 Consultation';
+  var notes = ($('bookNotes') && $('bookNotes').value.trim()) || '';
+
+  if (!name || !email || !phone) return false;
+
+  // Send lead to server
+  fetch('/api/checkout/create-order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: name, email: email, phone: phone, inquiryType: type, notes: notes })
+  }).catch(function () {});
+
+  // Show success confirmation
+  if ($('bookingFormWrap')) $('bookingFormWrap').classList.add('hidden');
+  if ($('bookingSuccessWrap')) $('bookingSuccessWrap').classList.remove('hidden');
+
+  return false;
+}
+
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') {
+    closeUnifiedModal();
+    closeBookingModal();
+  }
+});
+
 window.addEventListener('DOMContentLoaded', function () {
   loadCheckoutConfig();
   var params = new URLSearchParams(window.location.search);
   if (params.get('open') === 'checkout' || params.get('enroll') === 'true') startUnifiedFunnel();
   var overlay = $('unifiedFunnelModal');
   if (overlay) overlay.addEventListener('click', function (e) { if (e.target === overlay) closeUnifiedModal(); });
+  var bookOverlay = $('bookingModal');
+  if (bookOverlay) bookOverlay.addEventListener('click', function (e) { if (e.target === bookOverlay) closeBookingModal(); });
 });
