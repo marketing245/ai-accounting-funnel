@@ -85,6 +85,10 @@ Public tags (GA4, Google Ads conversion label, Meta pixel) live in `public/site-
 - [ ] Google Ads conversion label in `site-config.js`; GA4 `purchase` visible in Realtime after a test order
 - [ ] Password-reset email provider (Resend / Gmail) — until then resets are handled by support email
 
+## Branches & deployment (important)
+- **`vercel` branch → Vercel production** (this is what https://ai-accounting-funnel.vercel.app serves). Work in the worktree `~/ai-accounting-funnel-vercel`: commit → `git push origin vercel` → `vercel --prod`.
+- **`main` branch → Railway** (maintained by Antigravity). The two branches are deployed independently; merge `main` into `vercel` deliberately, never edit both checkouts at once.
+
 ## Local development
 ```
 npm install
