@@ -4,6 +4,10 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": "/api/index?route=$1"
+    },
+    {
       "source": "/portal",
       "destination": "/portal.html"
     }
@@ -50,7 +54,7 @@
     }
   ],
   "functions": {
-    "api/[...path].js": {
+    "api/index.js": {
       "includeFiles": "node_modules/pdfkit/js/data/**"
     }
   }

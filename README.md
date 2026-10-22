@@ -5,7 +5,7 @@ Runs on Vercel: static pages in `public/`, serverless functions in `api/`, data 
 
 ```
 public/            landing (index), login, thank-you, portal, privacy, terms, refund, contact
-api/[...path].js   the ONE serverless function (Hobby plan limit) — routes /api/* to src/handlers
+api/index.js       the ONE serverless function (Hobby plan limit); vercel.json rewrites /api/* to it, it routes to src/handlers
 src/handlers/      checkout (config · create-order · verify · webhook · order) · auth (login · logout · me · set-password)
                    course (lessons · progress) · certificate (status/issue · pdf · verify) · health
 src/lib/           config (prices) · course (5 modules + Bunny video ids — edit here to change videos) · store (Blob JSON) · auth · razorpay · bunny · fulfil · certificate

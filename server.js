@@ -1,5 +1,5 @@
 /**
- * Local development server — mirrors Vercel: static files from /public (clean URLs) + the api/[...path].js function.
+ * Local development server — mirrors Vercel: static files from /public (clean URLs) + the api/index.js function.
  * Usage: node server.js   (reads .env.local if present)
  * Production runs on Vercel; this file is not used there.
  */
@@ -41,7 +41,7 @@ function resolveStatic(pathname) {
 async function runApi(req, res) {
   // Same entry as Vercel: one catch-all function routes to src/handlers. Hot-reload api/ and src/ in dev.
   for (const k of Object.keys(require.cache)) if (k.startsWith(API_DIR) || k.startsWith(path.join(__dirname, 'src'))) delete require.cache[k];
-  const handler = require(path.join(API_DIR, '[...path].js'));
+  const handler = require(path.join(API_DIR, 'index.js'));
   await handler(req, res);
 }
 

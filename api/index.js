@@ -1,5 +1,6 @@
 'use strict';
 // Single serverless function for every /api/* route (Vercel Hobby allows 12 functions; we route in-process instead).
+// vercel.json rewrites /api/<route> → /api/index?route=<route>; locally server.js calls this directly with the original URL.
 // Body parsing is disabled so the Razorpay webhook can verify the raw body; handlers read JSON via src/lib/http.readJson.
 const ROUTES = {
   'health': () => require('../src/handlers/health'),
@@ -21,7 +22,10 @@ const ROUTES = {
 
 module.exports = async (req, res) => {
   const u = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-  const rel = u.pathname.replace(/^\/api\/?/, '').replace(/\/+$/, '').toLowerCase();
+  let rel = (u.searchParams.get('route') || '').trim();
+  if (!rel) rel = u.pathname.replace(/^\/api\/?/, '').replace(/\/+$/, '');
+  rel = rel.replace(/^\/+|\/+$/g, '').toLowerCase();
+  if (rel === 'index') rel = '';
   const load = ROUTES[rel];
   if (!load) {
     res.statusCode = 404;
