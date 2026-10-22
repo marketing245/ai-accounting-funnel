@@ -26,12 +26,17 @@ module.exports = wrap(async (req, res) => {
   const amount = computeAmount();
   const items = [{ id: PRODUCT.id, name: PRODUCT.name, price: amount.base, qty: 1 }];
 
+  const clean = (t) => t && typeof t === 'object' ? Object.fromEntries(['source', 'medium', 'campaign', 'term', 'content', 'gclid', 'fbclid', 'referrer', 'landing', 'at'].map((k) => [k, String(t[k] || '').slice(0, 200)])) : null;
+  const a = body.attribution && typeof body.attribution === 'object' ? body.attribution : {};
+  const attribution = { first: clean(a.first), last: clean(a.last), page: String(a.page || '').slice(0, 300), screen: String(a.screen || '').slice(0, 20), userAgent: String(req.headers['user-agent'] || '').slice(0, 200) };
+
   const order = {
     id: null, gateway: mode, status: 'created',
     customer: { name, email, phone },
     items, amount,
     createdAt: new Date().toISOString(), paidAt: null, paymentId: null,
     ip: clientIp(req),
+    attribution,
   };
 
   let response;

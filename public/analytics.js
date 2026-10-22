@@ -23,6 +23,34 @@
     window.fbq('track', 'PageView');
   }
 
+  // ── Attribution: remember where the visitor came from (first touch + last touch) for the admin panel ──
+  function touch() {
+    var p = new URLSearchParams(location.search);
+    var ref = '';
+    try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+    var own = ref && ref === location.hostname;
+    var t = { source: p.get('utm_source') || '', medium: p.get('utm_medium') || '', campaign: p.get('utm_campaign') || '', term: p.get('utm_term') || '', content: p.get('utm_content') || '',
+      gclid: p.get('gclid') || '', fbclid: p.get('fbclid') || '', referrer: own ? '' : ref, landing: location.pathname + location.search, at: new Date().toISOString() };
+    if (!t.source) {
+      if (t.gclid) { t.source = 'google'; t.medium = t.medium || 'cpc'; }
+      else if (t.fbclid) { t.source = 'facebook'; t.medium = t.medium || 'social'; }
+      else if (t.referrer) { t.source = t.referrer.replace(/^www\./, ''); t.medium = t.medium || 'referral'; }
+      else { t.source = 'direct'; t.medium = t.medium || 'none'; }
+    }
+    t.meaningful = !!(p.get('utm_source') || t.gclid || t.fbclid || t.referrer);
+    return t;
+  }
+  try {
+    var t = touch();
+    if (!localStorage.getItem('aae_first_touch')) localStorage.setItem('aae_first_touch', JSON.stringify(t));
+    if (t.meaningful || !localStorage.getItem('aae_last_touch')) localStorage.setItem('aae_last_touch', JSON.stringify(t));
+  } catch (e) {}
+  window.aaeAttribution = function () {
+    var out = { first: null, last: null, page: location.href, screen: (screen && screen.width) + 'x' + (screen && screen.height) };
+    try { out.first = JSON.parse(localStorage.getItem('aae_first_touch') || 'null'); out.last = JSON.parse(localStorage.getItem('aae_last_touch') || 'null'); } catch (e) {}
+    return out;
+  };
+
   // aaeTrack('purchase', {...}) → GA4 event (+ Google Ads conversion for purchase, + Meta when configured)
   window.aaeTrack = function (name, params) {
     params = params || {};

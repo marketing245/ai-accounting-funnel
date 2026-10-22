@@ -18,6 +18,10 @@ const ROUTES = {
   'certificate': () => require('../src/handlers/certificate'),
   'certificate/pdf': () => require('../src/handlers/certificate/pdf'),
   'certificate/verify': () => require('../src/handlers/certificate/verify'),
+  'admin/login': () => require('../src/handlers/admin/login'),
+  'admin/logout': () => require('../src/handlers/admin/logout'),
+  'admin/overview': () => require('../src/handlers/admin/overview'),
+  'admin/export': () => require('../src/handlers/admin/export'),
 };
 
 module.exports = async (req, res) => {

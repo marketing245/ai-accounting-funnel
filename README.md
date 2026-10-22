@@ -39,6 +39,11 @@ Varsha can also upload in the Bunny dashboard: title the video `M03: …` and th
 **Moving to the instructor's own Bunny account** (the current one is a demo): she creates a Bunny account + one Stream library and shares the account API key; then
 `node scripts/videos.js setup --account-key <key>` → `vercel --prod` → `node scripts/videos.js upload-folder <videos>`. Nothing else changes.
 
+## Admin panel — `/admin`
+Password from `ADMIN_PASSWORD`. Shows revenue/orders (7 / 30 days / all), **leads** (people who typed name, email, phone but did not pay — each row has a WhatsApp link),
+students with progress and certificates, and **where every order came from**: UTM source/medium/campaign, gclid/fbclid or referrer, captured on the visitor's first and last visit
+(`localStorage` in `public/analytics.js`, stored on the order at checkout). CSV export for orders, leads and students. Only Google Ads links need UTMs or auto-tagging; GA4 keeps its own data.
+
 ## Environment variables (Vercel → Settings → Environment Variables)
 | Name | Required | Notes |
 |---|---|---|
@@ -47,6 +52,7 @@ Varsha can also upload in the Bunny dashboard: title the video `M03: …` and th
 | `PAYMENT_MODE` | yes | `test` (demo) or `razorpay` (live) |
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | live | from Razorpay dashboard → Account & Settings → API keys |
 | `RAZORPAY_WEBHOOK_SECRET` | live | set when creating the webhook `https://<domain>/api/checkout/webhook` |
+| `ADMIN_PASSWORD` | yes | password for `/admin` |
 | `SITE_URL` | recommended | canonical URL, e.g. `https://course.aiaccountingengineer.com` |
 | `BUNNY_LIBRARY_ID` | optional | defaults to `786834` |
 | `BUNNY_STREAM_API_KEY` | yes | the library's API key (Stream → library → API) — lets the portal list videos |

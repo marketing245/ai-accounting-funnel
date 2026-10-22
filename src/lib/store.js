@@ -40,4 +40,28 @@ async function writeJson(pathname, obj) {
   });
 }
 
-module.exports = { readJson, writeJson, PREFIX, hasBlob };
+// List every JSON document under a folder (e.g. 'orders/'). Reads are consistent (no CDN cache).
+async function listJson(folder, { limit = 2000 } = {}) {
+  const out = [];
+  if (!hasBlob) {
+    const dir = path.join(LOCAL_DIR, folder);
+    if (!fs.existsSync(dir)) return out;
+    for (const f of fs.readdirSync(dir)) if (f.endsWith('.json')) { try { out.push(JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'))); } catch {} }
+    return out;
+  }
+  const { list } = require('@vercel/blob');
+  const paths = [];
+  let cursor;
+  do {
+    const page = await list({ prefix: key(folder), limit: 1000, cursor });
+    for (const b of page.blobs) if (b.pathname.endsWith('.json')) paths.push(b.pathname.replace(/^.*?\//, ''));
+    cursor = page.hasMore ? page.cursor : undefined;
+  } while (cursor && paths.length < limit);
+  for (let i = 0; i < paths.length; i += 12) {
+    const batch = await Promise.all(paths.slice(i, i + 12).map((p) => readJson(p).catch(() => null)));
+    for (const d of batch) if (d) out.push(d);
+  }
+  return out;
+}
+
+module.exports = { readJson, writeJson, listJson, PREFIX, hasBlob };

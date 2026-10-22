@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin — AI Accounting Engineer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #070c14; color: #faf8f3; }
+    .card { background: rgba(15,25,39,.85); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th { text-align: left; font-weight: 600; color: rgba(255,255,255,.5); padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,.1); white-space: nowrap; }
+    td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,.05); white-space: nowrap; }
+    tr:hover td { background: rgba(255,255,255,.03); }
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+    .paid { background: rgba(52,211,153,.15); color: #6ee7b7; } .created { background: rgba(251,191,36,.15); color: #fcd34d; }
+    .kpi { font-size: 26px; font-weight: 800; color: #dfb35a; } .kpi-sub { font-size: 11px; color: rgba(255,255,255,.5); }
+    .tab { padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 700; color: rgba(255,255,255,.6); cursor: pointer; }
+    .tab.active { background: rgba(196,149,58,.2); color: #dfb35a; border: 1px solid rgba(196,149,58,.5); }
+    input, select { background: #0a1320; border: 1px solid rgba(255,255,255,.15); border-radius: 8px; padding: 8px 10px; color: #fff; font-size: 13px; }
+    input:focus, select:focus { outline: none; border-color: #c4953a; }
+    .btn { background: #c4953a; color: #000; font-weight: 700; border-radius: 10px; padding: 9px 14px; font-size: 12px; }
+    .btn-ghost { background: rgba(255,255,255,.08); color: #fff; font-weight: 600; border-radius: 10px; padding: 8px 12px; font-size: 12px; }
+    .bar { height: 42px; display: flex; align-items: flex-end; gap: 2px; }
+    .bar div { flex: 1; background: rgba(196,149,58,.45); border-radius: 2px 2px 0 0; min-height: 2px; }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- LOGIN -->
+  <div id="loginView" class="min-h-screen flex items-center justify-center p-6">
+    <form id="loginForm" class="card p-7 w-full max-w-sm space-y-4">
+      <div class="flex items-center gap-2"><div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#c4953a] to-[#8a6520] flex items-center justify-center font-bold text-black text-sm">AI</div><div class="font-bold">Admin panel</div></div>
+      <p class="text-xs text-white/60">Orders, leads, students and where they came from.</p>
+      <input type="password" id="pw" placeholder="Admin password" autocomplete="current-password" class="w-full">
+      <div id="loginErr" class="hidden text-xs text-red-300"></div>
+      <button class="btn w-full" type="submit">Log in</button>
+    </form>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashView" class="hidden">
+    <header class="sticky top-0 z-10 px-5 py-3 flex items-center justify-between border-b border-white/10 bg-[#070c14]/90 backdrop-blur">
+      <div class="flex items-center gap-2"><div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#c4953a] to-[#8a6520] flex items-center justify-center font-bold text-black text-sm">AI</div><div><div class="font-bold text-sm">AI Accounting Engineer — Admin</div><div id="meta" class="text-[10px] text-white/40"></div></div></div>
+      <div class="flex items-center gap-2">
+        <a href="/" target="_blank" class="btn-ghost">Site ↗</a>
+        <button onclick="load()" class="btn-ghost">Refresh</button>
+        <button onclick="logout()" class="btn-ghost">Log out</button>
+      </div>
+    </header>
+
+    <main class="p-5 space-y-5 max-w-[1400px] mx-auto">
+      <div id="modeBanner" class="hidden text-xs rounded-xl px-4 py-2 bg-amber-900/40 border border-amber-500/40 text-amber-200"></div>
+
+      <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3" id="kpis"></section>
+
+      <section class="grid lg:grid-cols-3 gap-4">
+        <div class="card p-4 lg:col-span-2">
+          <div class="flex items-center justify-between mb-2"><h3 class="text-sm font-bold">Last 30 days — paid orders per day</h3><span id="dailySummary" class="text-[11px] text-white/50"></span></div>
+          <div class="bar" id="dailyBars"></div>
+        </div>
+        <div class="card p-4">
+          <h3 class="text-sm font-bold mb-2">Where they came from</h3>
+          <p class="text-[11px] text-white/50 mb-2">Source / medium / campaign from the link the visitor arrived on (UTM, gclid, fbclid or referrer).</p>
+          <div class="overflow-auto max-h-56"><table id="sourceTable"></table></div>
+        </div>
+      </section>
+
+      <section class="card p-4">
+        <div class="flex flex-wrap items-center gap-2 mb-3">
+          <span class="tab active" data-tab="paid" onclick="setTab('paid')">Paid orders</span>
+          <span class="tab" data-tab="leads" onclick="setTab('leads')">Leads (started checkout, didn't pay)</span>
+          <span class="tab" data-tab="students" onclick="setTab('students')">Students & progress</span>
+          <input id="search" placeholder="Search name, email, phone…" class="ml-auto w-64" oninput="render()">
+          <a id="exportBtn" class="btn" href="/api/admin/export?type=orders">Export CSV</a>
+        </div>
+        <p id="tabHelp" class="text-[11px] text-white/50 mb-2"></p>
+        <div class="overflow-auto"><table id="mainTable"></table></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    let DATA = null, TAB = 'paid';
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const inr = (n) => '₹' + Number(n || 0).toLocaleString('en-IN');
+    const dt = (iso) => iso ? new Date(iso).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+
+    async function api(path, opts) { const r = await fetch(path, Object.assign({ cache: 'no-store' }, opts || {})); return { status: r.status, data: await r.json().catch(() => null) }; }
+
+    $('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault(); $('loginErr').classList.add('hidden');
+      const r = await api('/api/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: $('pw').value }) });
+      if (r.data && r.data.ok) { $('pw').value = ''; load(); } else { $('loginErr').textContent = (r.data && r.data.error) || 'Login failed'; $('loginErr').classList.remove('hidden'); }
+    });
+    async function logout() { await api('/api/admin/logout', { method: 'POST' }); location.reload(); }
+
+    async function load() {
+      const r = await api('/api/admin/overview');
+      if (r.status === 401) { $('loginView').classList.remove('hidden'); $('dashView').classList.add('hidden'); return; }
+      if (!r.data || !r.data.ok) { alert((r.data && r.data.error) || 'Could not load'); return; }
+      DATA = r.data;
+      $('loginView').classList.add('hidden'); $('dashView').classList.remove('hidden');
+      $('meta').textContent = 'Updated ' + dt(DATA.generatedAt) + ' · payment mode: ' + DATA.paymentMode;
+      if (DATA.paymentMode !== 'razorpay') { $('modeBanner').textContent = 'Payment mode is "' + DATA.paymentMode + '": orders here are test orders (no real money). Switch to Razorpay keys before running ads.'; $('modeBanner').classList.remove('hidden'); }
+      const s = DATA.stats;
+      $('kpis').innerHTML = [
+        ['Revenue (30 days)', inr(s.revenue30), s.paid30 + ' paid orders'],
+        ['Revenue (7 days)', inr(s.revenue7), s.paid7 + ' paid orders'],
+        ['Revenue (all time)', inr(s.revenueAll), s.paidAll + ' paid orders'],
+        ['Leads (unpaid checkouts)', s.leadsAll, s.leads7 + ' in last 7 days'],
+        ['Checkout → paid', s.checkoutConversion + '%', 'of started checkouts'],
+        ['Students', s.students, s.certificates + ' certificates issued'],
+      ].map((k) => `<div class="card p-4"><div class="kpi">${esc(k[1])}</div><div class="text-xs font-semibold mt-1">${esc(k[0])}</div><div class="kpi-sub">${esc(k[2])}</div></div>`).join('');
+      const max = Math.max(1, ...DATA.daily.map((d) => d.paid));
+      $('dailyBars').innerHTML = DATA.daily.map((d) => `<div title="${d.date}: ${d.paid} paid, ${d.checkouts} checkouts, ${inr(d.revenue)}" style="height:${Math.round((d.paid / max) * 100)}%"></div>`).join('');
+      $('dailySummary').textContent = DATA.daily.reduce((n, d) => n + d.paid, 0) + ' paid · ' + DATA.daily.reduce((n, d) => n + d.checkouts, 0) + ' checkouts started';
+      $('sourceTable').innerHTML = '<tr><th>Source</th><th>Medium</th><th>Campaign</th><th>Leads</th><th>Paid</th><th>Revenue</th></tr>' + DATA.bySource.map((b) => `<tr><td>${esc(b.source)}</td><td>${esc(b.medium)}</td><td>${esc(b.campaign || '—')}</td><td>${b.leads}</td><td>${b.paid}</td><td>${inr(b.revenue)}</td></tr>`).join('');
+      render();
+    }
+
+    function setTab(t) { TAB = t; document.querySelectorAll('.tab').forEach((el) => el.classList.toggle('active', el.dataset.tab === t)); render(); }
+    function render() {
+      if (!DATA) return;
+      const q = ($('search').value || '').toLowerCase();
+      const match = (o) => !q || [o.name, o.email, o.phone, o.campaign, o.source, o.id].some((v) => String(v || '').toLowerCase().includes(q));
+      $('exportBtn').href = '/api/admin/export?type=' + (TAB === 'paid' ? 'orders' : TAB);
+      if (TAB === 'students') {
+        $('tabHelp').textContent = 'Everyone with course access. Progress = modules marked complete.';
+        const rows = DATA.students.filter(match);
+        $('mainTable').innerHTML = '<tr><th>Joined</th><th>Name</th><th>Email</th><th>Phone</th><th>Paid</th><th>Progress</th><th>Password</th><th>Certificate</th></tr>' +
+          rows.map((u) => `<tr><td>${dt(u.purchasedAt)}</td><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${esc(u.phone)}</td><td>${inr(u.paid)}</td><td>${u.completed}/${u.total}</td><td>${u.hasPassword ? 'set' : '<span class="text-amber-300">not set</span>'}</td><td>${u.certificate ? esc(u.certificate) : '—'}</td></tr>`).join('') || '<tr><td class="text-white/40">No students yet</td></tr>';
+        return;
+      }
+      const rows = DATA.orders.filter((o) => (TAB === 'paid' ? o.status === 'paid' : o.status !== 'paid')).filter(match);
+      $('tabHelp').textContent = TAB === 'paid' ? 'Completed payments. Source = where the buyer first arrived from.' : 'People who entered name, email and phone but did not finish paying — worth a WhatsApp follow-up.';
+      $('mainTable').innerHTML = '<tr><th>When</th><th>Status</th><th>Name</th><th>Email</th><th>Phone</th><th>Amount</th><th>Source</th><th>Campaign</th><th>Landing page</th><th>Device</th><th>Gateway</th><th>Payment ID</th></tr>' +
+        rows.map((o) => `<tr><td>${dt(o.paidAt || o.createdAt)}</td><td><span class="pill ${o.status === 'paid' ? 'paid' : 'created'}">${o.status === 'paid' ? 'paid' : 'lead'}</span></td><td>${esc(o.name)}</td><td>${esc(o.email)}</td><td><a class="underline" href="https://wa.me/91${esc(o.phone)}" target="_blank">${esc(o.phone)}</a></td><td>${inr(o.amount)}</td><td>${esc(o.source)}${o.medium ? ' / ' + esc(o.medium) : ''}</td><td>${esc(o.campaign || '—')}</td><td title="${esc(o.landing)}">${esc((o.landing || '').slice(0, 40))}</td><td>${esc(o.device)}</td><td>${esc(o.gateway)}</td><td>${esc(o.paymentId || '')}</td></tr>`).join('') || '<tr><td class="text-white/40">Nothing here yet</td></tr>';
+    }
+    load();
+  </script>
+</body>
+</html>

@@ -33,7 +33,7 @@ async function call(method, path, body, opts = {}) {
   r = await call('GET', '/api/checkout/config');
   check('checkout config', r.status === 200 && r.data.amount.total === 1769 && !('amounts' in r.data), JSON.stringify(r.data.amount));
 
-  r = await call('POST', '/api/checkout/create-order', { name: 'Smoke Tester', email, phone: '9876543210', bump: true /* must be ignored */ });
+  r = await call('POST', '/api/checkout/create-order', { name: 'Smoke Tester', email, phone: '9876543210', bump: true /* must be ignored */, attribution: { first: { source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'x', landing: '/?utm_source=google' }, last: { source: 'google', medium: 'cpc', campaign: 'smoke_campaign', landing: '/?utm_source=google' }, page: 'http://x/', screen: '1x1' } });
   check('create order (test gateway)', r.status === 200 && r.data.gateway === 'test' && r.data.testToken, r.data?.orderId);
   const order = r.data;
 
@@ -118,8 +118,29 @@ async function call(method, path, body, opts = {}) {
   r = await call('POST', '/api/auth/set-password', { password: 'AnotherPass123', currentPassword: 'nope' });
   check('change password needs current password', r.status === 400);
 
+  // admin panel
+  cookie = '';
+  r = await call('GET', '/api/admin/overview');
+  check('admin overview requires login', r.status === 401);
+  r = await call('POST', '/api/admin/login', { password: 'wrong-password' });
+  check('admin wrong password → 401', r.status === 401);
+  const adminPw = process.env.ADMIN_PASSWORD;
+  if (adminPw) {
+    r = await call('POST', '/api/admin/login', { password: adminPw });
+    check('admin login', r.status === 200 && r.data.ok && !!cookie);
+    r = await call('GET', '/api/admin/overview');
+    const mine = (r.data?.orders || []).find((o) => o.id === order.orderId);
+    check('admin overview lists the order with attribution', r.status === 200 && mine && mine.status === 'paid' && mine.source === 'google' && mine.campaign === 'smoke_campaign' && typeof r.data.stats.revenueAll === 'number', mine && `${mine.source}/${mine.campaign}`);
+    check('admin overview lists the student', (r.data?.students || []).some((u) => u.email === email && u.completed === 5 && u.certificate === certId));
+    check('admin source table has google/cpc', (r.data?.bySource || []).some((b) => b.source === 'google' && b.paid >= 1));
+    const e = await fetch(BASE + '/api/admin/export?type=orders', { headers: { Cookie: cookie } }); const csvText = await e.text();
+    check('admin csv export', e.status === 200 && /text\/csv/.test(e.headers.get('content-type')) && csvText.includes(order.orderId) && csvText.includes('smoke_campaign'));
+    r = await call('POST', '/api/admin/logout');
+    cookie = '';
+  } else console.log('skip  admin login checks (ADMIN_PASSWORD not in env)');
+
   // static pages
-  for (const p of ['/', '/login', '/thank-you', '/portal', '/privacy', '/terms', '/refund', '/contact', '/verify']) {
+  for (const p of ['/', '/login', '/thank-you', '/portal', '/privacy', '/terms', '/refund', '/contact', '/verify', '/admin']) {
     const s = await fetch(BASE + p, { redirect: 'manual' });
     const html = await s.text();
     check(`page ${p}`, s.status === 200 && /<html/i.test(html), `${s.status}`);

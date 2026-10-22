@@ -92,7 +92,7 @@ async function submitCheckout(ev) {
   setBusy(true);
   var data;
   try {
-    var r = await fetch('/api/checkout/create-order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, phone: phone }) });
+    var r = await fetch('/api/checkout/create-order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, phone: phone, attribution: window.aaeAttribution ? aaeAttribution() : null }) });
     data = await r.json();
   } catch (e) { data = { ok: false, error: 'Network error. Please check your connection and try again.' }; }
   if (!data || !data.ok) { setBusy(false); showError(data && data.error); return false; }

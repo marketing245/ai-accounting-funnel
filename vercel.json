@@ -23,7 +23,7 @@
       ]
     },
     {
-      "source": "/(portal|thank-you|login)",
+      "source": "/(portal|thank-you|login|admin)",
       "headers": [
         {
           "key": "Cache-Control",

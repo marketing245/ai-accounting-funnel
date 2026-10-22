@@ -56,6 +56,9 @@ const server = http.createServer(async (req, res) => {
       auth.setSession(res, req, user);
       res.writeHead(302, { Location: u.searchParams.get('next') || '/portal' }); return res.end();
     }
+    if (u.pathname === '/dev/admin' && process.env.VERCEL !== '1') { // DEV ONLY: admin session for screenshots/QA
+      require('./src/lib/admin').setAdminSession(res, req); res.writeHead(302, { Location: '/admin' }); return res.end();
+    }
     if (u.pathname.startsWith('/api/')) return await runApi(req, res);
     const f = resolveStatic(u.pathname);
     if (!f) { res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' }); return res.end('<h1>404</h1>'); }

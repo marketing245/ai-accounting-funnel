@@ -19,37 +19,55 @@
     </div>
   </nav>
   <main>
-    <div class="auth-wrap" style="max-width:520px">
+    <div class="auth-wrap" style="max-width:560px">
       <div class="auth-card" id="card">
         <span class="ok-badge">✓ Payment confirmed</span>
         <h1 style="margin-top:14px">Welcome aboard, <span id="firstName">there</span>.</h1>
-        <p class="sub">Your enrollment is complete. Your login email is <strong id="emailLabel" style="color:#fff"></strong>.</p>
+        <p class="sub">You now have lifetime access to <strong style="color:#fff">AI in Accounting</strong>. Here is how to get in — it takes one minute.</p>
 
-        <div class="order-box" id="orderBox">
-          <div class="row"><span>Order</span><span id="orderId" style="font-family:var(--mono)">…</span></div>
-          <div id="orderItems"></div>
-          <div class="row"><span>GST (18%)</span><span id="orderGst"></span></div>
-          <div class="row total"><span>Paid</span><span id="orderTotal"></span></div>
-          <div class="row" style="font-size:12px;color:rgba(250,248,243,.6)"><span>Payment ID</span><span id="paymentId" style="font-family:var(--mono)"></span></div>
+        <div class="order-box" style="padding:18px 18px 8px">
+          <div class="row" style="align-items:flex-start;gap:14px;padding:6px 0 12px">
+            <span style="flex:0 0 28px;height:28px;border-radius:50%;background:var(--gold);color:#0f1b2d;font-weight:800;display:flex;align-items:center;justify-content:center">1</span>
+            <span><strong style="color:#fff">Your login is your email</strong><br><span id="emailLabel" style="font-family:var(--mono);color:var(--gold)"></span></span>
+          </div>
+          <div class="row" style="align-items:flex-start;gap:14px;padding:6px 0 12px">
+            <span style="flex:0 0 28px;height:28px;border-radius:50%;background:var(--gold);color:#0f1b2d;font-weight:800;display:flex;align-items:center;justify-content:center">2</span>
+            <span id="step2Text"><strong style="color:#fff">Create a password</strong> (below) — you will use it every time you log in.</span>
+          </div>
+          <div class="row" style="align-items:flex-start;gap:14px;padding:6px 0 12px">
+            <span style="flex:0 0 28px;height:28px;border-radius:50%;background:var(--gold);color:#0f1b2d;font-weight:800;display:flex;align-items:center;justify-content:center">3</span>
+            <span><strong style="color:#fff">Open your course here</strong> (save this link):<br><a id="portalLink" href="/portal" style="font-family:var(--mono);color:var(--gold);text-decoration:underline;text-underline-offset:3px;word-break:break-all"></a></span>
+          </div>
         </div>
 
         <div id="pwSection">
-          <p class="sub" style="margin-bottom:4px"><strong style="color:#fff">One last step:</strong> create a password so you can log in from any device.</p>
           <form id="pwForm" novalidate>
-            <label for="pw">Create a password <span style="opacity:.6;font-weight:400">(at least 8 characters)</span></label>
+            <label for="pw">Create your password <span style="opacity:.6;font-weight:400">(at least 8 characters)</span></label>
             <input type="password" id="pw" autocomplete="new-password" minlength="8" required placeholder="Choose a password">
             <label for="pw2">Repeat password</label>
             <input type="password" id="pw2" autocomplete="new-password" minlength="8" required placeholder="Repeat it">
             <div id="err" class="err" role="alert"></div>
-            <button type="submit" id="btn" class="btn btn-primary">Save password &amp; open the portal &rarr;</button>
+            <button type="submit" id="btn" class="btn btn-primary">Save password &amp; open my course &rarr;</button>
           </form>
         </div>
 
         <div id="readySection" style="display:none">
-          <a href="/portal" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:18px">Open your student portal &rarr;</a>
+          <a href="/portal" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:18px">Open my course &rarr;</a>
+          <p class="foot">Log in any time with your email and password at <a id="loginLink" href="/login"></a>.</p>
         </div>
 
-        <p class="foot">A GST invoice for this payment can be requested at <a href="mailto:hello@aiaccountingengineer.com">hello@aiaccountingengineer.com</a>.</p>
+        <details style="margin-top:22px;font-size:13px;color:var(--muted-on-dark)">
+          <summary style="cursor:pointer">Payment receipt</summary>
+          <div class="order-box" id="orderBox" style="margin-top:10px">
+            <div class="row"><span>Order</span><span id="orderId" style="font-family:var(--mono)">…</span></div>
+            <div id="orderItems"></div>
+            <div class="row"><span>GST (18%)</span><span id="orderGst"></span></div>
+            <div class="row total"><span>Paid</span><span id="orderTotal"></span></div>
+            <div class="row" style="font-size:12px;color:rgba(250,248,243,.6)"><span>Payment ID</span><span id="paymentId" style="font-family:var(--mono)"></span></div>
+          </div>
+          <p style="margin-top:8px">GST invoice: email <a href="mailto:hello@aiaccountingengineer.com" style="color:var(--gold)">hello@aiaccountingengineer.com</a> with your order ID.</p>
+        </details>
+        <p class="foot">Need help? <a href="mailto:hello@aiaccountingengineer.com">hello@aiaccountingengineer.com</a></p>
       </div>
     </div>
   <script>
@@ -66,6 +84,8 @@
 
       document.getElementById('firstName').textContent = (me.name || '').split(' ')[0] || 'there';
       document.getElementById('emailLabel').textContent = me.email;
+      document.getElementById('portalLink').textContent = location.origin + '/portal';
+      document.getElementById('loginLink').textContent = location.origin.replace(/^https?:\/\//, '') + '/login';
       var fmt = function (n) { return '₹' + Number(n || 0).toLocaleString('en-IN'); };
       if (order) {
         document.getElementById('orderId').textContent = order.id;
@@ -84,7 +104,7 @@
         } catch (e) {}
       } else { document.getElementById('orderBox').style.display = 'none'; }
 
-      if (me.hasPassword) { document.getElementById('pwSection').style.display = 'none'; document.getElementById('readySection').style.display = 'block'; }
+      if (me.hasPassword) { document.getElementById('pwSection').style.display = 'none'; document.getElementById('readySection').style.display = 'block'; document.getElementById('step2Text').innerHTML = '<strong style="color:#fff">Your password is set.</strong>'; }
 
       var form = document.getElementById('pwForm'), err = document.getElementById('err'), btn = document.getElementById('btn');
       form.addEventListener('submit', async function (e) {
@@ -97,7 +117,7 @@
         try { var r2 = await fetch('/api/auth/set-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pw }) }); data = await r2.json(); }
         catch (e2) { data = { ok: false, error: 'Network error. Please try again.' }; }
         if (data.ok) { location.href = '/portal'; return; }
-        err.textContent = data.error || 'Could not save password.'; err.classList.add('show'); btn.disabled = false; btn.textContent = 'Save password & open the portal →';
+        err.textContent = data.error || 'Could not save password.'; err.classList.add('show'); btn.disabled = false; btn.textContent = 'Save password & open my course →';
       });
     })();
   </script>
