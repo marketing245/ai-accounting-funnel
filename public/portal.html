@@ -275,7 +275,12 @@
       $('currentLessonTitle').textContent = mod.title;
       const iframe = $('bunnyPlayerIframe');
       if (mod.embedUrl) { iframe.src = mod.embedUrl; $('videoUnavailable').classList.add('hidden'); }
-      else { iframe.src = 'about:blank'; $('videoUnavailable').classList.remove('hidden'); }
+      else {
+        iframe.src = 'about:blank';
+        const msgs = { processing: 'This video is being processed — it will appear here shortly.', transcoding: 'This video is being processed — it will appear here shortly.', uploaded: 'This video is being processed — it will appear here shortly.', created: 'This video is being uploaded.', error: 'This video could not be processed. Please contact support.', upload_failed: 'This video could not be processed. Please contact support.' };
+        $('videoUnavailable').textContent = msgs[mod.videoStatus] || 'This lesson\'s video has not been uploaded yet.';
+        $('videoUnavailable').classList.remove('hidden');
+      }
       $('lessonDescription').textContent = mod.description || '';
       updateCompleteBtnState();
       renderCurriculum();

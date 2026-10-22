@@ -12,9 +12,15 @@ module.exports = wrap(async (req, res) => {
   const user = await auth.getUser(session.email);
   if (!user || !user.purchases || user.purchases.length === 0) return fail(res, 403, 'No active course purchase on this account.', { code: 'NO_ACCESS' });
 
+  const videos = await bunny.resolveVideos(CURRICULUM);
   const modules = publicCurriculum().map((m) => {
-    const src = CURRICULUM.find((c) => c.id === m.id);
-    return { ...m, embedUrl: src.bunnyVideoId ? bunny.embedUrl(src.bunnyVideoId) : null };
+    const v = videos[m.id];
+    return {
+      ...m,
+      duration: bunny.durationLabel(v && v.lengthSec, m.duration),
+      embedUrl: v && v.ready ? bunny.embedUrl(v.videoId) : null,
+      videoStatus: v ? v.statusText : 'missing',
+    };
   });
   send(res, 200, {
     ok: true,

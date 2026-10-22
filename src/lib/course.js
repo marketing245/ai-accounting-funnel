@@ -1,7 +1,8 @@
 'use strict';
 // Course content served ONLY to logged-in students (see api/course/lessons.js).
-// Bunny Stream video ids live here, never in public HTML. To change a lesson's video: paste the new
-// Video ID (GUID from the Bunny Stream dashboard, library 786834) into bunnyVideoId and deploy.
+// Videos are matched at runtime from the Bunny Stream library (see src/lib/bunny.js): upload with
+// `node scripts/videos.js upload <file> --module N` or name the video "M0N: …" in the Bunny dashboard.
+// bunnyVideoId below is only the last-resort fallback when Bunny cannot be reached.
 
 const CURRICULUM = [
   { id: 1, code: 'M01', title: 'Claude 101 — Foundation', duration: '45 Min', category: 'Foundation',

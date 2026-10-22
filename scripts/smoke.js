@@ -60,7 +60,7 @@ async function call(method, path, body, opts = {}) {
 
   r = await call('GET', '/api/course/lessons');
   const mods = r.data?.course?.modules || [];
-  check('lessons (5 modules, embed urls, no video ids leaked)', r.status === 200 && mods.length === 5 && mods.every((m) => m.embedUrl && m.embedUrl.includes('iframe.mediadelivery.net') && m.description && !('bunnyVideoId' in m) && !('prompts' in m)));
+  check('lessons (5 modules, embed urls, no video ids leaked)', r.status === 200 && mods.length === 5 && mods.every((m) => m.embedUrl && m.embedUrl.includes('iframe.mediadelivery.net') && m.videoStatus === 'ready' && m.description && !('bunnyVideoId' in m) && !('prompts' in m)));
 
   r = await call('POST', '/api/course/progress', { completed: [1, 2, 99], lastModule: 2 });
   check('progress saved (invalid ids dropped)', r.status === 200 && JSON.stringify(r.data.progress.completed) === '[1,2]');

@@ -23,6 +23,19 @@ scripts/smoke.js   end-to-end test: node scripts/smoke.js [baseUrl]
 
 **Test mode** (`PAYMENT_MODE=test`): the Razorpay window is replaced by a clearly labelled "simulated payment" step; everything else is identical. No money moves.
 
+## Course videos (Bunny Stream library 786834)
+The portal reads the library at runtime (cached 5 min) and matches videos to modules by the `module` meta tag
+(set by the script) or by a title starting with `M01`…`M05`. The newest finished video per module wins, so
+re-uploading a lesson replaces it automatically — **no deploy needed**. Overrides: `src/lib/videos.json` (`{"1": "<videoId>"}`).
+
+```
+node scripts/videos.js status                          # what each module will play
+node scripts/videos.js upload-folder ~/Downloads/varsha # files named 1-….mp4 … 5-….mp4 (or M01…M05); uploads, waits for encoding
+node scripts/videos.js upload lesson2.mp4 --module 2    # single file
+node scripts/videos.js protect on                      # embed-token authentication (needs BUNNY_TOKEN_AUTH_KEY on Vercel)
+```
+Varsha can also upload in the Bunny dashboard: title the video `M03: …` and the portal picks it up within 5 minutes.
+
 ## Environment variables (Vercel → Settings → Environment Variables)
 | Name | Required | Notes |
 |---|---|---|
@@ -33,6 +46,8 @@ scripts/smoke.js   end-to-end test: node scripts/smoke.js [baseUrl]
 | `RAZORPAY_WEBHOOK_SECRET` | live | set when creating the webhook `https://<domain>/api/checkout/webhook` |
 | `SITE_URL` | recommended | canonical URL, e.g. `https://course.aiaccountingengineer.com` |
 | `BUNNY_LIBRARY_ID` | optional | defaults to `786834` |
+| `BUNNY_STREAM_API_KEY` | yes | the library's API key (Stream → library → API) — lets the portal list videos |
+| `BUNNY_API_KEY` | scripts | account API key, only for `scripts/videos.js protect` |
 | `BUNNY_TOKEN_AUTH_KEY` | recommended | Bunny Stream → library → Security → "Embed view token authentication"; makes video URLs expire |
 | `WHATSAPP_GROUP_URL` | optional | shows the group button in the portal |
 | `SUPPORT_EMAIL` | optional | defaults to hello@aiaccountingengineer.com |
@@ -43,8 +58,7 @@ Public tags (GA4, Google Ads conversion label, Meta pixel) live in `public/site-
 - [ ] Custom domain on Vercel (e.g. `course.aiaccountingengineer.com`) and `SITE_URL` updated
 - [ ] Razorpay keys + webhook secret set, `PAYMENT_MODE=razorpay`, one real ₹1 test refunded
 - [ ] Legal entity name, address, GSTIN and grievance officer filled in `privacy.html`, `terms.html`, `contact.html`; refund window confirmed in `refund.html` and the "draft" note removed
-- [ ] Real lesson videos in Bunny (ids in `api/_lib/course.js`), token authentication on
-- [ ] Downloadable templates uploaded and `RESOURCES[].url` filled in `api/_lib/course.js`
+- [ ] Real lesson videos uploaded with `scripts/videos.js` (test clips deleted), token authentication on
 - [ ] Google Ads conversion label in `site-config.js`; GA4 `purchase` visible in Realtime after a test order
 - [ ] Password-reset email provider (Resend / Gmail) — until then resets are handled by support email
 
