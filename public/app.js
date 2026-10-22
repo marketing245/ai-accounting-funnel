@@ -12,16 +12,13 @@ function $(id) { return document.getElementById(id); }
 function fmt(n) { return '₹' + Number(n || 0).toLocaleString('en-IN'); }
 
 function amounts() {
-  var bump = !!($('orderBumpCheckbox') && $('orderBumpCheckbox').checked);
-  if (CHECKOUT && CHECKOUT.amounts) return bump ? CHECKOUT.amounts.withBump : CHECKOUT.amounts.withoutBump;
-  var base = 1499, b = bump ? 399 : 0, sub = base + b, gst = Math.round(sub * 0.18);
-  return { base: base, bump: b, subtotal: sub, gst: gst, total: sub + gst, gstPercent: 18 };
+  if (CHECKOUT && CHECKOUT.amount) return CHECKOUT.amount;
+  var base = 1499, gst = Math.round(base * 0.18);
+  return { base: base, subtotal: base, gst: gst, total: base + gst, gstPercent: 18 };
 }
 
 function items(a) {
-  var list = [{ item_id: 'aiae-course', item_name: 'AI in Accounting Course', price: a.base, quantity: 1 }];
-  if (a.bump) list.push({ item_id: 'aiae-prompt-pack', item_name: '50+ Claude Prompts & SOP Pack', price: a.bump, quantity: 1 });
-  return list;
+  return [{ item_id: 'aiae-course', item_name: 'AI in Accounting Course', price: a.base, quantity: 1 }];
 }
 
 async function loadCheckoutConfig() {
@@ -88,7 +85,6 @@ async function submitCheckout(ev) {
   var name = ($('custName').value || '').trim();
   var email = ($('custEmail').value || '').trim();
   var phone = ($('custPhone').value || '').replace(/\D/g, '');
-  var bump = !!$('orderBumpCheckbox').checked;
   if (name.length < 2) return showError('Please enter your full name.'), false;
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return showError('Please enter a valid email — it becomes your student login.'), false;
   if (!/^[6-9]\d{9}$/.test(phone)) return showError('Please enter a valid 10-digit mobile number.'), false;
@@ -96,7 +92,7 @@ async function submitCheckout(ev) {
   setBusy(true);
   var data;
   try {
-    var r = await fetch('/api/checkout/create-order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, phone: phone, bump: bump }) });
+    var r = await fetch('/api/checkout/create-order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, phone: phone }) });
     data = await r.json();
   } catch (e) { data = { ok: false, error: 'Network error. Please check your connection and try again.' }; }
   if (!data || !data.ok) { setBusy(false); showError(data && data.error); return false; }

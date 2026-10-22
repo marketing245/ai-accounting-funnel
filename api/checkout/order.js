@@ -12,5 +12,5 @@ module.exports = wrap(async (req, res) => {
   const order = await store.readJson(`orders/${id}.json`);
   if (!order || auth.normalizeEmail(order.customer.email) !== session.email) return fail(res, 404, 'Order not found.');
   send(res, 200, { ok: true, order: { id: order.id, status: order.status, gateway: order.gateway, paymentId: order.paymentId, paidAt: order.paidAt,
-    customer: { name: order.customer.name, email: order.customer.email }, items: order.items, amount: order.amount, bump: order.bump } });
+    customer: { name: order.customer.name, email: order.customer.email }, items: order.items, amount: order.amount } });
 });

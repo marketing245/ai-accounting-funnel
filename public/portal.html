@@ -125,20 +125,6 @@
         <!-- Rendered by JS -->
       </div>
 
-      <!-- Order Bump Bonus Box -->
-      <div id="bumpBox" class="hidden p-4 m-3 rounded-xl bg-gradient-to-br from-[#c4953a]/20 to-black/40 border border-[#c4953a]/30 space-y-2">
-        <div class="flex items-center justify-between">
-          <span class="text-[10px] font-extrabold tracking-wider uppercase text-[#dfb35a] bg-[#c4953a]/20 px-2 py-0.5 rounded">Included in your order</span>
-          <span class="text-xs text-emerald-400 font-bold">Prompt &amp; SOP pack</span>
-        </div>
-        <h4 class="text-xs font-bold text-white">50+ Ready Claude Prompts & SOP Pack</h4>
-        <p class="text-[11px] text-white/70 leading-relaxed">
-          Pre-formatted XML templates, GST notice response generators, and balance sheet sanitizers.
-        </p>
-        <button onclick="switchTab('prompts')" class="w-full py-1.5 rounded-lg bg-[#c4953a] hover:bg-[#dfb35a] text-black font-bold text-[11px] transition">
-          ⚡ Open Prompt Vault
-        </button>
-      </div>
     </aside>
 
     <!-- RIGHT/CENTER: CINEMA VIDEO PLAYER & INTERACTIVE LAB -->
@@ -306,7 +292,6 @@
       $('userAvatarInitials').textContent = (USER.name || 'S').split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
       if (data.course.whatsappGroupUrl) { $('whatsappLink').href = data.course.whatsappGroupUrl; $('whatsappLink').style.display=''; $('communityJoinBtn').href = data.course.whatsappGroupUrl; }
       else { $('communityJoinBtn').href = 'mailto:' + (data.course.supportEmail || 'hello@aiaccountingengineer.com'); $('communityJoinBtn').textContent = '✉ Email the mentor team'; }
-      if (USER.hasBump) $('bumpBox').classList.remove('hidden');
 
       renderCurriculum();
       renderResources();

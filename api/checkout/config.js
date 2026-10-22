@@ -11,7 +11,7 @@ module.exports = wrap(async (req, res) => {
     mode,
     keyId: mode === 'razorpay' ? rzp.keyId() : null,
     pricing: PRICING,
-    product: { id: PRODUCT.id, name: PRODUCT.name, bumpName: PRODUCT.bumpName, supportEmail: PRODUCT.supportEmail },
-    amounts: { withoutBump: computeAmount(false), withBump: computeAmount(true) },
+    product: { id: PRODUCT.id, name: PRODUCT.name, supportEmail: PRODUCT.supportEmail },
+    amount: computeAmount(),
   });
 });

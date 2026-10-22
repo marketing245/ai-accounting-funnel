@@ -14,7 +14,7 @@ scripts/smoke.js   end-to-end test: node scripts/smoke.js [baseUrl]
 ```
 
 ## How a purchase works
-1. Visitor fills name / email / phone in the checkout modal → `POST /api/checkout/create-order` (server computes ₹ + 18% GST, creates the Razorpay order, stores `orders/<id>.json`).
+1. Visitor fills name / email / phone in the checkout modal (single product, no add-ons) → `POST /api/checkout/create-order` (server computes ₹ + 18% GST, creates the Razorpay order, stores `orders/<id>.json`).
 2. Razorpay Checkout opens in the browser. On success → `POST /api/checkout/verify` (server checks the HMAC signature **and** re-fetches the payment from Razorpay: amount + order must match).
 3. Server marks the order paid, creates/updates `users/<sha256(email)>.json`, sets an HttpOnly session cookie, redirects to `/thank-you` where the student sets a password. GA4 `purchase` fires there, once per order.
 4. `/portal` loads `GET /api/course/lessons` — only a valid session with a paid purchase gets the curriculum, prompts and video embed URLs. Video ids never appear in public HTML.

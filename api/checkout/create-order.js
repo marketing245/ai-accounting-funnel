@@ -15,7 +15,6 @@ module.exports = wrap(async (req, res) => {
   const name = String(body.name || '').trim().replace(/\s+/g, ' ').slice(0, 80);
   const email = auth.normalizeEmail(body.email);
   const phone = String(body.phone || '').replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '');
-  const bump = body.bump === true || body.bump === 'true';
 
   if (name.length < 2) return fail(res, 400, 'Please enter your full name.');
   if (!EMAIL_RE.test(email)) return fail(res, 400, 'Please enter a valid email address — it becomes your login.');
@@ -24,14 +23,13 @@ module.exports = wrap(async (req, res) => {
   const mode = paymentMode();
   if (mode === 'disabled') return fail(res, 503, 'Payments are not configured yet. Please try again later.');
 
-  const amount = computeAmount(bump);
+  const amount = computeAmount();
   const items = [{ id: PRODUCT.id, name: PRODUCT.name, price: amount.base, qty: 1 }];
-  if (bump) items.push({ id: PRODUCT.bumpId, name: PRODUCT.bumpName, price: amount.bump, qty: 1 });
 
   const order = {
     id: null, gateway: mode, status: 'created',
     customer: { name, email, phone },
-    bump, items, amount,
+    items, amount,
     createdAt: new Date().toISOString(), paidAt: null, paymentId: null,
     ip: clientIp(req),
   };
@@ -39,11 +37,11 @@ module.exports = wrap(async (req, res) => {
   let response;
   if (mode === 'razorpay') {
     const receipt = `aiae_${Date.now().toString(36)}_${crypto.randomBytes(3).toString('hex')}`;
-    const r = await rzp.createOrder({ amountPaise: amount.totalPaise, receipt, notes: { email, phone, name, product: PRODUCT.id, bump: String(bump) } });
+    const r = await rzp.createOrder({ amountPaise: amount.totalPaise, receipt, notes: { email, phone, name, product: PRODUCT.id } });
     order.id = r.id; order.receipt = receipt;
     response = {
       gateway: 'razorpay', orderId: r.id, keyId: rzp.keyId(), amountPaise: amount.totalPaise, currency: 'INR',
-      description: PRODUCT.shortName + (bump ? ' + ' + PRODUCT.bumpName : ''),
+      description: PRODUCT.shortName,
       prefill: { name, email, contact: `+91${phone}` },
     };
   } else {

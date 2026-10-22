@@ -31,9 +31,9 @@ async function call(method, path, body, opts = {}) {
   if (r.data?.paymentMode !== 'test') { console.log('Server is not in test payment mode; cannot run the paid-flow checks.'); process.exit(1); }
 
   r = await call('GET', '/api/checkout/config');
-  check('checkout config', r.status === 200 && r.data.amounts.withoutBump.total === 1769 && r.data.amounts.withBump.total === 2240, JSON.stringify(r.data.amounts.withoutBump));
+  check('checkout config', r.status === 200 && r.data.amount.total === 1769 && !('amounts' in r.data), JSON.stringify(r.data.amount));
 
-  r = await call('POST', '/api/checkout/create-order', { name: 'Smoke Tester', email, phone: '9876543210', bump: true });
+  r = await call('POST', '/api/checkout/create-order', { name: 'Smoke Tester', email, phone: '9876543210', bump: true /* must be ignored */ });
   check('create order (test gateway)', r.status === 200 && r.data.gateway === 'test' && r.data.testToken, r.data?.orderId);
   const order = r.data;
 
@@ -53,10 +53,10 @@ async function call(method, path, body, opts = {}) {
   check('verify is idempotent', r.status === 200 && r.data.ok);
 
   r = await call('GET', '/api/auth/me');
-  check('me', r.status === 200 && r.data.user.email === email && r.data.user.hasAccess && r.data.user.hasBump && !r.data.user.hasPassword);
+  check('me', r.status === 200 && r.data.user.email === email && r.data.user.hasAccess && !('hasBump' in r.data.user) && !r.data.user.hasPassword);
 
   r = await call('GET', `/api/checkout/order?id=${order.orderId}`);
-  check('order summary for buyer', r.status === 200 && r.data.order.status === 'paid' && r.data.order.amount.total === 2240 && r.data.order.items.length === 2);
+  check('order summary for buyer', r.status === 200 && r.data.order.status === 'paid' && r.data.order.amount.total === 1769 && r.data.order.items.length === 1);
 
   r = await call('GET', '/api/course/lessons');
   const mods = r.data?.course?.modules || [];
@@ -104,6 +104,7 @@ async function call(method, path, body, opts = {}) {
   const cfg = await (await fetch(BASE + '/site-config.js')).text();
   check('GA4 id configured', /G-YZVRBXJRME/.test(cfg));
   const portal = await (await fetch(BASE + '/portal')).text();
+  check('home has no add-on', !/orderBumpCheckbox|SOP pack/.test(home));
   check('portal html has no video ids / fake auth', !/mediadelivery\.net\/embed\/786834\/[0-9a-f]/.test(portal) && !/AAE-ACTIVE-MEMBER|verifyExistingMemberPhone/.test(portal));
 
   console.log(failures ? `\n${failures} check(s) FAILED` : '\nAll checks passed');

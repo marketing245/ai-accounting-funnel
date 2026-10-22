@@ -18,7 +18,7 @@ module.exports = wrap(async (req, res) => {
   });
   send(res, 200, {
     ok: true,
-    user: { name: user.name, email: user.email, phone: user.phone, hasBump: !!user.hasBump },
+    user: { name: user.name, email: user.email, phone: user.phone },
     course: { title: PRODUCT.name, modules, resources: RESOURCES, videoProtected: bunny.signed(), whatsappGroupUrl: PRODUCT.whatsappGroupUrl, supportEmail: PRODUCT.supportEmail },
     progress: user.progress || { completed: [] },
   });

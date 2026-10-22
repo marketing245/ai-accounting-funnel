@@ -13,11 +13,10 @@ async function fulfil(order, paymentId, source) {
   let user = await auth.getUser(email);
   if (!user) {
     user = { email, name: order.customer.name, phone: order.customer.phone, createdAt: now, passwordHash: null,
-      purchases: [], progress: { completed: [] }, hasBump: false, failedLogins: 0, lockedUntil: null };
+      purchases: [], progress: { completed: [] }, failedLogins: 0, lockedUntil: null };
   }
   if (!user.purchases.some((p) => p.orderId === order.id)) {
-    user.purchases.push({ orderId: order.id, paymentId, amount: order.amount.total, currency: order.amount.currency, items: order.items, bump: !!order.bump, at: now, gateway: order.gateway });
-    if (order.bump) user.hasBump = true;
+    user.purchases.push({ orderId: order.id, paymentId, amount: order.amount.total, currency: order.amount.currency, items: order.items, at: now, gateway: order.gateway });
     if (!user.phone && order.customer.phone) user.phone = order.customer.phone;
     await auth.saveUser(user);
   }
