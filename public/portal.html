@@ -194,43 +194,17 @@
         </div>
       </div>
 
-      <!-- Video Player Area -->
+      <!-- Video Player Area (Bunny.net Stream Anti-Download Encrypted Player) -->
       <div class="p-6 pb-2">
-        <div class="relative w-full rounded-2xl overflow-hidden bg-black border border-white/10 shadow-2xl aspect-video max-h-[520px] mx-auto group">
-          <!-- Video Mock / Real Video Player -->
-          <div id="videoContainer" class="w-full h-full relative flex items-center justify-center bg-gradient-to-br from-[#0c1626] to-[#04080f]">
-            
-            <!-- Video Poster / Backdrop -->
-            <div class="absolute inset-0 bg-cover bg-center opacity-40" id="videoPoster" style="background-image: url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1600&q=80');"></div>
-            
-            <!-- Video Overlay Gradient -->
-            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50"></div>
-
-            <!-- Central Big Play Button -->
-            <button id="mainPlayBtn" onclick="togglePlayState()" class="relative z-10 w-20 h-20 rounded-full bg-[#c4953a] hover:bg-[#dfb35a] hover:scale-105 active:scale-95 text-black flex items-center justify-center text-3xl pl-1 shadow-[0_0_50px_rgba(196,149,58,0.5)] transition duration-300">
-              ▶
-            </button>
-
-            <!-- Video Status Tag -->
-            <div class="absolute top-4 left-4 z-10 flex items-center gap-2 bg-black/60 backdrop-blur border border-white/10 rounded-full px-3 py-1 text-xs">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span class="text-white/80 font-mono text-[11px]" id="videoStatusTag">1080p Full HD • Interactive Studio</span>
-            </div>
-
-            <!-- Custom Player Controls Bar (Bottom) -->
-            <div class="absolute bottom-0 inset-x-0 z-10 p-4 bg-gradient-to-t from-black to-transparent flex items-center justify-between text-xs text-white">
-              <div class="flex items-center gap-4">
-                <button onclick="togglePlayState()" class="hover:text-[#dfb35a] font-bold text-sm" id="bottomPlayBtn">▶ Play</button>
-                <span class="text-white/60 font-mono text-[11px]" id="videoTimecode">00:00 / 28:15</span>
-              </div>
-              <div class="flex items-center gap-3">
-                <span class="text-[11px] px-2 py-0.5 rounded bg-white/10 font-mono">1.0x</span>
-                <span class="text-[11px] px-2 py-0.5 rounded bg-white/10 font-mono">CC (EN/HI)</span>
-                <button onclick="toggleFullscreen()" class="hover:text-[#dfb35a]">⛶</button>
-              </div>
-            </div>
-
-          </div>
+        <div class="relative w-full rounded-2xl overflow-hidden bg-black border border-white/10 shadow-2xl aspect-video max-h-[520px] mx-auto">
+          <iframe
+            id="bunnyPlayerIframe"
+            src="https://iframe.mediadelivery.net/embed/786834/4e8cdcac-b9ab-42db-9b72-bdc1d0a58b52?autoplay=false&loop=false&muted=false&preload=true&responsive=true"
+            loading="lazy"
+            style="border:0;position:absolute;top:0;left:0;height:100%;width:100%;"
+            allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;"
+            allowfullscreen="true">
+          </iframe>
         </div>
       </div>
 
@@ -369,6 +343,9 @@
 
   <!-- PORTAL SCRIPT -->
   <script>
+    // Bunny.net Stream Video Library Configuration
+    const BUNNY_LIBRARY_ID = '786834';
+
     // Course Curriculum Data — Exactly Matched with Superprofile / CA Varsha Varyani Course
     const CURRICULUM = [
       {
@@ -379,10 +356,10 @@
         category: "Foundation",
         unlockSchedule: "Unlocks Instantly",
         isUnlocked: true,
+        bunnyVideoId: "4e8cdcac-b9ab-42db-9b72-bdc1d0a58b52",
         description: "Before we touch any workflow, you need to understand how to actually talk to AI — because it's nothing like a Google search. This module covers how to frame your work for Claude, what to ask, how to check what comes back, and why that skill is the foundation everything else is built on.",
         result: "You go from 'I don't know what to ask' to giving Claude work and getting usable output back — in your first session.",
         poster: "https://media-cdn.cosmofeed.com/chat/native-products/691ad2ab1e76fb001325bd21/88f0c6d28b2bbc76272400976fecb811a3c53a593edc926e.png",
-        videoEmbed: "", // Paste YouTube Unlisted / Bunny embed ID here
         prompts: [
           {
             title: "Claude Accounting Framework Master Prompt",
@@ -404,10 +381,10 @@
         category: "Ledger",
         unlockSchedule: "Drips after 5 days",
         isUnlocked: true,
+        bunnyVideoId: "9c632bf7-9220-430b-a00f-77f6684d81bb",
         description: "You take an invoice, a bank statement, a vendor bill — and Claude reads it and gives you the journal entry, correctly classified, with narration. You review, approve, post.",
         result: "20 minutes per entry → 2 minutes. You review instead of type.",
         poster: "https://media-cdn.cosmofeed.com/chat/native-products/6176b3d141ed2447e4e37e90/7c920decbde58110e2231a64dcd394118c721983372820ba.jpeg",
-        videoEmbed: "",
         prompts: [
           {
             title: "Invoice & Source Document to Journal Entry Parser",
@@ -429,10 +406,10 @@
         category: "Ledger",
         unlockSchedule: "Drips after 5 days",
         isUnlocked: true,
+        bunnyVideoId: "f66542f3-9a50-4f8e-a521-a6b7d7681667",
         description: "Paste your bank data and let Claude do the matching. You spend your time on the items that actually don't reconcile — not the ones that do. Depreciation schedules work the same way.",
         result: "Hours of matching → minutes. Depreciation schedules you can hand to anyone, generated in one pass.",
         poster: "https://media-cdn.cosmofeed.com/chat/native-products/6176b3d141ed2447e4e37e90/fa74ee5188d0f973efc2af53188ce02948816d1eff4af7e6.jpeg",
-        videoEmbed: "",
         prompts: [
           {
             title: "Bank Statement Matching & Exception Extractor",
@@ -454,10 +431,10 @@
         category: "Compliance",
         unlockSchedule: "Drips after 5 days",
         isUnlocked: true,
+        bunnyVideoId: "7785eb45-321b-4200-8ad7-fc8c82bcd4bd",
         description: "Claude runs the 2A vs 2B comparison, flags the mismatches, and gives you a clean exception list. You know exactly what needs attention and what doesn't.",
         result: "A full day of GST matching → one hour of focused review.",
         poster: "https://media-cdn.cosmofeed.com/chat/native-products/6176b3d141ed2447e4e37e90/8ab9b6c13697c930fcc9b35cfbd08b788e98d8188435a37d.jpeg",
-        videoEmbed: "",
         prompts: [
           {
             title: "GSTR-2B vs Purchase Register 2-Way Matcher",
@@ -479,10 +456,10 @@
         category: "Capstone",
         unlockSchedule: "Drips after 5 days",
         isUnlocked: true,
+        bunnyVideoId: "e26a756b-7495-4fe5-9a98-b041362956f1",
         description: "GL scrutiny, tie-outs, flux notes — this module brings everything together into a close that finishes on time. The capstone where hours saved across every module compound.",
         result: "Close on Day 5 instead of Day 15. The single biggest career unlock in this course.",
         poster: "https://media-cdn.cosmofeed.com/chat/native-products/6176b3d141ed2447e4e37e90/a47afdd6c1ab2002cd45b834d198e1c55ffc640cb22c0a4d.jpeg",
-        videoEmbed: "",
         prompts: [
           {
             title: "GL Scrutiny & Unusual Movement Anomaly Detector",
@@ -612,7 +589,7 @@
       });
     }
 
-    // Load Specific Lesson
+    // Load Specific Lesson & Stream from Bunny.net
     function loadLesson(idx) {
       currentModuleIndex = idx;
       const mod = CURRICULUM[idx];
@@ -620,8 +597,12 @@
       document.getElementById('currentModuleBadge').innerText = `${mod.code}: ${mod.category}`;
       document.getElementById('currentDurationBadge').innerText = mod.duration;
       document.getElementById('currentLessonTitle').innerText = mod.title;
-      document.getElementById('videoPoster').style.backgroundImage = `url('${mod.poster}')`;
-      document.getElementById('videoTimecode').innerText = `00:00 / ${mod.duration.replace('Min', ':00')}`;
+
+      // Update Bunny.net Stream Embed Iframe
+      const bunnyIframe = document.getElementById('bunnyPlayerIframe');
+      if (bunnyIframe && mod.bunnyVideoId) {
+        bunnyIframe.src = `https://iframe.mediadelivery.net/embed/${BUNNY_LIBRARY_ID}/${mod.bunnyVideoId}?autoplay=false&loop=false&muted=false&preload=true&responsive=true`;
+      }
 
       // Update Focus & Outcome in Notes tab
       const focusEl = document.getElementById('lessonFocusDescription');
