@@ -92,16 +92,8 @@ async function submitCheckout(ev) {
   setBusy(true);
   var data;
   var payload = function () { return JSON.stringify({ name: name, email: email, phone: phone, website: ($('custWebsite') && $('custWebsite').value) || '', formToken: CHECKOUT && CHECKOUT.formToken, attribution: window.aaeAttribution ? aaeAttribution() : null }); };
-  try {
-    var r = await fetch('/api/checkout/create-order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload() });
-    data = await r.json();
-    if (data && data.code === 'FORM_TOKEN') { // token stale (page open for hours) → refresh it once and retry
-      await loadCheckoutConfig();
-      if (data.reason === 'too_fast') await new Promise(function (res) { setTimeout(res, 3200); });
-      r = await fetch('/api/checkout/create-order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload() });
-      data = await r.json();
-    }
-  } catch (e) { data = { ok: false, error: 'Network error. Please check your connection and try again.' }; }
+  try { data = await postForm('/api/checkout/create-order', payload); }
+  catch (e) { data = { ok: false, error: 'Network error. Please check your connection and try again.' }; }
   if (!data || !data.ok) { setBusy(false); showError(data && data.error); return false; }
 
   currentOrder = data;
@@ -111,6 +103,19 @@ async function submitCheckout(ev) {
   if (data.gateway === 'razorpay') openRazorpay(data);
   else { $('testOrderId').textContent = data.orderId; $('testOrderAmount').textContent = fmt(a.total); showStep('test'); }
   return false;
+}
+
+// POST JSON to a form endpoint; if the signed form token is rejected, fix it (wait 3.2 s when too fast, refresh when stale) and retry once.
+async function postForm(path, buildBody) {
+  var r = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: buildBody() });
+  var data = await r.json();
+  if (data && data.code === 'FORM_TOKEN') {
+    if (data.reason === 'too_fast') await new Promise(function (res) { setTimeout(res, 3300); });
+    else await loadCheckoutConfig();
+    r = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: buildBody() });
+    data = await r.json();
+  }
+  return data;
 }
 
 function loadScript(src) {
@@ -173,24 +178,26 @@ function submitBookingInquiry(e) {
   if (e) e.preventDefault();
   var name = ($('bookName') && $('bookName').value.trim()) || '';
   var email = ($('bookEmail') && $('bookEmail').value.trim()) || '';
-  var phone = ($('bookPhone') && $('bookPhone').value.trim()) || '';
+  var phone = ($('bookPhone') && $('bookPhone').value.replace(/\D/g, '')) || '';
   var type = ($('bookingType') && $('bookingType').value) || '1:1 Consultation';
   var notes = ($('bookNotes') && $('bookNotes').value.trim()) || '';
-
-  if (!name || !email || !phone) return false;
-
-  // Send the inquiry to the server (stored under inquiries/, shown in /admin → Inquiries)
+  var btn = $('bookingForm') && $('bookingForm').querySelector('button[type=submit]');
+  var errEl = $('bookingError');
+  var showErr = function (msg) { if (errEl) { errEl.textContent = msg; errEl.classList.remove('hidden'); } else alert(msg); };
+  if (errEl) errEl.classList.add('hidden');
+  if (name.length < 2) return showErr('Please enter your full name.'), false;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return showErr('Please enter a valid email address.'), false;
+  if (!/^[6-9]\d{9}$/.test(phone)) return showErr('Please enter a valid 10-digit mobile number.'), false;
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
   var inqBody = function () { return JSON.stringify({ name: name, email: email, phone: phone, type: type, notes: notes, website: ($('bookWebsite') && $('bookWebsite').value) || '', formToken: CHECKOUT && CHECKOUT.formToken, attribution: window.aaeAttribution ? aaeAttribution() : null }); };
-  fetch('/api/inquiry', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: inqBody() })
-    .then(function (r) { return r.json(); })
-    .then(function (d) { if (d && d.code === 'FORM_TOKEN') return loadCheckoutConfig().then(function () { return fetch('/api/inquiry', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: inqBody() }); }); })
-    .catch(function () {});
-  if (window.aaeTrack) aaeTrack('generate_lead', { lead_type: type });
-
-  // Show success confirmation
-  if ($('bookingFormWrap')) $('bookingFormWrap').classList.add('hidden');
-  if ($('bookingSuccessWrap')) $('bookingSuccessWrap').classList.remove('hidden');
-
+  postForm('/api/inquiry', inqBody).then(function (d) {
+    if (d && d.ok) {
+      if (window.aaeTrack) aaeTrack('generate_lead', { lead_type: type });
+      if ($('bookingFormWrap')) $('bookingFormWrap').classList.add('hidden');
+      if ($('bookingSuccessWrap')) $('bookingSuccessWrap').classList.remove('hidden');
+    } else showErr((d && d.error) || 'Could not send your request. Please try again.');
+  }).catch(function () { showErr('Network error. Please try again.'); })
+    .finally(function () { if (btn) { btn.disabled = false; btn.textContent = 'Request a quote →'; } });
   return false;
 }
 
