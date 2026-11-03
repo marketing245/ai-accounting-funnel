@@ -7,7 +7,7 @@ const sha = (v) => v ? crypto.createHash('sha256').update(String(v).trim().toLow
 const configured = () => !!(process.env.META_PIXEL_ID && process.env.META_CAPI_TOKEN);
 
 function userData(order) {
-  const c = order.customer || {}, a = order.attribution || {};
+  const c = { ...(order.payer || {}), ...Object.fromEntries(Object.entries(order.customer || {}).filter(([, v]) => v)) }, a = order.attribution || {};
   const [fn, ...rest] = String(c.name || '').trim().split(/\s+/);
   const phone = String(c.phone || '').replace(/\D/g, '');
   return {

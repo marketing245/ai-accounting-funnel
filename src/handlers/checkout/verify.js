@@ -6,6 +6,13 @@ const rzp = require('../../lib/razorpay');
 const { fulfil } = require('../../lib/fulfil');
 const { paymentMode } = require('../../lib/config');
 
+function payerFrom(p) {
+  return {
+    email: auth.normalizeEmail(p.email || ''),
+    phone: String(p.contact || '').replace(/\D/g, '').replace(/^91(?=\d{10}$)/, ''),
+  };
+}
+
 module.exports = wrap(async (req, res) => {
   if (!allow(req, res, ['POST'])) return;
   if (!auth.sameOrigin(req, res)) return;
@@ -17,6 +24,7 @@ module.exports = wrap(async (req, res) => {
   if (!order) return fail(res, 404, 'Order not found.');
 
   let paymentId;
+  let payment = null;
   if (order.gateway === 'razorpay') {
     paymentId = String(body.paymentId || body.razorpay_payment_id || '');
     const signature = String(body.signature || body.razorpay_signature || '');
@@ -25,6 +33,7 @@ module.exports = wrap(async (req, res) => {
     }
     // Belt and braces: confirm amount with Razorpay itself.
     const p = await rzp.fetchPayment(paymentId);
+    payment = p;
     if (p.order_id !== orderId || Number(p.amount) !== order.amount.totalPaise || !['captured', 'authorized'].includes(p.status)) {
       return fail(res, 400, 'Payment details do not match this order.');
     }
@@ -36,8 +45,16 @@ module.exports = wrap(async (req, res) => {
     return fail(res, 400, 'Unknown gateway.');
   }
 
+  // Pay-first (express checkout): mark paid now, ask for email/phone next. Razorpay's own contact details are kept as a fallback.
+  if (order.flow === 'payfirst' && !(order.customer && order.customer.email)) {
+    if (payment) order.payer = payerFrom(payment);
+    const { order: paidOrder } = await fulfil(order, paymentId, 'checkout');
+    return send(res, 200, { ok: true, claim: true, orderId: paidOrder.id, claimToken: auth.signClaim(paidOrder.id), payer: paidOrder.payer || {}, amount: paidOrder.amount });
+  }
+
   const { order: paidOrder, user } = await fulfil(order, paymentId, 'checkout');
   if (!user.firstLoginAt) { user.firstLoginAt = new Date().toISOString(); user.lastLoginAt = user.firstLoginAt; user.loginCount = (user.loginCount || 0) + 1; await auth.saveUser(user); }
   auth.setSession(res, req, user);
   send(res, 200, { ok: true, orderId: paidOrder.id, needsPassword: !user.passwordHash, next: `/thank-you?order=${encodeURIComponent(paidOrder.id)}` });
 });
+module.exports.payerFrom = payerFrom;

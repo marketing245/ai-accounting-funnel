@@ -21,6 +21,8 @@ async function handler(req, res) {
   const order = await store.readJson(`orders/${payment.order_id}.json`);
   if (!order) return send(res, 200, { ok: true, ignored: 'unknown order' });
   if (Number(payment.amount) !== order.amount.totalPaise) return send(res, 200, { ok: true, ignored: 'amount mismatch' });
+  // Pay-first order whose buyer closed the page before giving details: keep Razorpay's contact so the team can follow up.
+  if (order.flow === 'payfirst' && !(order.customer && order.customer.email) && !order.payer) order.payer = require('./verify').payerFrom(payment);
   await fulfil(order, payment.id, 'webhook');
   send(res, 200, { ok: true });
 }

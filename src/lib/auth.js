@@ -135,6 +135,13 @@ function checkFormToken(token) {
 }
 
 // Signed one-off tokens for the test gateway (no real money).
+// Pay-first checkout: the browser that paid gets this token to attach its email/phone to the order afterwards.
+function signClaim(orderId) { return b64u(hmac(`claim|${orderId}`, '|claim')); }
+function verifyClaim(orderId, token) {
+  const expected = signClaim(orderId);
+  return typeof token === 'string' && token.length === expected.length && crypto.timingSafeEqual(Buffer.from(token), Buffer.from(expected));
+}
+
 function signTestPayment(orderId) { return b64u(hmac(`test-payment|${orderId}`, '|test')); }
 function verifyTestPayment(orderId, token) {
   const expected = signTestPayment(orderId);
@@ -142,4 +149,4 @@ function verifyTestPayment(orderId, token) {
 }
 
 module.exports = { signToken, verifyToken, hashPassword, verifyPassword, normalizeEmail, userKey, getUser, saveUser,
-  setSession, clearSession, getSession, requireSession, loadSessionUser, hasAccess, sameOrigin, issueFormToken, checkFormToken, signTestPayment, verifyTestPayment, COOKIE, ownedAddons };
+  setSession, clearSession, getSession, requireSession, loadSessionUser, hasAccess, sameOrigin, issueFormToken, checkFormToken, signTestPayment, verifyTestPayment, signClaim, verifyClaim, COOKIE, ownedAddons };

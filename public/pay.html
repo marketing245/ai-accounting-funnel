@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Secure checkout · AI in Accounting</title>
+  <meta name="description" content="Enrol in AI in Accounting by CA Varsha Varyani. Pay first, add your details after.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0f1b2d">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link href="https://api.fontshare.com/v2/css?f[]=sentient@500,600&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/pay.css">
+  <script src="/site-config.js"></script>
+  <script src="/analytics.js" defer></script>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="/">AI Accounting Engineer</a>
+    <span class="secure"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg>Secure checkout</span>
+  </header>
+
+  <ol class="steps" id="steps" aria-label="Checkout steps">
+    <li class="is-on" data-step="pay">1 · Pay</li>
+    <li data-step="details">2 · Your details</li>
+    <li data-step="start">3 · Start learning</li>
+  </ol>
+
+  <main class="wrap">
+    <!-- STEP 1: PAY (no form) -->
+    <section id="payStep">
+      <span id="testBadge" class="badge-test" hidden>Test mode · no money is charged</span>
+      <div class="product">
+        <img src="/varsha-hero.jpg" alt="CA Varsha Varyani" width="84" height="84">
+        <div>
+          <h1>AI in Accounting</h1>
+          <p class="by">by CA Varsha Varyani · CA · CFA · DipIFRS</p>
+          <p class="meta">5 recorded modules · lifetime access · certificate</p>
+        </div>
+      </div>
+
+      <ul class="mods" aria-label="Modules">
+        <li><span class="lock" aria-hidden="true"></span>Claude 101: foundation</li>
+        <li><span class="lock" aria-hidden="true"></span>Journal entries</li>
+        <li><span class="lock" aria-hidden="true"></span>Bank reconciliation &amp; fixed asset depreciation</li>
+        <li><span class="lock" aria-hidden="true"></span>GST 2A/2B reconciliation</li>
+        <li><span class="lock" aria-hidden="true"></span>Month-end close</li>
+      </ul>
+
+      <div class="addon">
+        <div class="addon-head">
+          <img src="/addon-23-skills.jpg" alt="23 Claude AI Skills for Indian Accountants" width="72" height="72">
+          <div>
+            <strong>23 AI Skills - Ready to Use for CA, CMA, CS &amp; BCom Graduates</strong>
+            <span class="addon-price">₹999 <small>+ GST</small></span>
+          </div>
+        </div>
+        <p>Ready-made AI workflows for month-end close (7), accounts payable (8) and accounts receivable (8). Includes a 34-page PDF and starter reference files.</p>
+        <label class="addon-check"><input type="checkbox" id="addonSkills" value="aiae-23-skills"> Yes, add it to my order</label>
+      </div>
+
+      <div class="sum">
+        <div><span>AI in Accounting course</span><span data-amt="base">₹1,499</span></div>
+        <div id="addonRow" hidden><span>23 AI Skills pack</span><span data-amt="addons">₹999</span></div>
+        <div class="muted"><span>GST (18%)</span><span data-amt="gst">₹270</span></div>
+        <div class="total"><span>Total</span><span data-amt="total">₹1,769</span></div>
+      </div>
+
+      <p class="error" id="payError" role="alert" hidden></p>
+      <button class="cta" id="payBtn" type="button">Pay ₹1,769 securely</button>
+      <p class="reassure">No forms before payment. After paying, you tell us where to send your login. It takes about 20 seconds.</p>
+      <p class="methods">UPI · RuPay · Visa · Mastercard · Net banking<br><span>Payments processed by Razorpay. One-time payment, no subscription.</span></p>
+      <input type="text" id="hpWebsite" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp">
+
+      <!-- Test mode only: simulated gateway, clearly labelled -->
+      <div id="testPanel" class="testpanel" hidden>
+        <strong>Simulated payment (test mode)</strong>
+        <p>Order <code id="testOrderId"></code> for <b id="testAmount"></b>. No money moves.</p>
+        <button class="cta cta-dark" id="testPayBtn" type="button">Simulate successful payment</button>
+      </div>
+    </section>
+
+    <!-- STEP 2: DETAILS AFTER PAYMENT -->
+    <section id="claimStep" hidden>
+      <div class="paid">
+        <span class="tick" aria-hidden="true"></span>
+        <div>
+          <strong>Payment received: <span id="paidAmount"></span></strong>
+          <span>Your enrolment is confirmed. One last step.</span>
+        </div>
+      </div>
+      <h2>Where should we send your login and course details?</h2>
+      <form id="claimForm" novalidate>
+        <label><span>Email <small>(this becomes your login)</small></span>
+          <input id="cEmail" type="email" inputmode="email" autocomplete="email" required maxlength="120">
+        </label>
+        <label>WhatsApp number
+          <span class="phone"><span>+91</span><input id="cPhone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="10" required></span>
+        </label>
+        <label><span>Full name <small>(as it should appear on your certificate)</small></span>
+          <input id="cName" autocomplete="name" required maxlength="80">
+        </label>
+        <div class="two">
+          <label>State
+            <select id="cState" required autocomplete="address-level1"><option value="">Select state</option></select>
+          </label>
+          <label><span>GSTIN <small>(optional)</small></span>
+            <input id="cGstin" maxlength="15" autocomplete="off" autocapitalize="characters" spellcheck="false">
+          </label>
+        </div>
+        <p class="error" id="claimError" role="alert" hidden></p>
+        <button class="cta" type="submit" id="claimBtn">Get my access</button>
+        <p class="reassure">We send your login and course details to this email straight away.</p>
+      </form>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <a href="/terms" target="_blank">Terms</a> · <a href="/refund" target="_blank">Refund policy</a> · <a href="/privacy" target="_blank">Privacy</a>
+    <p>Independent course by CA Varsha Varyani. Not affiliated with or endorsed by Anthropic.</p>
+  </footer>
+
+  <script src="/pay.js"></script>
+</body>
+</html>

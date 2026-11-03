@@ -16,15 +16,19 @@ module.exports = wrap(async (req, res) => {
   if (String(body.website || body.company_url || '').trim()) return fail(res, 400, 'Spam check failed.');
   const ft = auth.checkFormToken(body.formToken);
   if (ft) return fail(res, 400, ft === 'too_fast' ? 'Please take a moment and try again.' : 'Your form session expired — please refresh the page and try again.', { code: 'FORM_TOKEN', reason: ft });
+  // flow 'payfirst' (express checkout /pay): no details before payment; they are claimed after (see checkout/claim).
+  const payFirst = body.flow === 'payfirst';
   const name = String(body.name || '').trim().replace(/\s+/g, ' ').slice(0, 80);
   const email = auth.normalizeEmail(body.email);
   const phone = String(body.phone || '').replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '');
-
-  if (name.length < 2) return fail(res, 400, 'Please enter your full name.');
-  if (!EMAIL_RE.test(email)) return fail(res, 400, 'Please enter a valid email address — it becomes your login.');
-  if (!PHONE_RE.test(phone)) return fail(res, 400, 'Please enter a valid 10-digit Indian mobile number.');
-  const place = require('../../lib/states').checkPlaceOfSupply(body.state, body.gstin);
-  if (place.error) return fail(res, 400, place.error);
+  let place = { state: { name: '', code: '' }, gstin: '' };
+  if (!payFirst) {
+    if (name.length < 2) return fail(res, 400, 'Please enter your full name.');
+    if (!EMAIL_RE.test(email)) return fail(res, 400, 'Please enter a valid email address — it becomes your login.');
+    if (!PHONE_RE.test(phone)) return fail(res, 400, 'Please enter a valid 10-digit Indian mobile number.');
+    place = require('../../lib/states').checkPlaceOfSupply(body.state, body.gstin);
+    if (place.error) return fail(res, 400, place.error);
+  }
 
   const mode = paymentMode();
   if (mode === 'disabled') return fail(res, 503, 'Payments are not configured yet. Please try again later.');
@@ -50,7 +54,9 @@ module.exports = wrap(async (req, res) => {
 
   const order = {
     id: null, gateway: mode, status: 'created',
-    customer: { name, email, phone, state: place.state.name, stateCode: place.state.code, gstin: place.gstin },
+    customer: payFirst ? {} : { name, email, phone, state: place.state.name, stateCode: place.state.code, gstin: place.gstin },
+    flow: payFirst ? 'payfirst' : 'standard',
+    source: String(body.source || '').replace(/[^a-z0-9_-]/gi, '').slice(0, 40),
     items, amount, addons: addonIds,
     createdAt: new Date().toISOString(), paidAt: null, paymentId: null,
     ip: clientIp(req),
@@ -61,12 +67,12 @@ module.exports = wrap(async (req, res) => {
   let response;
   if (mode === 'razorpay') {
     const receipt = `aiae_${Date.now().toString(36)}_${crypto.randomBytes(3).toString('hex')}`;
-    const r = await rzp.createOrder({ amountPaise: amount.totalPaise, receipt, notes: { email, phone, name, product: PRODUCT.id, addons: addonIds.join(','), state: place.state.name, gstin: place.gstin } });
+    const r = await rzp.createOrder({ amountPaise: amount.totalPaise, receipt, notes: { email, phone, name, product: PRODUCT.id, addons: addonIds.join(','), state: place.state.name, gstin: place.gstin, flow: payFirst ? 'payfirst' : 'standard' } });
     order.id = r.id; order.receipt = receipt;
     response = {
       gateway: 'razorpay', orderId: r.id, keyId: rzp.keyId(), amountPaise: amount.totalPaise, currency: 'INR',
       description: [PRODUCT.shortName].concat(addonIds.map((id) => ADDONS.find((a) => a.id === id).shortName)).join(' + '),
-      prefill: { name, email, contact: `+91${phone}` },
+      prefill: payFirst ? {} : { name, email, contact: `+91${phone}` },
     };
   } else {
     order.id = `order_test_${crypto.randomBytes(8).toString('hex')}`;

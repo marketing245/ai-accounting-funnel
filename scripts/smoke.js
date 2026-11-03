@@ -202,6 +202,32 @@ async function call(method, path, body, opts = {}) {
   } else console.log('skip  admin login checks (ADMIN_PASSWORD not in env)');
 
   // static pages
+  // ── Pay-first (express) checkout: pay with no details, then claim ──
+  {
+    r = await call('GET', '/api/checkout/config', null, { noCookie: true });
+    const ft = r.data.formToken;
+    await new Promise((res) => setTimeout(res, 3300));
+    r = await call('POST', '/api/checkout/create-order', { flow: 'payfirst', source: 'smoke_express', formToken: ft, addons: [] }, { noCookie: true });
+    check('pay-first order needs no details', r.status === 200 && r.data.testToken && r.data.amount.total === 1769, r.data?.error);
+    const pf = r.data;
+    r = await call('POST', '/api/checkout/verify', { orderId: pf.orderId, testToken: pf.testToken }, { noCookie: true });
+    check('pay-first verify returns a claim token (no account yet)', r.status === 200 && r.data.claim === true && !!r.data.claimToken);
+    const claimToken = r.data.claimToken;
+    const pfEmail = 'payfirst+' + Date.now() + '@example.com';
+    r = await call('POST', '/api/checkout/claim', { orderId: pf.orderId, claimToken: 'wrong', email: pfEmail, phone: '9876543210', name: 'Pay First', state: '27' }, { noCookie: true });
+    check('claim rejects a wrong token', r.status === 403);
+    r = await call('POST', '/api/checkout/claim', { orderId: pf.orderId, claimToken, email: pfEmail, phone: '9876543210', name: 'Pay First' }, { noCookie: true });
+    check('claim requires a state', r.status === 400 && /state/i.test(r.data.error || ''));
+    r = await call('POST', '/api/checkout/claim', { orderId: pf.orderId, claimToken, email: pfEmail, phone: '9876543210', name: 'Pay First', state: '27' });
+    check('claim creates the account and logs in', r.status === 200 && /thank-you/.test(r.data.next || ''), r.data?.error);
+    r = await call('GET', '/api/course/lessons');
+    check('pay-first buyer can open the course', r.status === 200 && (r.data?.course?.modules || []).length === 5);
+    r = await call('POST', '/api/checkout/claim', { orderId: pf.orderId, claimToken, email: 'someone.else@example.com', phone: '9876543210', name: 'Other', state: '27' }, { noCookie: true });
+    check('order cannot be claimed by a second email', r.status === 409);
+  }
+  const payHtml = await (await fetch(BASE + '/pay')).text();
+  check('express checkout page /pay', /id="payBtn"/.test(payHtml) && /id="claimForm"/.test(payHtml));
+
   for (const p of ['/', '/login', '/thank-you', '/portal', '/privacy', '/terms', '/refund', '/contact', '/verify', '/admin']) {
     const s = await fetch(BASE + p, { redirect: 'manual' });
     const html = await s.text();

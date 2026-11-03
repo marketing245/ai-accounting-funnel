@@ -35,7 +35,7 @@ function flat(o) {
   const sig = o.signals || {};
   return {
     id: o.id, createdAt: o.createdAt, paidAt: o.paidAt, status: o.status, gateway: o.gateway, paymentId: o.paymentId, paidVia: o.paidVia,
-    name: o.customer?.name, email: o.customer?.email, phone: o.customer?.phone, state: o.customer?.state || '', gstin: o.customer?.gstin || '', addons: (o.addons || []).join(' '), amount: o.amount?.total, gst: o.amount?.gst,
+    name: o.customer?.name || (o.flow === 'payfirst' && o.status === 'paid' ? '(details pending)' : ''), email: o.customer?.email || o.payer?.email || '', phone: o.customer?.phone || o.payer?.phone || '', state: o.customer?.state || '', gstin: o.customer?.gstin || '', addons: (o.addons || []).join(' '), flow: o.flow || 'standard', checkoutSource: o.source || '', claimedAt: o.claimedAt || '', welcomeEmail: o.signals?.welcomeEmail?.status || '', amount: o.amount?.total, gst: o.amount?.gst,
     source: last.source || 'unknown', medium: last.medium || '', campaign: last.campaign || '', term: last.term || '', content: last.content || '', utmId: last.id || '',
     firstSource: first.source || '', firstMedium: first.medium || '', firstCampaign: first.campaign || '', firstAt: first.at || a.firstSeen || '',
     referrer: last.referrerHost || first.referrerHost || '', landing: last.landing || first.landing || '', page: a.page || '',

@@ -10,6 +10,7 @@ const ROUTES = {
   'checkout/verify': () => require('../src/handlers/checkout/verify'),
   'checkout/webhook': () => require('../src/handlers/checkout/webhook'),
   'checkout/order': () => require('../src/handlers/checkout/order'),
+  'checkout/claim': () => require('../src/handlers/checkout/claim'),
   'auth/login': () => require('../src/handlers/auth/login'),
   'auth/logout': () => require('../src/handlers/auth/logout'),
   'auth/me': () => require('../src/handlers/auth/me'),
