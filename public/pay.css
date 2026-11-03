@@ -49,6 +49,7 @@ h2 { font-size: 22px; margin: 18px 0 14px; }
 
 .sum { margin: 18px 0 14px; padding: 14px; background: #fff; border: 1px solid var(--rule); border-radius: 12px; font-size: 15px; }
 .sum div { display: flex; justify-content: space-between; padding: 4px 0; }
+[hidden] { display: none !important; } /* never let a display rule show a hidden row (e.g. the add-on line at ₹0) */
 .sum .muted { color: var(--muted); }
 .sum .total { margin-top: 6px; padding-top: 10px; border-top: 1px solid var(--rule); font-weight: 700; font-size: 18px; color: var(--navy); }
 

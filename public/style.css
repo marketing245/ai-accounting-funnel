@@ -1499,3 +1499,8 @@ footer {
   .hero-credential-pill { font-size: 11px; }
   .nav-cta { min-height: 44px; display: inline-flex; align-items: center; }
 }
+
+/* Mobile audit 4 Nov 2026: bigger tap targets in the checkout, no iOS/iPad zoom on any screen size */
+.modal-close { top: 6px; right: 6px; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+.modal-container input, .modal-container select, .modal-container textarea { font-size: 16px !important; }
+.addon-bump label[for="addonSkills"] { min-height: 44px; }
