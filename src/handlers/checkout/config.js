@@ -15,6 +15,7 @@ module.exports = wrap(async (req, res) => {
     product: { id: PRODUCT.id, name: PRODUCT.name, supportEmail: PRODUCT.supportEmail },
     amount: computeAmount(),
     addons: ADDONS.map((a) => ({ id: a.id, name: a.name, shortName: a.shortName, price: a.price, amountWith: computeAmount([a.id]) })),
+    states: require('../../lib/states').STATES,
     amountWithAllAddons: computeAmount(ADDONS.map((a) => a.id)),
   });
 });

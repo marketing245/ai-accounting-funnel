@@ -1,7 +1,7 @@
 'use strict';
 const { allow, wrap, getQuery, fail } = require('../../lib/http');
 const admin = require('../../lib/admin');
-const ORDER_COLS = ['createdAt', 'paidAt', 'status', 'name', 'email', 'phone', 'amount', 'gst', 'gateway', 'paymentId', 'platform', 'source', 'medium', 'campaign', 'term', 'content', 'utmId', 'firstSource', 'firstMedium', 'firstCampaign', 'firstAt', 'referrer', 'landing', 'gclid', 'gbraid', 'wbraid', 'fbclid', 'ttclid', 'msclkid', 'device', 'os', 'browser', 'inApp', 'country', 'city', 'sessions', 'pageviews', 'touches', 'hoursToPurchase', 'metaPurchase', 'metaInitiateCheckout', 'id'];
+const ORDER_COLS = ['createdAt', 'paidAt', 'status', 'name', 'email', 'phone', 'state', 'gstin', 'addons', 'amount', 'gst', 'gateway', 'paymentId', 'platform', 'source', 'medium', 'campaign', 'term', 'content', 'utmId', 'firstSource', 'firstMedium', 'firstCampaign', 'firstAt', 'referrer', 'landing', 'gclid', 'gbraid', 'wbraid', 'fbclid', 'ttclid', 'msclkid', 'device', 'os', 'browser', 'inApp', 'country', 'city', 'sessions', 'pageviews', 'touches', 'hoursToPurchase', 'metaPurchase', 'metaInitiateCheckout', 'id'];
 module.exports = wrap(async (req, res) => {
   if (!allow(req, res, ['GET'])) return;
   if (!admin.requireAdmin(req, res)) return;

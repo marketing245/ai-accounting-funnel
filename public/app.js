@@ -40,8 +40,25 @@ function items(a) {
 
 async function loadCheckoutConfig() {
   try { var r = await fetch('/api/checkout/config', { cache: 'no-store' }); CHECKOUT = await r.json(); } catch (e) { CHECKOUT = null; }
+  fillStates();
   updateCheckoutDisplay();
 }
+
+function fillStates() {
+  var sel = $('custState');
+  if (!sel || !CHECKOUT || !CHECKOUT.states || sel.options.length > 1) return;
+  CHECKOUT.states.forEach(function (st) { var o = document.createElement('option'); o.value = st.code; o.textContent = st.name; sel.appendChild(o); });
+}
+
+// GSTIN starts with the GST state code: pick the matching state for the buyer.
+function syncStateFromGstin() {
+  var g = $('custGstin'), sel = $('custState');
+  if (!g || !sel) return;
+  g.value = g.value.toUpperCase().replace(/\s+/g, '');
+  var code = g.value.slice(0, 2);
+  if (/^\d{2}$/.test(code) && Array.prototype.some.call(sel.options, function (o) { return o.value === code; })) sel.value = code;
+}
+document.addEventListener('input', function (e) { if (e.target && e.target.id === 'custGstin') syncStateFromGstin(); });
 
 function updateCheckoutDisplay() {
   var a = amounts();
@@ -110,10 +127,14 @@ async function submitCheckout(ev) {
   if (name.length < 2) return showError('Please enter your full name.'), false;
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return showError('Please enter a valid email — it becomes your student login.'), false;
   if (!/^[6-9]\d{9}$/.test(phone)) return showError('Please enter a valid 10-digit mobile number.'), false;
+  var state = ($('custState') && $('custState').value) || '';
+  var gstin = (($('custGstin') && $('custGstin').value) || '').toUpperCase().replace(/\s+/g, '');
+  if (!state) return showError('Please select your state.'), false;
+  if (gstin && !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(gstin)) return showError('Please enter a valid 15-character GSTIN, or leave it blank.'), false;
 
   setBusy(true);
   var data;
-  var payload = function () { return JSON.stringify({ name: name, email: email, phone: phone, website: ($('custWebsite') && $('custWebsite').value) || '', formToken: CHECKOUT && CHECKOUT.formToken, addons: selectedAddons(), attribution: window.aaeAttribution ? aaeAttribution() : null }); };
+  var payload = function () { return JSON.stringify({ name: name, email: email, phone: phone, state: state, gstin: gstin, website: ($('custWebsite') && $('custWebsite').value) || '', formToken: CHECKOUT && CHECKOUT.formToken, addons: selectedAddons(), attribution: window.aaeAttribution ? aaeAttribution() : null }); };
   try { data = await postForm('/api/checkout/create-order', payload); }
   catch (e) { data = { ok: false, error: 'Network error. Please check your connection and try again.' }; }
   if (!data || !data.ok) { setBusy(false); showError(data && data.error); return false; }

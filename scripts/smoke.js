@@ -44,7 +44,11 @@ async function call(method, path, body, opts = {}) {
   r = await call('POST', '/api/checkout/create-order', { name: 'CSRF Probe', email, phone: '9876543210', formToken }, { headers: { Origin: 'https://evil.example' } });
   check('create-order rejects foreign Origin', r.status === 403 && r.data.code === 'BAD_ORIGIN');
 
-  r = await call('POST', '/api/checkout/create-order', { name: 'Smoke Tester', email, phone: '9876543210', formToken, addons: ['aiae-23-skills', 'not-a-real-addon'], attribution: { first: { source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'x', landing: '/?utm_source=google' }, last: { source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'TeSt.gclid', landing: '/?utm_source=google' }, touches: [{ source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'TeSt.gclid', at: new Date().toISOString(), landing: '/' }], page: 'http://x/', screen: '1x1', vid: 'smokevid', sessions: 2, pageviews: 5 } });
+  r = await call('POST', '/api/checkout/create-order', { name: 'Smoke Tester', email, phone: '9876543210', formToken });
+  check('create-order requires a state', r.status === 400 && /state/i.test(r.data.error || ''), r.data?.error);
+  r = await call('POST', '/api/checkout/create-order', { name: 'Smoke Tester', email, phone: '9876543210', formToken, state: '07', gstin: '27AAPFU0939F1ZV' });
+  check('create-order rejects a GSTIN from another state', r.status === 400 && /Maharashtra/.test(r.data.error || ''), r.data?.error);
+  r = await call('POST', '/api/checkout/create-order', { name: 'Smoke Tester', email, phone: '9876543210', formToken, state: '27', gstin: '27aapfu0939f1zv', addons: ['aiae-23-skills', 'not-a-real-addon'], attribution: { first: { source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'x', landing: '/?utm_source=google' }, last: { source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'TeSt.gclid', landing: '/?utm_source=google' }, touches: [{ source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'TeSt.gclid', at: new Date().toISOString(), landing: '/' }], page: 'http://x/', screen: '1x1', vid: 'smokevid', sessions: 2, pageviews: 5 } });
   check('create order with add-on (test gateway, unknown add-on ignored)', r.status === 200 && r.data.gateway === 'test' && r.data.testToken && r.data.amount.total === 2948 && r.data.amount.addonIds.length === 1, r.data?.orderId);
   const order = r.data;
 
@@ -180,7 +184,7 @@ async function call(method, path, body, opts = {}) {
     r = await call('GET', '/api/admin/overview?days=7');
     check('admin overview date range', r.status === 200 && r.data.stats.days === 7);
     r = await call('GET', `/api/admin/order?id=${order.orderId}`);
-    check('admin order detail', r.status === 200 && r.data.order.id === order.orderId && r.data.flat.campaign === 'smoke_campaign' && r.data.user && r.data.user.email === email);
+    check('admin order detail (incl. state, GSTIN, add-on)', r.status === 200 && r.data.order.id === order.orderId && r.data.flat.campaign === 'smoke_campaign' && r.data.user && r.data.user.email === email && r.data.flat.state === 'Maharashtra' && r.data.flat.gstin === '27AAPFU0939F1ZV' && r.data.flat.addons === 'aiae-23-skills');
     const e = await fetch(BASE + '/api/admin/export?type=orders', { headers: { Cookie: cookie } }); const csvText = await e.text();
     check('admin csv export', e.status === 200 && /text\/csv/.test(e.headers.get('content-type')) && csvText.includes(order.orderId) && csvText.includes('smoke_campaign') && csvText.includes('gclid'));
     const g = await fetch(BASE + '/api/admin/export?type=google-offline', { headers: { Cookie: cookie } }); const gText = await g.text();

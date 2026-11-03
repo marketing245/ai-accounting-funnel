@@ -23,6 +23,8 @@ module.exports = wrap(async (req, res) => {
   if (name.length < 2) return fail(res, 400, 'Please enter your full name.');
   if (!EMAIL_RE.test(email)) return fail(res, 400, 'Please enter a valid email address — it becomes your login.');
   if (!PHONE_RE.test(phone)) return fail(res, 400, 'Please enter a valid 10-digit Indian mobile number.');
+  const place = require('../../lib/states').checkPlaceOfSupply(body.state, body.gstin);
+  if (place.error) return fail(res, 400, place.error);
 
   const mode = paymentMode();
   if (mode === 'disabled') return fail(res, 503, 'Payments are not configured yet. Please try again later.');
@@ -48,7 +50,7 @@ module.exports = wrap(async (req, res) => {
 
   const order = {
     id: null, gateway: mode, status: 'created',
-    customer: { name, email, phone },
+    customer: { name, email, phone, state: place.state.name, stateCode: place.state.code, gstin: place.gstin },
     items, amount, addons: addonIds,
     createdAt: new Date().toISOString(), paidAt: null, paymentId: null,
     ip: clientIp(req),
@@ -59,7 +61,7 @@ module.exports = wrap(async (req, res) => {
   let response;
   if (mode === 'razorpay') {
     const receipt = `aiae_${Date.now().toString(36)}_${crypto.randomBytes(3).toString('hex')}`;
-    const r = await rzp.createOrder({ amountPaise: amount.totalPaise, receipt, notes: { email, phone, name, product: PRODUCT.id, addons: addonIds.join(',') } });
+    const r = await rzp.createOrder({ amountPaise: amount.totalPaise, receipt, notes: { email, phone, name, product: PRODUCT.id, addons: addonIds.join(','), state: place.state.name, gstin: place.gstin } });
     order.id = r.id; order.receipt = receipt;
     response = {
       gateway: 'razorpay', orderId: r.id, keyId: rzp.keyId(), amountPaise: amount.totalPaise, currency: 'INR',
