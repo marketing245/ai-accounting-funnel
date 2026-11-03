@@ -16,6 +16,7 @@ const ROUTES = {
   'auth/set-password': () => require('../src/handlers/auth/set-password'),
   'course/lessons': () => require('../src/handlers/course/lessons'),
   'course/progress': () => require('../src/handlers/course/progress'),
+  'course/addon-file': () => require('../src/handlers/course/addon-file'),
   'certificate': () => require('../src/handlers/certificate'),
   'certificate/pdf': () => require('../src/handlers/certificate/pdf'),
   'certificate/verify': () => require('../src/handlers/certificate/verify'),

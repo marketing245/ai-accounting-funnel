@@ -57,5 +57,12 @@
     "api/index.js": {
       "includeFiles": "node_modules/pdfkit/js/data/**"
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/workshops",
+      "destination": "/",
+      "permanent": false
+    }
+  ]
 }

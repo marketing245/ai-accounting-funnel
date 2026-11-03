@@ -11,14 +11,31 @@ var currentOrder = null;  // order returned by create-order
 function $(id) { return document.getElementById(id); }
 function fmt(n) { return '₹' + Number(n || 0).toLocaleString('en-IN'); }
 
+function selectedAddons() {
+  var box = $('addonSkills');
+  return box && box.checked ? [box.value] : [];
+}
+
 function amounts() {
-  if (CHECKOUT && CHECKOUT.amount) return CHECKOUT.amount;
-  var base = 1499, gst = Math.round(base * 0.18);
-  return { base: base, subtotal: base, gst: gst, total: base + gst, gstPercent: 18 };
+  var ids = selectedAddons();
+  if (CHECKOUT && CHECKOUT.amount) {
+    if (!ids.length) return CHECKOUT.amount;
+    var match = (CHECKOUT.addons || []).find(function (a) { return a.id === ids[0]; });
+    if (match && match.amountWith) return match.amountWith;
+  }
+  return amountsFor(ids);
+}
+
+// Offline fallback only (server config not loaded yet); the server always recomputes the real amount.
+function amountsFor(ids) {
+  var base = 1499, add = ids.length ? 999 : 0, sub = base + add, gst = Math.round(sub * 0.18);
+  return { base: base, addons: add, addonIds: ids, subtotal: sub, gst: gst, total: sub + gst, gstPercent: 18 };
 }
 
 function items(a) {
-  return [{ item_id: 'aiae-course', item_name: 'AI in Accounting Course', price: a.base, quantity: 1 }];
+  var list = [{ item_id: 'aiae-course', item_name: 'AI in Accounting Course', price: a.base, quantity: 1 }];
+  if (a.addons) list.push({ item_id: 'aiae-23-skills', item_name: '23 AI Skills pack', price: a.addons, quantity: 1 });
+  return list;
 }
 
 async function loadCheckoutConfig() {
@@ -28,9 +45,14 @@ async function loadCheckoutConfig() {
 
 function updateCheckoutDisplay() {
   var a = amounts();
+  // Page price blocks always show the course alone; the checkout modal shows the basket (course + ticked add-ons).
+  var course = (CHECKOUT && CHECKOUT.amount) || amountsFor([]);
+  var pick = function (el) { return el.closest('#unifiedFunnelModal') ? a : course; };
   document.querySelectorAll('[data-price="base"]').forEach(function (el) { el.textContent = fmt(a.base); });
-  document.querySelectorAll('[data-price="gst"]').forEach(function (el) { el.textContent = fmt(a.gst); });
-  document.querySelectorAll('[data-price="total"]').forEach(function (el) { el.textContent = fmt(a.total); });
+  document.querySelectorAll('[data-price="gst"]').forEach(function (el) { el.textContent = fmt(pick(el).gst); });
+  document.querySelectorAll('[data-price="addons"]').forEach(function (el) { el.textContent = fmt(a.addons || 0); });
+  if ($('addonRow')) $('addonRow').classList.toggle('hidden', !a.addons);
+  document.querySelectorAll('[data-price="total"]').forEach(function (el) { el.textContent = fmt(pick(el).total); });
   if ($('checkoutTotalAmount')) $('checkoutTotalAmount').textContent = fmt(a.total);
   if ($('checkoutPayBtn') && !$('checkoutPayBtn').disabled) $('checkoutPayBtn').textContent = 'Proceed to secure payment → ' + fmt(a.total);
   var badge = $('paymentModeBadge');
@@ -91,7 +113,7 @@ async function submitCheckout(ev) {
 
   setBusy(true);
   var data;
-  var payload = function () { return JSON.stringify({ name: name, email: email, phone: phone, website: ($('custWebsite') && $('custWebsite').value) || '', formToken: CHECKOUT && CHECKOUT.formToken, attribution: window.aaeAttribution ? aaeAttribution() : null }); };
+  var payload = function () { return JSON.stringify({ name: name, email: email, phone: phone, website: ($('custWebsite') && $('custWebsite').value) || '', formToken: CHECKOUT && CHECKOUT.formToken, addons: selectedAddons(), attribution: window.aaeAttribution ? aaeAttribution() : null }); };
   try { data = await postForm('/api/checkout/create-order', payload); }
   catch (e) { data = { ok: false, error: 'Network error. Please check your connection and try again.' }; }
   if (!data || !data.ok) { setBusy(false); showError(data && data.error); return false; }

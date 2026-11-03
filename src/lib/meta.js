@@ -27,7 +27,7 @@ async function sendEvent(order, eventName, { value, eventTime } = {}) {
       event_name: eventName, event_time: Math.floor((eventTime ? new Date(eventTime) : new Date()).getTime() / 1000),
       event_id: `${order.id}:${eventName}`, action_source: 'website', event_source_url: (order.attribution && order.attribution.page) || process.env.SITE_URL || undefined,
       user_data: userData(order),
-      custom_data: { currency: 'INR', value: value ?? order.amount?.total, content_name: 'AI in Accounting Course', content_type: 'product', content_ids: ['aiae-course'], order_id: order.id, num_items: 1 },
+      custom_data: { currency: 'INR', value: value ?? order.amount?.total, content_name: 'AI in Accounting Course', content_type: 'product', content_ids: (order.items || []).map((i) => i.id).filter(Boolean).length ? order.items.map((i) => i.id) : ['aiae-course'], order_id: order.id, num_items: (order.items || []).length || 1 },
     }],
   };
   if (process.env.META_TEST_EVENT_CODE) body.test_event_code = process.env.META_TEST_EVENT_CODE;

@@ -32,6 +32,7 @@ async function call(method, path, body, opts = {}) {
 
   r = await call('GET', '/api/checkout/config');
   check('checkout config', r.status === 200 && r.data.amount.total === 1769 && !('amounts' in r.data) && !!r.data.formToken, JSON.stringify(r.data.amount));
+  check('checkout config lists the 23 AI Skills add-on (₹999 → total ₹2,948)', Array.isArray(r.data.addons) && r.data.addons[0]?.id === 'aiae-23-skills' && r.data.addons[0].price === 999 && r.data.addons[0].amountWith.total === 2948);
   const formToken = r.data.formToken;
   r = await call('POST', '/api/checkout/create-order', { name: 'Smoke Tester', email, phone: '9876543210', formToken });
   check('create-order rejects a form token younger than 3 s', r.status === 400 && r.data.code === 'FORM_TOKEN');
@@ -43,8 +44,8 @@ async function call(method, path, body, opts = {}) {
   r = await call('POST', '/api/checkout/create-order', { name: 'CSRF Probe', email, phone: '9876543210', formToken }, { headers: { Origin: 'https://evil.example' } });
   check('create-order rejects foreign Origin', r.status === 403 && r.data.code === 'BAD_ORIGIN');
 
-  r = await call('POST', '/api/checkout/create-order', { name: 'Smoke Tester', email, phone: '9876543210', formToken, bump: true /* must be ignored */, attribution: { first: { source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'x', landing: '/?utm_source=google' }, last: { source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'TeSt.gclid', landing: '/?utm_source=google' }, touches: [{ source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'TeSt.gclid', at: new Date().toISOString(), landing: '/' }], page: 'http://x/', screen: '1x1', vid: 'smokevid', sessions: 2, pageviews: 5 } });
-  check('create order (test gateway)', r.status === 200 && r.data.gateway === 'test' && r.data.testToken, r.data?.orderId);
+  r = await call('POST', '/api/checkout/create-order', { name: 'Smoke Tester', email, phone: '9876543210', formToken, addons: ['aiae-23-skills', 'not-a-real-addon'], attribution: { first: { source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'x', landing: '/?utm_source=google' }, last: { source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'TeSt.gclid', landing: '/?utm_source=google' }, touches: [{ source: 'google', medium: 'cpc', campaign: 'smoke_campaign', gclid: 'TeSt.gclid', at: new Date().toISOString(), landing: '/' }], page: 'http://x/', screen: '1x1', vid: 'smokevid', sessions: 2, pageviews: 5 } });
+  check('create order with add-on (test gateway, unknown add-on ignored)', r.status === 200 && r.data.gateway === 'test' && r.data.testToken && r.data.amount.total === 2948 && r.data.amount.addonIds.length === 1, r.data?.orderId);
   const order = r.data;
 
   r = await call('POST', '/api/checkout/create-order', { name: 'X', email: 'bad', phone: '123', formToken });
@@ -66,10 +67,19 @@ async function call(method, path, body, opts = {}) {
   check('me', r.status === 200 && r.data.user.email === email && r.data.user.hasAccess && !('hasBump' in r.data.user) && !r.data.user.hasPassword);
 
   r = await call('GET', `/api/checkout/order?id=${order.orderId}`);
-  check('order summary for buyer', r.status === 200 && r.data.order.status === 'paid' && r.data.order.amount.total === 1769 && r.data.order.items.length === 1);
+  check('order summary for buyer', r.status === 200 && r.data.order.status === 'paid' && r.data.order.amount.total === 2948 && r.data.order.items.length === 2 && r.data.order.items[1].id === 'aiae-23-skills');
 
   r = await call('GET', '/api/course/lessons');
   const mods = r.data?.course?.modules || [];
+  const addon = (r.data?.addons || [])[0];
+  check('portal lists the purchased add-on with 2 downloads', addon && addon.id === 'aiae-23-skills' && addon.files.length === 2);
+  if (addon) {
+    const dl = await fetch(BASE + addon.files[0].url, { headers: { cookie } });
+    check('add-on PDF downloads for the buyer', dl.status === 200 && /pdf/.test(dl.headers.get('content-type') || ''), dl.status);
+    await dl.arrayBuffer().catch(() => {});
+    const anon = await fetch(BASE + addon.files[0].url);
+    check('add-on file is blocked without login', anon.status === 401);
+  }
   check('lessons (5 modules, embed urls, no video ids leaked)', r.status === 200 && mods.length === 5 && mods.every((m) => m.embedUrl && m.embedUrl.includes('iframe.mediadelivery.net') && m.videoStatus === 'ready' && m.description && !('bunnyVideoId' in m) && !('prompts' in m)));
 
   if (mods[0] && /[?&]token=/.test(mods[0].embedUrl)) {
@@ -188,19 +198,19 @@ async function call(method, path, body, opts = {}) {
   } else console.log('skip  admin login checks (ADMIN_PASSWORD not in env)');
 
   // static pages
-  for (const p of ['/', '/login', '/thank-you', '/portal', '/privacy', '/terms', '/refund', '/contact', '/verify', '/admin', '/workshops']) {
+  for (const p of ['/', '/login', '/thank-you', '/portal', '/privacy', '/terms', '/refund', '/contact', '/verify', '/admin']) {
     const s = await fetch(BASE + p, { redirect: 'manual' });
     const html = await s.text();
     check(`page ${p}`, s.status === 200 && /<html/i.test(html), `${s.status}`);
   }
   const home = await (await fetch(BASE + '/')).text();
   check('home has no fake scarcity / UPI / old portal links / invented rating', !/Long Weekend|Limited Spots|okhdfcbank|I Have Paid|cd-h|4\.9 \/ 5/.test(home));
-  check('home keeps the funnel focused (consultation moved to /workshops)', !/id="consultation-webinars"|bookingModal/.test(home) && /href="\/workshops"/.test(home));
+  check('home keeps the funnel focused (no consultation/workshops section or links)', !/id="consultation-webinars"|bookingModal|href="\/workshops"/.test(home));
   check('home loads tracking config + checkout modal', /site-config\.js/.test(home) && /analytics\.js/.test(home) && /checkoutPayBtn/.test(home));
   const cfg = await (await fetch(BASE + '/site-config.js')).text();
   check('GA4 id configured', /G-YZVRBXJRME/.test(cfg));
   const portal = await (await fetch(BASE + '/portal')).text();
-  check('home has no add-on', !/orderBumpCheckbox|SOP pack/.test(home));
+  check('home has no old placeholder add-on (₹399 SOP pack)', !/orderBumpCheckbox|SOP pack/.test(home) && /id="addonSkills"/.test(home));
   check('portal html has no video ids / fake auth', !/mediadelivery\.net\/embed\/786834\/[0-9a-f]/.test(portal) && !/AAE-ACTIVE-MEMBER|verifyExistingMemberPhone/.test(portal));
 
   console.log(failures ? `\n${failures} check(s) FAILED` : '\nAll checks passed');

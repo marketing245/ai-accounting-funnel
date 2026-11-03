@@ -127,6 +127,12 @@
       </div>
 
 
+      <!-- PAID ADD-ONS (shown only to buyers; files stream from /api/course/addon-file) -->
+      <div id="addonsCard" class="hidden p-4 m-3 rounded-xl bg-white/5 border border-white/10 space-y-2">
+        <span class="text-[10px] font-extrabold tracking-wider uppercase text-[#dfb35a]">Your add-ons</span>
+        <div id="addonsList" class="space-y-3"></div>
+      </div>
+
       <!-- CERTIFICATE OF COMPLETION -->
       <div id="certCard" class="p-4 m-3 rounded-xl bg-gradient-to-br from-[#c4953a]/15 to-black/40 border border-[#c4953a]/30 space-y-2">
         <div class="flex items-center justify-between">
@@ -262,12 +268,24 @@
       if (data.course.whatsappGroupUrl) { $('whatsappLink').href = data.course.whatsappGroupUrl; $('whatsappLink').style.display = ''; }
       if (data.course.supportEmail) { $('supportLink').href = 'mailto:' + data.course.supportEmail; $('supportLink').textContent = data.course.supportEmail; }
 
+      renderAddons(data.addons || []);
       renderCurriculum();
       loadLesson(currentModuleIndex);
       updateProgressDisplay();
       $('authGate').classList.add('hidden');
       refreshCertificate();
       attachPlayer(); startActiveTick();
+    }
+
+    function renderAddons(list) {
+      if (!list.length) return;
+      const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      $('addonsList').innerHTML = list.map((a) => `
+        <div>
+          <div class="text-xs font-bold text-white mb-1.5">${esc(a.name)}</div>
+          ${a.files.map((f) => `<a href="${esc(f.url)}" class="block w-full mb-1.5 px-3 py-2 rounded-lg bg-[#c4953a]/15 hover:bg-[#c4953a]/25 border border-[#c4953a]/30 text-[11px] font-semibold text-[#e3c27e] transition">⬇ ${esc(f.name)}</a>`).join('')}
+        </div>`).join('');
+      $('addonsCard').classList.remove('hidden');
     }
 
     async function logout() {

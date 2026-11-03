@@ -1,6 +1,6 @@
 'use strict';
 const { send, allow, wrap } = require('../../lib/http');
-const { PRICING, PRODUCT, computeAmount, paymentMode } = require('../../lib/config');
+const { PRICING, PRODUCT, ADDONS, computeAmount, paymentMode } = require('../../lib/config');
 const rzp = require('../../lib/razorpay');
 
 module.exports = wrap(async (req, res) => {
@@ -14,5 +14,7 @@ module.exports = wrap(async (req, res) => {
     pricing: PRICING,
     product: { id: PRODUCT.id, name: PRODUCT.name, supportEmail: PRODUCT.supportEmail },
     amount: computeAmount(),
+    addons: ADDONS.map((a) => ({ id: a.id, name: a.name, shortName: a.shortName, price: a.price, amountWith: computeAmount([a.id]) })),
+    amountWithAllAddons: computeAmount(ADDONS.map((a) => a.id)),
   });
 });

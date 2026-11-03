@@ -82,6 +82,20 @@ function hasAccess(user) {
   return user.purchases.some((p) => p.gateway && p.gateway !== 'test');
 }
 
+// Add-ons this user has paid for (same live-mode rule as hasAccess: test purchases count only in test mode).
+function ownedAddons(user) {
+  if (!user || !Array.isArray(user.purchases)) return [];
+  const { paymentMode } = require('./config');
+  const allow = String(process.env.ACCESS_ALLOWLIST || '').split(',').map((e) => normalizeEmail(e)).filter(Boolean);
+  const anyGateway = paymentMode() === 'test' || allow.includes(normalizeEmail(user.email));
+  const ids = new Set();
+  for (const p of user.purchases) {
+    if (!anyGateway && (!p.gateway || p.gateway === 'test')) continue;
+    for (const it of p.items || []) if (it && it.addon) ids.add(it.id);
+  }
+  return [...ids];
+}
+
 // Session + fresh user record in one go. Sends 401/403 itself and returns null when the caller must stop.
 // A password change invalidates sessions issued before it (token.pv vs user.passwordSetAt).
 async function loadSessionUser(req, res, { requireAccess = true } = {}) {
@@ -128,4 +142,4 @@ function verifyTestPayment(orderId, token) {
 }
 
 module.exports = { signToken, verifyToken, hashPassword, verifyPassword, normalizeEmail, userKey, getUser, saveUser,
-  setSession, clearSession, getSession, requireSession, loadSessionUser, hasAccess, sameOrigin, issueFormToken, checkFormToken, signTestPayment, verifyTestPayment, COOKIE };
+  setSession, clearSession, getSession, requireSession, loadSessionUser, hasAccess, sameOrigin, issueFormToken, checkFormToken, signTestPayment, verifyTestPayment, COOKIE, ownedAddons };

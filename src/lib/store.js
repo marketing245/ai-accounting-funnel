@@ -66,4 +66,34 @@ async function listJson(folder, { limit = 2000 } = {}) {
   return out;
 }
 
-module.exports = { readJson, writeJson, listJson, PREFIX, hasBlob, setOnWrite: (fn) => { onWrite = fn; } };
+
+// Raw files shared by every environment (not prefixed with prod/ or dev/), e.g. paid add-on downloads.
+// Returns { stream, size, contentType } or null.
+async function readSharedFile(pathname) {
+  const k = `shared/${pathname}`;
+  if (!hasBlob) {
+    const f = path.join(process.cwd(), '.data', k);
+    if (!fs.existsSync(f)) return null;
+    return { stream: fs.createReadStream(f), size: fs.statSync(f).size, contentType: null };
+  }
+  const { get } = require('@vercel/blob');
+  let r;
+  try { r = await get(k, { access: 'private', useCache: false }); }
+  catch (e) { if (/not.?found/i.test(String(e && e.message)) || e?.name === 'BlobNotFoundError') return null; throw e; }
+  if (!r || r.statusCode !== 200) return null;
+  return { stream: r.stream, size: r.blob && r.blob.size, contentType: r.blob && r.blob.contentType };
+}
+
+async function writeSharedFile(pathname, buffer, contentType) {
+  const k = `shared/${pathname}`;
+  if (!hasBlob) {
+    const f = path.join(process.cwd(), '.data', k);
+    fs.mkdirSync(path.dirname(f), { recursive: true });
+    fs.writeFileSync(f, buffer);
+    return { pathname: k };
+  }
+  const { put } = require('@vercel/blob');
+  return put(k, buffer, { access: 'private', addRandomSuffix: false, allowOverwrite: true, contentType });
+}
+
+module.exports = { readJson, writeJson, listJson, readSharedFile, writeSharedFile, PREFIX, hasBlob, setOnWrite: (fn) => { onWrite = fn; } };

@@ -1,7 +1,7 @@
 'use strict';
 const crypto = require('crypto');
 const { readJson, send, fail, allow, wrap, clientIp } = require('../../lib/http');
-const { PRODUCT, computeAmount, paymentMode } = require('../../lib/config');
+const { PRODUCT, ADDONS, cleanAddonIds, computeAmount, paymentMode } = require('../../lib/config');
 const store = require('../../lib/store');
 const auth = require('../../lib/auth');
 const rzp = require('../../lib/razorpay');
@@ -27,8 +27,10 @@ module.exports = wrap(async (req, res) => {
   const mode = paymentMode();
   if (mode === 'disabled') return fail(res, 503, 'Payments are not configured yet. Please try again later.');
 
-  const amount = computeAmount();
+  const addonIds = cleanAddonIds(body.addons);
+  const amount = computeAmount(addonIds);
   const items = [{ id: PRODUCT.id, name: PRODUCT.name, price: amount.base, qty: 1 }];
+  for (const id of addonIds) { const a = ADDONS.find((x) => x.id === id); items.push({ id: a.id, name: a.name, price: a.price, qty: 1, addon: true }); }
 
   // Attribution: everything the browser remembered (see public/analytics.js) + what the request itself tells us.
   const str = (v, n = 200) => String(v == null ? '' : v).slice(0, n);
@@ -47,7 +49,7 @@ module.exports = wrap(async (req, res) => {
   const order = {
     id: null, gateway: mode, status: 'created',
     customer: { name, email, phone },
-    items, amount,
+    items, amount, addons: addonIds,
     createdAt: new Date().toISOString(), paidAt: null, paymentId: null,
     ip: clientIp(req),
     attribution,
@@ -57,11 +59,11 @@ module.exports = wrap(async (req, res) => {
   let response;
   if (mode === 'razorpay') {
     const receipt = `aiae_${Date.now().toString(36)}_${crypto.randomBytes(3).toString('hex')}`;
-    const r = await rzp.createOrder({ amountPaise: amount.totalPaise, receipt, notes: { email, phone, name, product: PRODUCT.id } });
+    const r = await rzp.createOrder({ amountPaise: amount.totalPaise, receipt, notes: { email, phone, name, product: PRODUCT.id, addons: addonIds.join(',') } });
     order.id = r.id; order.receipt = receipt;
     response = {
       gateway: 'razorpay', orderId: r.id, keyId: rzp.keyId(), amountPaise: amount.totalPaise, currency: 'INR',
-      description: PRODUCT.shortName,
+      description: [PRODUCT.shortName].concat(addonIds.map((id) => ADDONS.find((a) => a.id === id).shortName)).join(' + '),
       prefill: { name, email, contact: `+91${phone}` },
     };
   } else {

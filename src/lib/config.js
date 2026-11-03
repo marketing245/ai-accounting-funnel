@@ -19,12 +19,34 @@ const PRODUCT = {
   whatsappGroupUrl: process.env.WHATSAPP_GROUP_URL || null,
 };
 
-function computeAmount() {
+// Optional add-ons offered at checkout (same product and price as the SuperProfile course checkout bump).
+// Files live in the private Blob store under shared/addons/<id>/ (upload once: node scripts/addon-files.js upload).
+const ADDONS = [
+  {
+    id: 'aiae-23-skills',
+    name: '23 AI Skills - Ready to Use for CA, CMA, CS & BCom Graduates',
+    shortName: '23 AI Skills pack',
+    price: 999,
+    files: [
+      { name: 'AI Skills E-book Close, AP & AR.pdf', type: 'application/pdf' },
+      { name: 'Files-to-add_1.zip', type: 'application/zip' },
+    ],
+  },
+];
+
+function cleanAddonIds(ids) {
+  const wanted = new Set((Array.isArray(ids) ? ids : []).map(String));
+  return ADDONS.filter((a) => wanted.has(a.id)).map((a) => a.id); // known ids only, catalogue order, no duplicates
+}
+
+function computeAmount(addonIds) {
+  const ids = cleanAddonIds(addonIds);
   const base = PRICING.base;
-  const subtotal = base;
+  const addons = ids.reduce((sum, id) => sum + ADDONS.find((a) => a.id === id).price, 0);
+  const subtotal = base + addons;
   const gst = Math.round(subtotal * PRICING.gstPercent) / 100;
   const total = Math.round(subtotal + gst);
-  return { currency: PRICING.currency, base, subtotal, gstPercent: PRICING.gstPercent, gst: Math.round(gst), total, totalPaise: total * 100 };
+  return { currency: PRICING.currency, base, addons, addonIds: ids, subtotal, gstPercent: PRICING.gstPercent, gst: Math.round(gst), total, totalPaise: total * 100 };
 }
 
 // 'razorpay' when keys exist, 'test' only when explicitly enabled, otherwise 'disabled'.
@@ -38,4 +60,4 @@ function paymentMode() {
   return 'test';
 }
 
-module.exports = { PRICING, PRODUCT, computeAmount, paymentMode };
+module.exports = { PRICING, PRODUCT, ADDONS, cleanAddonIds, computeAmount, paymentMode };

@@ -3,7 +3,7 @@ const { send, fail, allow, wrap } = require('../../lib/http');
 const auth = require('../../lib/auth');
 const { CURRICULUM, publicCurriculum } = require('../../lib/course');
 const bunny = require('../../lib/bunny');
-const { PRODUCT } = require('../../lib/config');
+const { PRODUCT, ADDONS } = require('../../lib/config');
 
 // Everything the portal needs, in one authenticated call. Video embed URLs are generated per request (signed when enabled).
 module.exports = wrap(async (req, res) => {
@@ -25,5 +25,9 @@ module.exports = wrap(async (req, res) => {
     user: { name: user.name, email: user.email, phone: user.phone },
     course: { title: PRODUCT.name, modules, videoProtected: bunny.signed(), whatsappGroupUrl: PRODUCT.whatsappGroupUrl, supportEmail: PRODUCT.supportEmail },
     progress: user.progress || { completed: [] },
+    addons: auth.ownedAddons(user).map((id) => {
+      const a = ADDONS.find((x) => x.id === id);
+      return a && { id: a.id, name: a.name, files: a.files.map((f, i) => ({ name: f.name, url: `/api/course/addon-file?addon=${encodeURIComponent(a.id)}&file=${i}` })) };
+    }).filter(Boolean),
   });
 });
