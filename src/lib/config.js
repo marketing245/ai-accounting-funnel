@@ -4,7 +4,7 @@
 
 const PRICING = {
   currency: 'INR',
-  base: 1499,              // course price before tax
+  base: Number(process.env.COURSE_PRICE_OVERRIDE) > 0 ? Number(process.env.COURSE_PRICE_OVERRIDE) : 1499, // course price before tax (override = temporary test price)
   regular: 5000,           // regular (MRP) price shown struck through
   gstPercent: 18,
 };
