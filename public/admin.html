@@ -19,6 +19,8 @@
     .paid { background: rgba(52,211,153,.15); color: #6ee7b7; } .lead { background: rgba(251,191,36,.15); color: #fcd34d; }
     .ok { color: #6ee7b7; } .warn { color: #fcd34d; } .bad { color: #fca5a5; } .muted { color: rgba(255,255,255,.45); }
     .pill.bad { background: rgba(248,113,113,.15); } .pill.warn { background: rgba(251,191,36,.15); } .pill:not(.paid):not(.lead):not(.bad):not(.warn) { background: rgba(255,255,255,.08); color: rgba(255,255,255,.7); }
+    /* Chrome autofill paints saved passwords on a light background; keep the field dark so text and the eye stay visible */
+    input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus { -webkit-box-shadow: 0 0 0 1000px #0a1320 inset; -webkit-text-fill-color: #fff; caret-color: #fff; }
     .kpi { font-size: 24px; font-weight: 800; color: #dfb35a; line-height: 1.1; } .kpi-sub { font-size: 11px; color: rgba(255,255,255,.5); }
     .tab { padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 700; color: rgba(255,255,255,.6); cursor: pointer; white-space: nowrap; }
     .tab.active { background: rgba(196,149,58,.2); color: #dfb35a; border: 1px solid rgba(196,149,58,.5); }
@@ -46,7 +48,7 @@
       <p class="text-xs text-white/60">Orders, leads, students, traffic sources and conversion signals.</p>
       <div class="relative">
         <input type="password" id="pw" placeholder="Admin password" autocomplete="current-password" class="w-full" style="padding-right:44px">
-        <button type="button" id="pwEye" aria-label="Show password" title="Show password" onclick="togglePw()" style="position:absolute;right:4px;top:50%;transform:translateY(-50%);width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:transparent;border:0;color:rgba(255,255,255,.6);cursor:pointer">
+        <button type="button" id="pwEye" aria-label="Show password" title="Show password" onclick="togglePw()" style="position:absolute;right:4px;top:50%;transform:translateY(-50%);width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:transparent;border:0;color:#c4953a;cursor:pointer">
           <svg id="pwEyeOpen" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           <svg id="pwEyeOff" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
         </button>
