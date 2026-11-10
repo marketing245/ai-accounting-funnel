@@ -104,3 +104,11 @@ a.cta { text-align: center; text-decoration: none; }
 .upi-utr { display: grid; gap: 6px; font-size: 14px; font-weight: 600; color: var(--navy); }
 .upi-utr small { font-weight: 400; color: #666; }
 .upi-utr input { font-size: 17px; letter-spacing: .08em; padding: 13px 12px; border: 1px solid #cfc7b5; border-radius: 10px; font-family: ui-monospace, Menlo, monospace; }
+.upi-box { display: flex; flex-direction: column; gap: 12px; }
+.upi-box[hidden], .upipanel [hidden] { display: none !important; }
+.upi-apps { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.upi-app { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 14px; border-radius: 12px; border: 1.5px solid var(--rule, #e5e0d4); background: #fff; color: var(--navy); font-weight: 700; font-size: 15px; text-decoration: none; }
+.upi-dot { width: 14px; height: 14px; border-radius: 50%; flex: 0 0 14px; }
+.upi-warn { margin: 0; font-size: 13px; color: #9a6b00; text-align: center; }
+.upi-q { margin: 0; font-size: 17px; font-weight: 700; color: var(--navy); text-align: center; }
+.linkbtn { background: none; border: 0; color: #666; text-decoration: underline; font-size: 14px; cursor: pointer; padding: 6px; }

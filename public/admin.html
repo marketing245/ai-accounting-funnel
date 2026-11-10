@@ -77,13 +77,14 @@
       <!-- COURSE VIDEOS -->
       <section id="tab-videos" class="hidden space-y-3">
         <div id="videoService" class="card p-4"></div>
-        <div class="card p-4 space-y-2"><h3>Modules</h3><p class="text-[11px] text-white/50">Which video each module plays and how students watch it (real students only).</p>
+        <div class="card p-4 space-y-2"><div class="flex flex-wrap items-center gap-2"><h3 class="mr-auto">Modules</h3><button class="btn-ghost" onclick="load(true)">Refresh status</button></div><p class="text-[11px] text-white/50">Which video each module plays and how students watch it (real students only). <b>Upload new video</b> replaces a module's video: the old one keeps playing until the new one has finished processing at Bunny, then the portal switches by itself. Keep this tab open while it uploads.</p>
+          <input type="file" id="videoFile" accept="video/*" class="hidden">
           <div class="overflow-auto"><table id="t-videos"></table></div></div>
       </section>
 
       <!-- UPI PAYMENTS (PAYMENT_MODE=upi) -->
       <section id="tab-upi" class="hidden card p-4 space-y-3">
-        <div class="flex flex-wrap items-center gap-2"><h3 id="upiTitle">UPI payments</h3><p class="text-[11px] text-white/50 mr-auto">Open your UPI app (the account behind <b id="upiVpaLabel"></b>) and find a payment with the same <b>amount</b> and <b>UTR</b>. Found it → <b>Approve</b> and send the access link. Not there → <b>Reject</b>.</p>
+        <div class="flex flex-wrap items-center gap-2"><h3 id="upiTitle">UPI payments</h3><p class="text-[11px] text-white/50 mr-auto">Open your UPI app (the account behind <b id="upiVpaLabel"></b>) and find a payment with the same <b>amount</b> and <b>note code</b> (e.g. VVTCPSG6, shown in the payment details), around the time shown. Found it → <b>Approve</b> and send the access link. Not there → <b>Reject</b>.</p>
           <select id="upiFilter" onchange="renderUpi()"><option value="awaiting_verification">To verify</option><option value="paid">Approved</option><option value="rejected">Rejected</option><option value="all">All</option></select></div>
         <div class="overflow-auto max-h-[70vh]"><table id="t-upi"></table></div>
       </section>
@@ -288,10 +289,39 @@
       else if (s.ok) $('videoService').innerHTML = '<h3>Video service <span class="pill paid">on</span></h3><p class="text-[11px] text-white/60 mt-1">Bunny Stream · ' + s.videoCount + ' videos · ' + s.storageMb + ' MB stored · ' + s.trafficMb + ' MB streamed · balance $' + s.balanceUsd + '</p>';
       else $('videoService').innerHTML = '<h3>Video service <span class="pill bad">off</span></h3><p class="text-sm text-red-200 mt-2">' + esc(s.problem) + '</p><p class="text-[11px] text-white/50 mt-1">Bunny balance: $' + (s.balanceUsd == null ? '?' : s.balanceUsd) + (s.videoCount == null ? '' : ' · ' + s.videoCount + ' videos stored (nothing is lost)') + '</p>';
       const st = (m) => !m.video ? '<span class="pill bad">no video</span>' : m.video.ready === true ? '<span class="pill paid">ready</span>' : m.video.ready === false ? '<span class="pill warn">' + esc(m.video.status) + '</span>' : '<span class="pill">' + esc(m.video.status) + '</span>';
-      $('t-videos').innerHTML = '<tr><th>Module</th><th>Video</th><th>Status</th><th>Length</th><th>Students started</th><th>Completed</th><th>Avg watch</th></tr>' +
-        v.modules.map((m) => '<tr><td><b>' + esc(m.code) + '</b> ' + esc(m.title) + '</td><td class="text-[11px]">' + (m.video ? esc(m.video.title || m.video.id) : '—') + '</td><td>' + st(m) + '</td><td>' + (m.video && m.video.lengthMin ? m.video.lengthMin + ' min' : esc(m.plannedDuration || '')) + '</td><td>' + m.viewed + ' <span class="muted">(' + pct(m.viewedPct) + ')</span></td><td>' + m.completed + ' <span class="muted">(' + pct(m.completedPct) + ')</span></td><td>' + m.avgWatchMin + ' min</td></tr>').join('') +
-        '<tr><td colspan="7" class="muted text-[11px]">' + v.students + ' real student' + (v.students === 1 ? '' : 's') + ' so far.</td></tr>';
+      $('t-videos').innerHTML = '<tr><th>Module</th><th>Video</th><th>Status</th><th>Length</th><th>Students started</th><th>Completed</th><th>Avg watch</th><th>Upload</th></tr>' +
+        v.modules.map((m) => '<tr><td><b>' + esc(m.code) + '</b> ' + esc(m.title) + '</td><td class="text-[11px]">' + (m.video ? esc(m.video.title || m.video.id) : '—') + '</td><td>' + st(m) + '</td><td>' + (m.video && m.video.lengthMin ? m.video.lengthMin + ' min' : esc(m.plannedDuration || '')) + '</td><td>' + m.viewed + ' <span class="muted">(' + pct(m.viewedPct) + ')</span></td><td>' + m.completed + ' <span class="muted">(' + pct(m.completedPct) + ')</span></td><td>' + m.avgWatchMin + ' min</td><td class="whitespace-nowrap"><button class="btn-ghost" onclick="pickVideo(' + m.id + ')">Upload new video</button><div id="up-' + m.id + '" class="text-[11px] mt-1"></div></td></tr>').join('') +
+        '<tr><td colspan="8" class="muted text-[11px]">' + v.students + ' real student' + (v.students === 1 ? '' : 's') + ' so far.</td></tr>';
     }
+
+    // ── Course video upload: the browser sends the file straight to Bunny (TUS, resumable); our server only signs the upload ──
+    let UPLOAD_MODULE = null, UPLOADING = 0;
+    function pickVideo(id) { if (UPLOADING) return alert('Another upload is running. Wait for it to finish.'); UPLOAD_MODULE = id; $('videoFile').value = ''; $('videoFile').click(); }
+    function loadTus() {
+      return window.tus ? Promise.resolve() : new Promise((ok, bad) => { const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/tus-js-client@4.2.3/dist/tus.min.js'; s.onload = ok; s.onerror = () => bad(new Error('Could not load the uploader.')); document.head.appendChild(s); });
+    }
+    window.addEventListener('beforeunload', (e) => { if (UPLOADING) { e.preventDefault(); e.returnValue = ''; } });
+    $('videoFile').addEventListener('change', async () => {
+      const file = $('videoFile').files[0], id = UPLOAD_MODULE; if (!file || !id) return;
+      const out = $('up-' + id);
+      const say = (t, cls) => { out.className = 'text-[11px] mt-1 ' + (cls || ''); out.textContent = t; };
+      if (!/^video\//.test(file.type)) return say('Please choose a video file.', 'bad');
+      if (!confirm('Upload "' + file.name + '" (' + Math.round(file.size / 1048576) + ' MB) as the new video for module ' + id + '?')) return;
+      say('Preparing…');
+      const r = await api('/api/admin/video-upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ module: id }) });
+      if (!r.data || !r.data.ok) return say((r.data && r.data.error) || 'Could not start the upload.', 'bad');
+      try { await loadTus(); } catch (e) { return say(e.message, 'bad'); }
+      const d = r.data; UPLOADING++;
+      const up = new tus.Upload(file, {
+        endpoint: d.endpoint, retryDelays: [0, 3000, 5000, 10000, 20000, 60000],
+        headers: { AuthorizationSignature: d.signature, AuthorizationExpire: String(d.expires), VideoId: d.videoId, LibraryId: String(d.libraryId) },
+        metadata: { filetype: file.type, title: d.title },
+        onProgress: (sent, total) => say('Uploading… ' + Math.floor((sent / total) * 100) + '% of ' + Math.round(total / 1048576) + ' MB'),
+        onError: (err) => { UPLOADING--; say('Upload failed: ' + (err && err.message ? err.message.split('\n')[0] : 'unknown error') + '. Try again.', 'bad'); },
+        onSuccess: () => { UPLOADING--; say('Uploaded ✓ Bunny is processing it now (a few minutes for a long video). The portal switches to it by itself once it is ready.', 'ok'); setTimeout(() => load(true), 4000); },
+      });
+      up.findPreviousUploads().then((prev) => { if (prev.length) up.resumeFromPreviousUpload(prev[0]); up.start(); });
+    });
 
     function renderUpi() {
       if (!DATA) return;
@@ -300,8 +330,8 @@
       const label = { awaiting_verification: 'to verify', paid: 'approved', rejected: 'rejected' };
       $('upiTitle').textContent = 'UPI payments (' + rows.length + ')';
       const wa = (p) => p ? `<a href="https://wa.me/91${esc(p)}" target="_blank" class="underline">${esc(p)}</a>` : '';
-      $('t-upi').innerHTML = '<tr><th>Submitted</th><th>Status</th><th>Name</th><th>WhatsApp</th><th>Email</th><th>Amount</th><th>UTR</th><th>Note ref</th><th></th></tr>' +
-        (rows.map((o) => `<tr><td>${dt(o.upiSubmittedAt || o.createdAt)}</td><td><span class="pill ${o.status === 'paid' ? 'paid' : 'lead'}">${label[o.status] || esc(o.status)}</span>${o.upiRejectReason ? '<div class="muted text-[10px]">' + esc(o.upiRejectReason) + '</div>' : ''}</td><td>${esc(o.name)}</td><td>${wa(o.phone)}</td><td>${esc(o.email)}</td><td><b>${inr(o.amount)}</b></td><td class="font-mono"><b>${esc(o.utr)}</b></td><td class="font-mono muted">${esc(o.upiRef)}</td><td class="whitespace-nowrap">` +
+      $('t-upi').innerHTML = '<tr><th>Paid at (buyer says)</th><th>Status</th><th>Note code</th><th>Amount</th><th>Name</th><th>WhatsApp</th><th>Email</th><th>UTR</th><th></th></tr>' +
+        (rows.map((o) => `<tr><td>${dt(o.upiSubmittedAt || o.createdAt)}</td><td><span class="pill ${o.status === 'paid' ? 'paid' : 'lead'}">${label[o.status] || esc(o.status)}</span>${o.upiRejectReason ? '<div class="muted text-[10px]">' + esc(o.upiRejectReason) + '</div>' : ''}</td><td class="font-mono"><b style="color:#dfb35a">${esc(o.upiRef)}</b></td><td><b>${inr(o.amount)}</b></td><td>${esc(o.name)}</td><td>${wa(o.phone)}</td><td>${esc(o.email)}</td><td class="font-mono muted">${esc(o.utr || '—')}</td><td class="whitespace-nowrap">` +
           (o.status === 'awaiting_verification' ? `<button class="btn" onclick="upiAction('approve','${esc(o.id)}')">Approve</button> <button class="btn-ghost" onclick="upiAction('reject','${esc(o.id)}')">Reject</button>`
             : o.status === 'paid' ? `<button class="btn-ghost" onclick="upiAction('link','${esc(o.id)}')">Access link</button>`
             : `<button class="btn-ghost" onclick="upiAction('approve','${esc(o.id)}')">Approve anyway</button>`) + '</td></tr>').join('') ||
@@ -309,7 +339,7 @@
     }
     async function upiAction(action, id) {
       let reason = '';
-      if (action === 'approve' && !confirm('Approve this payment? Only do this after you have seen the money in your UPI app with the same amount and UTR.')) return;
+      if (action === 'approve' && !confirm('Approve this payment? Only do this after you have seen the money in your UPI app (same amount and note code).')) return;
       if (action === 'reject') { reason = prompt('Why are you rejecting it? (for your records)', 'Payment not found in UPI app'); if (reason === null) return; }
       const r = await api('/api/admin/upi', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, orderId: id, reason }) });
       if (!r.data || !r.data.ok) { alert((r.data && r.data.error) || 'Failed'); return; }

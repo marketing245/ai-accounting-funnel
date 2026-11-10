@@ -35,7 +35,7 @@ module.exports = wrap(async (req, res) => {
 
   if (action === 'approve') {
     if (order.status !== 'paid') {
-      if (!order.upi || !order.upi.utr) return fail(res, 409, 'The buyer has not submitted a UTR for this order.');
+      if (!order.upi || !order.upi.submittedAt) return fail(res, 409, 'The buyer has not confirmed this payment yet (they may have left the payment page).');
       order.upi.approvedAt = now; order.upi.rejectedAt = null; order.upi.rejectReason = '';
       await fulfil(order, `upi_${order.upi.utr}`, 'admin-upi'); // marks paid, creates the student, sends the Purchase signal
     }
@@ -47,7 +47,7 @@ module.exports = wrap(async (req, res) => {
     order.upi = Object.assign(order.upi || {}, { rejectedAt: now, rejectReason: String(body.reason || '').slice(0, 200) });
     await store.writeJson(`orders/${order.id}.json`, order);
     return send(res, 200, { ok: true, status: 'rejected', email: order.customer.email, phone: order.customer.phone, name: order.customer.name,
-      message: `Hi ${String(order.customer.name || '').split(' ')[0] || 'there'}, we could not find a UPI payment of ₹${order.amount.total.toLocaleString('en-IN')} to ${UPI.vpa} with UTR ${order.upi.utr || '-'}. Please reply with a screenshot of the payment and we will sort it out.\n\n- Team CA Varsha Varyani` });
+      message: `Hi ${String(order.customer.name || '').split(' ')[0] || 'there'}, we could not find your UPI payment of ₹${order.amount.total.toLocaleString('en-IN')} to ${UPI.vpa}${order.upi.utr ? ' (UTR ' + order.upi.utr + ')' : ''} for ${PRODUCT.shortName}. If the money left your account, please reply with a screenshot of the payment and we will sort it out.\n\n- Team CA Varsha Varyani` });
   }
   if (action === 'link') {
     if (order.status !== 'paid') return fail(res, 409, 'Approve the payment first.');

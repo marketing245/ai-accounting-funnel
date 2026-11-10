@@ -30,6 +30,7 @@ const ROUTES = {
   'admin/order': () => require('../src/handlers/admin/order'),
   'admin/student': () => require('../src/handlers/admin/student'),
   'admin/upi': () => require('../src/handlers/admin/upi'),
+  'admin/video-upload': () => require('../src/handlers/admin/video-upload'),
 };
 
 module.exports = async (req, res) => {

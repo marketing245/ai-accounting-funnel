@@ -79,8 +79,8 @@ function updateCheckoutDisplay() {
 }
 
 function showStep(step) {
-  ['checkoutFormSection', 'testGatewaySection', 'checkoutProcessing', 'upiSection', 'upiDoneSection'].forEach(function (id) { if ($(id)) $(id).classList.add('hidden'); });
-  var map = { form: 'checkoutFormSection', test: 'testGatewaySection', processing: 'checkoutProcessing', upi: 'upiSection', upiDone: 'upiDoneSection' };
+  ['checkoutFormSection', 'testGatewaySection', 'checkoutProcessing', 'upiSection'].forEach(function (id) { if ($(id)) $(id).classList.add('hidden'); });
+  var map = { form: 'checkoutFormSection', test: 'testGatewaySection', processing: 'checkoutProcessing', upi: 'upiSection' };
   if ($(map[step])) $(map[step]).classList.remove('hidden');
 }
 
@@ -188,48 +188,76 @@ function openRazorpay(d) {
   }).catch(function (e) { backToDetails(); showError(e.message); });
 }
 
-// ── Direct UPI (PAYMENT_MODE=upi): pay in any UPI app, then submit the 12-digit UTR; access follows after admin approval ──
-var isPhone = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+// ── Direct UPI (PAYMENT_MODE=upi), gateway style: phone → the UPI app opens; desktop → QR. Back on the page, one tap
+// ("Yes, I have paid") sends the buyer to /payment-received, the conversion page. Access follows after the admin approves. ──
+var UA = navigator.userAgent;
+var isAndroid = /Android/i.test(UA);
+var isIOS = /iPhone|iPad|iPod/i.test(UA) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+var upiState = { launchedAt: 0, link: '' };
+function upiAppLink(link, app) {
+  var q = link.split('?')[1] || '';
+  return { gpay: 'tez://upi/pay?' + q, phonepe: 'phonepe://pay?' + q, paytm: 'paytmmp://pay?' + q, upi: 'upi://pay?' + q }[app] || link;
+}
+function upiShow(id, on) { var el = $(id); if (el) el.classList.toggle('hidden', !on); }
+function upiLaunch(href) {
+  upiState.launchedAt = Date.now();
+  upiShow('upiNoApp', false);
+  window.location.href = href;
+  // still here after 2.5 s → the app did not open (no UPI app, or the browser blocked it)
+  setTimeout(function () { if (document.visibilityState === 'visible' && Date.now() - upiState.launchedAt < 4000 && $('upiConfirm').classList.contains('hidden')) { upiShow('upiNoApp', true); upiShow('upiQrBox', true); upiShow('upiShowQr', false); } }, 2500);
+  if (window.aaeTrack) aaeTrack('upi_app_opened', { currency: 'INR', value: (currentOrder && currentOrder.amount || {}).total });
+}
 function showUpi(d, a) {
   setBusy(false);
   var u = d.upi || {};
-  $('upiAmount').textContent = fmt(a.total); $('upiAmount2').textContent = fmt(a.total);
-  $('upiVpa').textContent = u.vpa || ''; $('upiPayee').textContent = u.payeeName || '';
+  upiState = { launchedAt: 0, link: u.link || '' };
+  $('upiAmount').textContent = fmt(a.total);
+  document.querySelectorAll('.upiAmt').forEach(function (el) { el.textContent = fmt(a.total); });
+  $('upiPayee').textContent = u.payeeName || '';
+  $('upiVpa').textContent = u.vpa || '';
   $('upiQr').innerHTML = u.qrSvg || '';
-  $('upiAppBtn').href = u.link || '#';
-  $('upiAppBtn').style.display = isPhone ? '' : 'none';
-  document.querySelectorAll('.upi-qr-hint-desktop').forEach(function (el) { el.style.display = isPhone ? 'none' : ''; });
-  document.querySelectorAll('.upi-qr-hint-mobile').forEach(function (el) { el.style.display = isPhone ? '' : 'none'; });
+  $('upiPayLink').href = u.link || '#';
   document.querySelectorAll('.upiWithin').forEach(function (el) { el.textContent = u.accessWithin || '24 hours'; });
-  $('upiUtr').value = ''; $('upiError').classList.add('hidden');
+  upiShow('upiPayBox', true); upiShow('upiConfirm', false); upiShow('upiNoApp', false); $('upiError').classList.add('hidden');
+  upiShow('upiPayLink', isAndroid); upiShow('upiIos', isIOS);
+  var phone = isAndroid || isIOS;
+  upiShow('upiQrBox', !phone); upiShow('upiShowQr', phone);
   showStep('upi');
   if (window.aaeTrack) aaeTrack('upi_payment_shown', { currency: 'INR', value: a.total });
+  if (isAndroid && u.link) upiLaunch(u.link); // straight into the UPI app, like a gateway
 }
+function upiAskConfirm() { upiShow('upiPayBox', false); upiShow('upiConfirm', true); }
 function upiError(msg) { var el = $('upiError'); el.textContent = msg || 'Something went wrong. Please try again.'; el.classList.remove('hidden'); }
-async function submitUpi(ev) {
-  if (ev) ev.preventDefault();
-  $('upiError').classList.add('hidden');
-  var utr = ($('upiUtr').value || '').replace(/\D/g, '');
-  if (!/^\d{12}$/.test(utr)) return upiError('Please enter the 12-digit UPI transaction ID (UTR / UPI Ref No.) from your UPI app.'), false;
-  var btn = $('upiSubmitBtn'); btn.disabled = true; btn.textContent = 'Submitting…';
+async function upiConfirmPaid() {
+  var btn = $('upiYes'), btn2 = $('upiDesktopDone');
+  [btn, btn2].forEach(function (b) { if (b) { b.disabled = true; b.dataset.label = b.dataset.label || b.textContent; b.textContent = 'One moment…'; } });
   var data;
   try {
-    var r = await fetch('/api/checkout/upi-submit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderId: currentOrder.orderId, submitToken: currentOrder.submitToken, utr: utr }) });
+    var r = await fetch('/api/checkout/upi-submit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderId: currentOrder.orderId, submitToken: currentOrder.submitToken }) });
     data = await r.json();
-  } catch (e) { data = { ok: false, error: 'Network error. Your payment is safe. Please try again.' }; }
-  btn.disabled = false; btn.textContent = 'I have paid · submit →';
-  if (!data || !data.ok) return upiError(data && data.error), false;
-  $('upiDoneEmail').textContent = data.email || '';
-  $('upiDoneUtr').textContent = utr;
-  var support = (window.AAE_CONFIG || {}).SUPPORT_EMAIL; if (support) { $('upiDoneSupport').textContent = support; $('upiDoneSupport').href = 'mailto:' + support; }
-  showStep('upiDone');
-  if (window.aaeTrack) aaeTrack('upi_payment_submitted', { currency: 'INR', value: (currentOrder.amount || {}).total });
-  return false;
+  } catch (e) { data = { ok: false, error: 'Network error. Your payment is safe. Please tap again.' }; }
+  [btn, btn2].forEach(function (b) { if (b) { b.disabled = false; b.textContent = b.dataset.label; } });
+  if (!data || !data.ok) return upiError(data && data.error);
+  try {
+    sessionStorage.setItem('aae_upi_paid', JSON.stringify({ orderId: data.orderId, ref: data.ref, amount: data.amount, items: data.items, email: data.email,
+      name: ($('custName') && $('custName').value) || '', phone: ($('custPhone') && $('custPhone').value) || '', within: data.accessWithin }));
+  } catch (e) {}
+  window.location.href = '/payment-received?order=' + encodeURIComponent(data.orderId);
 }
+document.addEventListener('visibilitychange', function () {
+  // back from the UPI app → ask "did it go through?"
+  if (document.visibilityState === 'visible' && upiState.launchedAt && Date.now() - upiState.launchedAt > 1500 && $('upiSection') && !$('upiSection').classList.contains('hidden')) upiAskConfirm();
+});
 document.addEventListener('click', function (e) {
-  if (e.target && e.target.id === 'upiCopy') {
-    var v = $('upiVpa').textContent;
-    var done = function () { e.target.textContent = 'Copied'; setTimeout(function () { e.target.textContent = 'Copy'; }, 1500); };
+  var t = e.target && e.target.closest ? e.target.closest('a,button') : null;
+  if (!t) return;
+  if (t.id === 'upiPayLink') { e.preventDefault(); upiLaunch(t.href); }
+  else if (t.classList.contains('upi-app')) { e.preventDefault(); upiLaunch(upiAppLink(upiState.link, t.getAttribute('data-app'))); }
+  else if (t.id === 'upiShowQr') { upiShow('upiQrBox', true); upiShow('upiShowQr', false); }
+  else if (t.id === 'upiDesktopDone' || t.id === 'upiYes') upiConfirmPaid();
+  else if (t.id === 'upiRetry') { upiShow('upiConfirm', false); upiShow('upiPayBox', true); upiState.launchedAt = 0; }
+  else if (t.id === 'upiCopy') {
+    var v = $('upiVpa').textContent, done = function () { t.textContent = 'Copied'; setTimeout(function () { t.textContent = 'Copy'; }, 1500); };
     if (navigator.clipboard) navigator.clipboard.writeText(v).then(done, done); else done();
   }
 });

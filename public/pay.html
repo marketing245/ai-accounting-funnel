@@ -9,7 +9,7 @@
   <meta name="theme-color" content="#0f1b2d">
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
   <link href="https://api.fontshare.com/v2/css?f[]=sentient@500,600&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/pay.css">
+  <link rel="stylesheet" href="/pay.css?v=20261110b">
   <script src="/site-config.js"></script>
   <script src="/analytics.js" defer></script>
 </head>
@@ -71,22 +71,34 @@
       <p class="methods" id="payMethods">UPI · RuPay · Visa · Mastercard · Net banking<br><span>Payments processed by Razorpay. One-time payment, no subscription.</span></p>
       <input type="text" id="hpWebsite" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp">
 
-      <!-- UPI mode: pay in any UPI app, then enter the 12-digit UTR -->
+      <!-- UPI mode, gateway style: phone → UPI app opens; desktop → QR; back on the page → one tap to confirm -->
       <div id="upiPanel" class="upipanel" hidden>
-        <strong>Pay <span id="upiAmt"></span> by UPI</strong>
-        <p class="upi-sub">To CA Varsha Varyani, with any UPI app (GPay, PhonePe, Paytm, BHIM or your bank app).</p>
-        <a id="upiAppBtn" class="cta" href="#">Open my UPI app to pay</a>
-        <div id="upiQr" class="upi-qr" aria-label="UPI QR code"></div>
-        <p class="upi-hint" id="upiHint">Scan with your phone's UPI app</p>
-        <div class="upi-rows">
-          <div><span>UPI ID</span><span><b id="upiVpa"></b> <button type="button" id="upiCopy" class="upi-copy">Copy</button></span></div>
-          <div><span>Name</span><b id="upiPayee"></b></div>
+        <strong>Pay <span class="upiAmt"></span></strong>
+        <p class="upi-sub">To <b id="upiPayee"></b> by UPI · no extra charges</p>
+        <div id="upiPayBox" class="upi-box">
+          <a id="upiAppBtn" class="cta" href="#" hidden>Pay <span class="upiAmt"></span> with UPI app</a>
+          <div id="upiIos" class="upi-apps" hidden>
+            <a href="#" class="upi-app" data-app="gpay"><span class="upi-dot" style="background:#4285F4"></span>Google Pay</a>
+            <a href="#" class="upi-app" data-app="phonepe"><span class="upi-dot" style="background:#5f259f"></span>PhonePe</a>
+            <a href="#" class="upi-app" data-app="paytm"><span class="upi-dot" style="background:#00baf2"></span>Paytm</a>
+            <a href="#" class="upi-app" data-app="upi"><span class="upi-dot" style="background:#c4953a"></span>Other UPI app</a>
+          </div>
+          <p id="upiNoApp" class="upi-warn" hidden>UPI app did not open? Scan the QR below from any phone, or pick another app.</p>
+          <div id="upiQrBox" hidden>
+            <div id="upiQr" class="upi-qr" aria-label="UPI QR code"></div>
+            <p class="upi-hint">Scan with GPay, PhonePe, Paytm or any UPI app</p>
+            <p class="upi-hint">UPI ID <b id="upiVpa"></b> <button type="button" id="upiCopy" class="upi-copy">Copy</button></p>
+            <button class="cta" id="upiDesktopDone" type="button">I have completed the payment</button>
+          </div>
+          <button type="button" id="upiShowQr" class="linkbtn" hidden>Pay from another phone (show QR)</button>
         </div>
-        <label class="upi-utr"><span>After paying, enter the 12-digit UPI transaction ID <small>(UTR / UPI Ref No. in your app's payment details)</small></span>
-          <input id="upiUtr" inputmode="numeric" autocomplete="off" maxlength="16" placeholder="e.g. 412345678901">
-        </label>
+        <div id="upiConfirm" class="upi-box" hidden>
+          <p class="upi-q">Did your payment of <span class="upiAmt"></span> go through?</p>
+          <button class="cta" id="upiYes" type="button">Yes, I have paid</button>
+          <button class="cta cta-dark" id="upiRetry" type="button">No, take me back to pay</button>
+          <p class="upi-hint">Money deducted but not sure? Tap "Yes". We check every payment before giving access.</p>
+        </div>
         <p class="error" id="upiError" role="alert" hidden></p>
-        <button class="cta" id="upiNextBtn" type="button">I have paid · next</button>
       </div>
       <!-- Test mode only: simulated gateway, clearly labelled -->
       <div id="testPanel" class="testpanel" hidden>
@@ -129,19 +141,6 @@
         <p class="reassure" id="claimReassure">We send your login and course details to this email straight away.</p>
       </form>
     </section>
-    <!-- UPI mode: submitted, waiting for the payment check -->
-    <section id="upiDoneStep" hidden>
-      <div class="paid">
-        <span class="tick" aria-hidden="true"></span>
-        <div>
-          <strong>Thank you! Payment details received.</strong>
-          <span>UTR <span id="upiDoneUtr"></span></span>
-        </div>
-      </div>
-      <h2>Your access is on its way</h2>
-      <p class="reassure" style="text-align:left">We will check your UPI payment and send your course access to <b id="upiDoneEmail"></b> and your WhatsApp within <span class="upiWithin">24 hours</span> (usually much sooner).</p>
-      <p class="reassure" style="text-align:left">Questions? Email <a id="upiDoneSupport" href="mailto:hello@aiaccountingengineer.com">hello@aiaccountingengineer.com</a> with your UTR.</p>
-    </section>
   </main>
 
   <footer class="foot">
@@ -149,6 +148,6 @@
     <p>Independent course by CA Varsha Varyani. Not affiliated with or endorsed by Anthropic.</p>
   </footer>
 
-  <script src="/pay.js?v=20261110"></script>
+  <script src="/pay.js?v=20261110b"></script>
 </body>
 </html>

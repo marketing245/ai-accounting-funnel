@@ -120,7 +120,7 @@ async function overview({ days = 30, force = false } = {}) {
   const engagement = engagementSummary(students);
   const [funnels, videos] = await Promise.all([
     require('./funnels').funnelReport(rows, inRange).catch((e) => { console.error('[admin] funnels', e.message); return []; }),
-    require('./video-health').videoReport(engagement.modules, students.length).catch((e) => { console.error('[admin] videos', e.message); return null; }),
+    require('./video-health').videoReport(engagement.modules, students.length, { force }).catch((e) => { console.error('[admin] videos', e.message); return null; }),
   ]);
   return {
     stats, series, orders: rows, students, engagement, inquiries: inquiryRows, funnels, videos,

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Thank you — CA Varsha Varyani</title>
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link href="https://api.fontshare.com/v2/css?f[]=sentient@400,500,600,700&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20261110b">
+  <script src="site-config.js"></script>
+  <script src="analytics.js" defer></script>
+</head>
+<body class="page-simple">
+  <nav>
+    <div class="wrap nav-inner">
+      <a href="/" class="brand"><span class="ai">CA</span> Varsha Varyani</a>
+    </div>
+  </nav>
+  <main>
+    <div class="auth-wrap" style="max-width:560px">
+      <div class="auth-card">
+        <span class="ok-badge">✓ Thank you for your payment</span>
+        <h1 style="margin-top:14px">Thank you<span id="firstName"></span>!</h1>
+        <p class="sub">We are confirming your UPI payment. Your course access is sent to <strong id="emailLabel" style="color:#fff">your email</strong> and your WhatsApp within <strong style="color:#fff" class="within">24 hours</strong>, usually much sooner.</p>
+
+        <div class="order-box" style="padding:18px 18px 8px">
+          <div class="row" style="align-items:flex-start;justify-content:flex-start;gap:14px;padding:6px 0 12px">
+            <span class="pr-step">1</span>
+            <span style="flex:1;text-align:left"><strong style="color:#fff">We match your payment</strong><br><span style="color:var(--muted-on-dark);font-size:13px">With the amount and the note code <b id="refLabel" style="font-family:var(--mono);color:var(--gold)"></b> in your UPI app.</span></span>
+          </div>
+          <div class="row" style="align-items:flex-start;justify-content:flex-start;gap:14px;padding:6px 0 12px">
+            <span class="pr-step">2</span>
+            <span style="flex:1;text-align:left"><strong style="color:#fff">You get your personal access link</strong><br><span style="color:var(--muted-on-dark);font-size:13px">On WhatsApp and email.</span></span>
+          </div>
+          <div class="row" style="align-items:flex-start;justify-content:flex-start;gap:14px;padding:6px 0 12px">
+            <span class="pr-step">3</span>
+            <span style="flex:1;text-align:left"><strong style="color:#fff">Create your password and start</strong><br><span style="color:var(--muted-on-dark);font-size:13px">All 5 modules, lifetime access, certificate.</span></span>
+          </div>
+        </div>
+
+        <div class="order-box" id="orderBox" style="display:none;margin-top:14px">
+          <div id="orderItems"></div>
+          <div class="row"><span>GST (18%)</span><span id="orderGst"></span></div>
+          <div class="row" style="font-weight:700;color:#fff"><span>Total paid</span><span id="orderTotal"></span></div>
+          <div class="row" style="font-size:12px"><span>Order</span><span id="orderId" style="font-family:var(--mono)"></span></div>
+        </div>
+
+        <p class="foot">Questions? Email <a id="supportLink" href="mailto:hello@aiaccountingengineer.com">hello@aiaccountingengineer.com</a> and mention the note code.</p>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <div class="wrap foot-inner">
+      <span class="brand"><span class="ai" style="color:var(--gold)">CA</span> Varsha Varyani</span>
+      <span>&copy; 2026 &middot; AI skills for finance professionals</span>
+      <span class="foot-links"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/refund">Refunds</a><a href="/contact">Contact</a></span>
+    </div>
+  </footer>
+  <script>
+    // Conversion page for direct-UPI orders. The checkout stores the order summary in sessionStorage right before it sends the
+    // buyer here; the purchase event fires once per order (localStorage guard). The server sends Meta CAPI Purchase with the same
+    // event id (the order id) when the payment is approved, so Meta counts it once.
+    (function () {
+      var fmt = function (n) { return '₹' + Number(n || 0).toLocaleString('en-IN'); };
+      var esc = function (x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); };
+      var id = new URLSearchParams(location.search).get('order') || '';
+      var o = null;
+      try { o = JSON.parse(sessionStorage.getItem('aae_upi_paid') || 'null'); } catch (e) {}
+      var cfg = window.AAE_CONFIG || {};
+      if (cfg.SUPPORT_EMAIL) { var s = document.getElementById('supportLink'); s.textContent = cfg.SUPPORT_EMAIL; s.href = 'mailto:' + cfg.SUPPORT_EMAIL; }
+      if (!o || o.orderId !== id) return;
+      if (o.name) document.getElementById('firstName').textContent = ', ' + String(o.name).split(' ')[0];
+      if (o.email) document.getElementById('emailLabel').textContent = o.email;
+      if (o.within) document.querySelectorAll('.within').forEach(function (el) { el.textContent = o.within; });
+      document.getElementById('refLabel').textContent = o.ref || '';
+      if (o.amount) {
+        document.getElementById('orderBox').style.display = '';
+        document.getElementById('orderItems').innerHTML = (o.items || []).map(function (i) { return '<div class="row"><span>' + esc(i.name) + '</span><span>' + fmt(i.price) + '</span></div>'; }).join('');
+        document.getElementById('orderGst').textContent = fmt(o.amount.gst);
+        document.getElementById('orderTotal').textContent = fmt(o.amount.total);
+        document.getElementById('orderId').textContent = o.orderId;
+      }
+      var fire = function () {
+        try {
+          var key = 'aae_purchase_tracked_' + o.orderId;
+          if (localStorage.getItem(key) || !window.aaeTrack) return !!localStorage.getItem(key);
+          try { if (window.gtag && o.email) gtag('set', 'user_data', { email: o.email, phone_number: o.phone ? '+91' + String(o.phone).slice(-10) : undefined }); } catch (e) {}
+          aaeTrack('purchase', { transaction_id: o.orderId, value: o.amount.total, tax: o.amount.gst, currency: 'INR', payment_type: 'upi',
+            items: (o.items || []).map(function (i) { return { item_id: i.id, item_name: i.name, price: i.price, quantity: i.qty || 1 }; }) });
+          localStorage.setItem(key, '1');
+          return true;
+        } catch (e) { return true; }
+      };
+      // analytics.js loads deferred: retry for a few seconds until aaeTrack exists.
+      var tries = 0; (function wait() { if (fire() || ++tries > 20) return; setTimeout(wait, 250); })();
+    })();
+  </script>
+</body>
+</html>

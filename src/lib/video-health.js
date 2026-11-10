@@ -36,8 +36,9 @@ async function serviceStatus() {
 }
 
 // engagementModules: admin.engagementSummary(...).modules (viewed / completed / avg watch per module, real students only)
-async function videoReport(engagementModules, studentCount) {
-  if (!cache.data || Date.now() - cache.at > CACHE_MS) {
+async function videoReport(engagementModules, studentCount, { force = false } = {}) {
+  if (force) bunny.clearCache();
+  if (force || !cache.data || Date.now() - cache.at > CACHE_MS) {
     const [service, resolved] = await Promise.all([serviceStatus(), bunny.resolveVideos(CURRICULUM).catch(() => ({}))]);
     cache = { at: Date.now(), data: { service, resolved } };
   }

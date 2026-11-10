@@ -1518,3 +1518,9 @@ footer {
 .upi-qr svg { width: 100%; height: 100%; display: block; }
 .upi-copy { font-size: 11px; padding: 4px 10px; min-height: 30px; border-radius: 6px; border: 1px solid rgba(196,149,58,.6); color: #e3c27e; background: transparent; cursor: pointer; }
 .upi-app-btn { display: flex; text-decoration: none; }
+.upi-pay-btn { display: flex; align-items: center; justify-content: center; gap: .3em; width: 100%; min-height: 54px; border-radius: 12px; background: var(--gold); color: #0f1b2d; font-weight: 800; font-size: 16px; text-decoration: none; box-shadow: 0 10px 24px rgba(196,149,58,.35); }
+.upi-pay-btn.hidden { display: none; }
+.upi-apps { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.upi-app { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 14px; border-radius: 12px; background: #fff; color: #0f1b2d; font-weight: 700; font-size: 14px; text-decoration: none; }
+.upi-dot { width: 14px; height: 14px; border-radius: 50%; flex: 0 0 14px; }
+.pr-step { flex: 0 0 28px; height: 28px; border-radius: 50%; background: var(--gold); color: #0f1b2d; font-weight: 800; display: flex; align-items: center; justify-content: center; }

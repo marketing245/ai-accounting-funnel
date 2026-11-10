@@ -82,4 +82,23 @@ function embedUrl(videoId, ttlSeconds = 6 * 3600) {
   return `https://iframe.mediadelivery.net/embed/${LIBRARY_ID}/${videoId}?${params.toString()}`;
 }
 
-module.exports = { LIBRARY_ID, STATUS, listVideos, resolveVideos, moduleOfVideo, durationLabel, embedUrl, signed: () => !!process.env.BUNNY_TOKEN_AUTH_KEY };
+// Direct browser upload (TUS) for a new module video: create the video in the library, tag it with the module, and return a
+// short-lived signature so the admin's browser uploads straight to Bunny (large files never pass through our server).
+async function createUpload(module, title) {
+  const key = streamKey();
+  if (!key) throw Object.assign(new Error('BUNNY_STREAM_API_KEY is not set on the server.'), { status: 503 });
+  const call = async (path, body) => {
+    const r = await fetch(`${STREAM_API}/library/${LIBRARY_ID}${path}`, { method: 'POST', headers: { AccessKey: key, 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(body) });
+    if (!r.ok) throw Object.assign(new Error(r.status === 401 || r.status === 403 ? 'Bunny refused the upload. The video service is off (usually: no credit left on the Bunny account). Add credit in Bunny, then try again.' : `Bunny error ${r.status}`), { status: 502 });
+    return r.json().catch(() => ({}));
+  };
+  const v = await call('/videos', { title });
+  await call(`/videos/${v.guid}`, { title, metaTags: [{ property: 'module', value: String(module) }] });
+  const expires = Math.floor(Date.now() / 1000) + 6 * 3600;
+  const signature = crypto.createHash('sha256').update(`${LIBRARY_ID}${key}${expires}${v.guid}`).digest('hex');
+  cache = { at: 0, videos: null };
+  return { videoId: v.guid, libraryId: LIBRARY_ID, expires, signature, endpoint: `${STREAM_API}/tusupload` };
+}
+function clearCache() { cache = { at: 0, videos: null }; }
+
+module.exports = { LIBRARY_ID, STATUS, createUpload, clearCache, listVideos, resolveVideos, moduleOfVideo, durationLabel, embedUrl, signed: () => !!process.env.BUNNY_TOKEN_AUTH_KEY };

@@ -1,6 +1,7 @@
 'use strict';
-// POST /api/checkout/upi-submit — direct-UPI checkout, step 2: the buyer has paid in their UPI app and sends the 12-digit UTR
-// (plus email/WhatsApp/name/state when the order was started without details on /pay). The order then waits for approval in /admin.
+// POST /api/checkout/upi-submit — direct-UPI checkout, step 2: the buyer says the payment went through in their UPI app
+// (plus email/WhatsApp/name/state when the order was started without details on /pay). The UTR is optional: the admin matches the
+// payment by amount + the order's note code (e.g. "VVTCPSG6", sent in the UPI note). The order then waits for approval in /admin.
 const { readJson, send, fail, allow, wrap } = require('../../lib/http');
 const store = require('../../lib/store');
 const auth = require('../../lib/auth');
@@ -24,9 +25,11 @@ module.exports = wrap(async (req, res) => {
   if (order.status === 'paid') return send(res, 200, { ok: true, orderId, status: 'paid', accessWithin: UPI.accessWithin, email: order.customer && order.customer.email });
 
   const utr = upi.cleanUtr(body.utr);
-  if (!upi.validUtr(utr)) return fail(res, 400, 'Please enter the 12-digit UPI transaction ID (UTR / UPI Ref No.) from your UPI app.', { code: 'BAD_UTR' });
-  const seen = await store.readJson(`upi-utr/${utr}.json`);
-  if (seen && seen.orderId !== orderId) return fail(res, 409, 'This UPI transaction ID has already been used for another order. Please check the number, or email us.', { code: 'UTR_USED' });
+  if (utr && !upi.validUtr(utr)) return fail(res, 400, 'The UPI transaction ID (UTR / UPI Ref No.) has 12 digits. Please check it, or leave it empty.', { code: 'BAD_UTR' });
+  if (utr) {
+    const seen = await store.readJson(`upi-utr/${utr}.json`);
+    if (seen && seen.orderId !== orderId) return fail(res, 409, 'This UPI transaction ID has already been used for another order. Please check the number, or email us.', { code: 'UTR_USED' });
+  }
 
   if (!(order.customer && order.customer.email)) {
     const name = String(body.name || '').trim().replace(/\s+/g, ' ').slice(0, 80);
@@ -43,10 +46,12 @@ module.exports = wrap(async (req, res) => {
 
   const now = new Date().toISOString();
   order.upi = order.upi || {};
-  order.upi.history = (order.upi.history || []).concat([{ utr, at: now }]).slice(-10);
-  order.upi.utr = utr; order.upi.submittedAt = now;
+  order.upi.history = (order.upi.history || []).concat([{ utr: utr || null, at: now }]).slice(-10);
+  if (utr) order.upi.utr = utr;
+  order.upi.submittedAt = now;
   order.status = 'awaiting_verification';
-  await store.writeJson(`upi-utr/${utr}.json`, { orderId, at: now });
+  if (utr) await store.writeJson(`upi-utr/${utr}.json`, { orderId, at: now });
   await store.writeJson(`orders/${order.id}.json`, order);
-  send(res, 200, { ok: true, orderId, status: order.status, accessWithin: UPI.accessWithin, email: order.customer.email });
+  send(res, 200, { ok: true, orderId, status: order.status, accessWithin: UPI.accessWithin, email: order.customer.email, ref: order.upi.ref,
+    amount: order.amount, items: order.items.map((i) => ({ id: i.id, name: i.name, price: i.price, qty: i.qty })) });
 });
