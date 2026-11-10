@@ -48,6 +48,9 @@ const server = http.createServer(async (req, res) => {
   for (const [k, v] of Object.entries(SECURITY)) res.setHeader(k, v);
   const u = new URL(req.url, 'http://localhost');
   try {
+    // Bare domain → www (one canonical address for cookies, pixels and Google).
+    const host = String(req.headers.host || '').toLowerCase().split(':')[0];
+    if (host === 'cavarshavaryani.com') { res.writeHead(301, { Location: 'https://www.cavarshavaryani.com' + req.url }); return res.end(); }
     if (u.pathname === '/workshops') { res.writeHead(307, { Location: '/' }); return res.end(); }
     if (u.pathname.startsWith('/api/')) { res.setHeader('Cache-Control', 'no-store'); return await handler(req, res); }
     if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405); return res.end(); }

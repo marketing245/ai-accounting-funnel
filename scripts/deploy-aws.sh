@@ -5,7 +5,7 @@
 set -euo pipefail
 HOST=ec2-user@13.210.107.3
 KEY="$HOME/.ssh/aiae-aws.pem"
-SITE=https://d12zo63bakkctz.cloudfront.net
+SITE=https://www.cavarshavaryani.com
 cd "$(dirname "$0")/.."
 
 ssh -i "$KEY" "$HOST" 'sudo chown -R ec2-user:ec2-user /opt/aiae/app'
