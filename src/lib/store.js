@@ -1,12 +1,14 @@
 'use strict';
 // JSON document store on a PRIVATE Vercel Blob store (consistent reads: useCache:false).
-// Falls back to a local ./.data folder when no Blob token is present (local dev without Vercel).
+// Falls back to a local folder when no Blob token is present, or always with STORAGE=local (the AWS server keeps its data on
+// its own disk: DATA_DIR, e.g. /var/lib/aiae). Default folder ./.data (local dev).
 const fs = require('fs');
 const path = require('path');
 
 const PREFIX = process.env.BLOB_PREFIX || (process.env.VERCEL_ENV === 'production' ? 'prod' : 'dev');
-const hasBlob = !!(process.env.BLOB_READ_WRITE_TOKEN || process.env.VERCEL_OIDC_TOKEN || process.env.VERCEL === '1');
-const LOCAL_DIR = path.join(process.cwd(), '.data', PREFIX);
+const hasBlob = process.env.STORAGE !== 'local' && !!(process.env.BLOB_READ_WRITE_TOKEN || process.env.VERCEL_OIDC_TOKEN || process.env.VERCEL === '1');
+const DATA_ROOT = process.env.DATA_DIR || path.join(process.cwd(), '.data');
+const LOCAL_DIR = path.join(DATA_ROOT, PREFIX);
 
 function key(pathname) { return `${PREFIX}/${pathname}`; }
 
@@ -72,7 +74,7 @@ async function listJson(folder, { limit = 2000 } = {}) {
 async function readSharedFile(pathname) {
   const k = `shared/${pathname}`;
   if (!hasBlob) {
-    const f = path.join(process.cwd(), '.data', k);
+    const f = path.join(DATA_ROOT, k);
     if (!fs.existsSync(f)) return null;
     return { stream: fs.createReadStream(f), size: fs.statSync(f).size, contentType: null };
   }
@@ -87,7 +89,7 @@ async function readSharedFile(pathname) {
 async function writeSharedFile(pathname, buffer, contentType) {
   const k = `shared/${pathname}`;
   if (!hasBlob) {
-    const f = path.join(process.cwd(), '.data', k);
+    const f = path.join(DATA_ROOT, k);
     fs.mkdirSync(path.dirname(f), { recursive: true });
     fs.writeFileSync(f, buffer);
     return { pathname: k };
@@ -100,7 +102,7 @@ async function writeSharedFile(pathname, buffer, contentType) {
 async function listJsonAt(prefix, folder) {
   const out = [];
   if (!hasBlob) {
-    const dir = path.join(process.cwd(), '.data', prefix, folder);
+    const dir = path.join(DATA_ROOT, prefix, folder);
     if (!fs.existsSync(dir)) return out;
     for (const f of fs.readdirSync(dir)) if (f.endsWith('.json')) { try { out.push(JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'))); } catch {} }
     return out;

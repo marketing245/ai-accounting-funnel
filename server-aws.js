@@ -9,7 +9,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-for (const k of ['AUTH_SECRET', 'BLOB_READ_WRITE_TOKEN', 'SITE_URL', 'PAYMENT_MODE']) {
+for (const k of ['AUTH_SECRET', 'SITE_URL', 'PAYMENT_MODE'].concat(process.env.STORAGE === 'local' ? ['DATA_DIR'] : ['BLOB_READ_WRITE_TOKEN'])) {
   if (!process.env[k]) { console.error(`Missing ${k} in the environment`); process.exit(1); }
 }
 process.env.BLOB_PREFIX = process.env.BLOB_PREFIX || 'prod';
