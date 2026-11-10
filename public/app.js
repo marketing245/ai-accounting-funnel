@@ -1,5 +1,5 @@
 /**
- * AI Accounting Engineer — checkout (landing page)
+ * CA Varsha Varyani — checkout (landing page)
  * Flow: details → /api/checkout/create-order → Razorpay (or the clearly-labelled test gateway) → /api/checkout/verify → /thank-you
  * Nothing here grants access; the server verifies the payment and sets the session cookie.
  */
@@ -173,7 +173,7 @@ function openRazorpay(d) {
   loadScript('https://checkout.razorpay.com/v1/checkout.js').then(function () {
     var rz = new window.Razorpay({
       key: d.keyId, amount: d.amountPaise, currency: d.currency || 'INR', order_id: d.orderId,
-      name: 'AI Accounting Engineer', description: d.description, prefill: d.prefill, theme: { color: '#c4953a' },
+      name: 'CA Varsha Varyani', description: d.description, prefill: d.prefill, theme: { color: '#c4953a' },
       handler: function (resp) { verifyPayment({ orderId: d.orderId, paymentId: resp.razorpay_payment_id, signature: resp.razorpay_signature }); },
       modal: { ondismiss: function () { backToDetails(); } }
     });

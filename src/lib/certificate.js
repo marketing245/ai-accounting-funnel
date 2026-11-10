@@ -82,7 +82,7 @@ function buildPdf(cert) {
 
     // wordmark
     doc.font('Times-Bold').fontSize(20);
-    const ai = 'AI', rest = 'AccountingEngineer';
+    const ai = 'CA', rest = ' Varsha Varyani';
     const wAi = doc.widthOfString(ai), wRest = doc.widthOfString(rest);
     const x0 = (W - wAi - wRest) / 2;
     doc.fillColor(GOLD).text(ai, x0, 62, { lineBreak: false });
@@ -117,7 +117,7 @@ function buildPdf(cert) {
     doc.lineWidth(1).strokeColor(NAVY).moveTo(sx, by + 30).lineTo(sx + 230, by + 30).stroke();
     doc.font('Times-Bold').fontSize(13).fillColor(NAVY).text(INSTRUCTOR, sx, by + 36, { width: 230, align: 'center' });
     doc.font('Helvetica').fontSize(8.5).fillColor(MUTED).text(INSTRUCTOR_LINE, sx, by + 53, { width: 230, align: 'center' });
-    doc.font('Helvetica').fontSize(8.5).fillColor(MUTED).text('aiaccountingengineer.com', sx, by + 66, { width: 230, align: 'center' });
+    doc.font('Helvetica').fontSize(8.5).fillColor(MUTED).text('www.cavarshavaryani.com', sx, by + 66, { width: 230, align: 'center' });
 
     doc.end();
   });

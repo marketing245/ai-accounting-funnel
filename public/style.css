@@ -1504,3 +1504,10 @@ footer {
 .modal-close { top: 6px; right: 6px; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
 .modal-container input, .modal-container select, .modal-container textarea { font-size: 16px !important; }
 .addon-bump label[for="addonSkills"] { min-height: 44px; }
+
+/* Personal-brand wordmark ("CA Varsha Varyani") stays on one line; on small phones the
+   inner pages drop the header "Student login" link (it stays in the footer) so Enroll fits. */
+.brand { white-space: nowrap; }
+@media (max-width: 440px) {
+  nav .nav-inner > div > a[href="/login"] { display: none; }
+}

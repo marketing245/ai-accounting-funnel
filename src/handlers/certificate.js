@@ -15,7 +15,7 @@ module.exports = wrap(async (req, res) => {
   const c = await cert.ensureCertificate(user);
   const issued = new Date(c.issuedAt);
   const linkedin = 'https://www.linkedin.com/profile/add?' + new URLSearchParams({
-    startTask: 'CERTIFICATION_NAME', name: cert.COURSE_TITLE, organizationName: 'AI Accounting Engineer',
+    startTask: 'CERTIFICATION_NAME', name: cert.COURSE_TITLE, organizationName: 'CA Varsha Varyani',
     issueYear: String(issued.getFullYear()), issueMonth: String(issued.getMonth() + 1), certUrl: cert.verifyUrl(c.id), certId: c.id,
   }).toString();
   send(res, 200, { ok: true, ready: true, completed: total, total, certificate: { id: c.id, issuedAt: c.issuedAt, pdfUrl: '/api/certificate/pdf', verifyUrl: cert.verifyUrl(c.id), linkedinUrl: linkedin } });

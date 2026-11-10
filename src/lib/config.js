@@ -13,7 +13,7 @@ const PRODUCT = {
   id: 'aiae-course',
   name: 'AI in Accounting — Course by CA Varsha Varyani',
   shortName: 'AI in Accounting Course',
-  brand: 'AI Accounting Engineer',
+  brand: 'CA Varsha Varyani',
   supportEmail: process.env.SUPPORT_EMAIL || 'hello@aiaccountingengineer.com',
   siteUrl: process.env.SITE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
   whatsappGroupUrl: process.env.WHATSAPP_GROUP_URL || null,

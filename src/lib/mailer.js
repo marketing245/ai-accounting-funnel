@@ -1,6 +1,6 @@
 'use strict';
 // Transactional email via Resend (https://resend.com). Needs RESEND_API_KEY and MAIL_FROM
-// (e.g. "AI Accounting Engineer <hello@aiaccountingengineer.com>", sending domain verified in Resend).
+// (e.g. "CA Varsha Varyani <hello@aiaccountingengineer.com>", sending domain verified in Resend).
 // Without them every send returns { status: 'not_configured' } and nothing else changes.
 const { PRODUCT } = require('./config');
 
@@ -44,7 +44,7 @@ function sendWelcome(order, user) {
       <tr><td style="padding:8px 0;font-weight:700;border-top:1px solid #e5e2da">Total paid</td><td style="padding:8px 0;text-align:right;font-weight:700;border-top:1px solid #e5e2da">${inr(order.amount.total)}</td></tr>
     </table>
     <p style="font-size:13px;color:#666">Order ${esc(order.id)}${order.customer && order.customer.gstin ? ` · GSTIN ${esc(order.customer.gstin)}` : ''}. Questions? Reply to this email or write to ${esc(PRODUCT.supportEmail)}.</p>
-    <p style="font-size:13px;color:#666">CA Varsha Varyani · AI Accounting Engineer</p>
+    <p style="font-size:13px;color:#666">CA Varsha Varyani · AI in Accounting</p>
   </div>`;
   const text = `Welcome to AI in Accounting. Your payment is confirmed. Login: ${user.email}. Start here: ${loginUrl}. Total paid ${inr(order.amount.total)} (order ${order.id}).`;
   return send({ to: user.email, subject: 'Your AI in Accounting access is ready', html, text });

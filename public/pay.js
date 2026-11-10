@@ -105,7 +105,7 @@
     loadScript('https://checkout.razorpay.com/v1/checkout.js').then(function () {
       var rz = new window.Razorpay({
         key: d.keyId, amount: d.amountPaise, currency: d.currency || 'INR', order_id: d.orderId,
-        name: 'AI Accounting Engineer', description: d.description, theme: { color: '#c4953a' },
+        name: 'CA Varsha Varyani', description: d.description, theme: { color: '#c4953a' },
         handler: function (resp) { verify({ orderId: d.orderId, paymentId: resp.razorpay_payment_id, signature: resp.razorpay_signature }); },
         modal: { ondismiss: function () { busy(false); } },
       });
