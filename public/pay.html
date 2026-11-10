@@ -22,7 +22,7 @@
   <ol class="steps" id="steps" aria-label="Checkout steps">
     <li class="is-on" data-step="pay">1 · Pay</li>
     <li data-step="details">2 · Your details</li>
-    <li data-step="start">3 · Start learning</li>
+    <li data-step="start" id="stepStart">3 · Start learning</li>
   </ol>
 
   <main class="wrap">
@@ -67,10 +67,27 @@
 
       <p class="error" id="payError" role="alert" hidden></p>
       <button class="cta" id="payBtn" type="button">Pay ₹1,769 securely</button>
-      <p class="reassure">No forms before payment. After paying, you tell us where to send your login. It takes about 20 seconds.</p>
-      <p class="methods">UPI · RuPay · Visa · Mastercard · Net banking<br><span>Payments processed by Razorpay. One-time payment, no subscription.</span></p>
+      <p class="reassure" id="payReassure">No forms before payment. After paying, you tell us where to send your login. It takes about 20 seconds.</p>
+      <p class="methods" id="payMethods">UPI · RuPay · Visa · Mastercard · Net banking<br><span>Payments processed by Razorpay. One-time payment, no subscription.</span></p>
       <input type="text" id="hpWebsite" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp">
 
+      <!-- UPI mode: pay in any UPI app, then enter the 12-digit UTR -->
+      <div id="upiPanel" class="upipanel" hidden>
+        <strong>Pay <span id="upiAmt"></span> by UPI</strong>
+        <p class="upi-sub">To CA Varsha Varyani, with any UPI app (GPay, PhonePe, Paytm, BHIM or your bank app).</p>
+        <a id="upiAppBtn" class="cta" href="#">Open my UPI app to pay</a>
+        <div id="upiQr" class="upi-qr" aria-label="UPI QR code"></div>
+        <p class="upi-hint" id="upiHint">Scan with your phone's UPI app</p>
+        <div class="upi-rows">
+          <div><span>UPI ID</span><span><b id="upiVpa"></b> <button type="button" id="upiCopy" class="upi-copy">Copy</button></span></div>
+          <div><span>Name</span><b id="upiPayee"></b></div>
+        </div>
+        <label class="upi-utr"><span>After paying, enter the 12-digit UPI transaction ID <small>(UTR / UPI Ref No. in your app's payment details)</small></span>
+          <input id="upiUtr" inputmode="numeric" autocomplete="off" maxlength="16" placeholder="e.g. 412345678901">
+        </label>
+        <p class="error" id="upiError" role="alert" hidden></p>
+        <button class="cta" id="upiNextBtn" type="button">I have paid · next</button>
+      </div>
       <!-- Test mode only: simulated gateway, clearly labelled -->
       <div id="testPanel" class="testpanel" hidden>
         <strong>Simulated payment (test mode)</strong>
@@ -84,11 +101,11 @@
       <div class="paid">
         <span class="tick" aria-hidden="true"></span>
         <div>
-          <strong>Payment received: <span id="paidAmount"></span></strong>
-          <span>Your enrolment is confirmed. One last step.</span>
+          <strong><span id="paidLabel">Payment received</span>: <span id="paidAmount"></span></strong>
+          <span id="paidSub">Your enrolment is confirmed. One last step.</span>
         </div>
       </div>
-      <h2>Where should we send your login and course details?</h2>
+      <h2 id="claimHeading">Where should we send your login and course details?</h2>
       <form id="claimForm" novalidate>
         <label><span>Email <small>(this becomes your login)</small></span>
           <input id="cEmail" type="email" inputmode="email" autocomplete="email" required maxlength="120">
@@ -109,8 +126,21 @@
         </div>
         <p class="error" id="claimError" role="alert" hidden></p>
         <button class="cta" type="submit" id="claimBtn">Get my access</button>
-        <p class="reassure">We send your login and course details to this email straight away.</p>
+        <p class="reassure" id="claimReassure">We send your login and course details to this email straight away.</p>
       </form>
+    </section>
+    <!-- UPI mode: submitted, waiting for the payment check -->
+    <section id="upiDoneStep" hidden>
+      <div class="paid">
+        <span class="tick" aria-hidden="true"></span>
+        <div>
+          <strong>Thank you! Payment details received.</strong>
+          <span>UTR <span id="upiDoneUtr"></span></span>
+        </div>
+      </div>
+      <h2>Your access is on its way</h2>
+      <p class="reassure" style="text-align:left">We will check your UPI payment and send your course access to <b id="upiDoneEmail"></b> and your WhatsApp within <span class="upiWithin">24 hours</span> (usually much sooner).</p>
+      <p class="reassure" style="text-align:left">Questions? Email <a id="upiDoneSupport" href="mailto:hello@aiaccountingengineer.com">hello@aiaccountingengineer.com</a> with your UTR.</p>
     </section>
   </main>
 
@@ -119,6 +149,6 @@
     <p>Independent course by CA Varsha Varyani. Not affiliated with or endorsed by Anthropic.</p>
   </footer>
 
-  <script src="/pay.js"></script>
+  <script src="/pay.js?v=20261110"></script>
 </body>
 </html>

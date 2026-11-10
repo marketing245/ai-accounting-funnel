@@ -87,3 +87,20 @@ input:focus, select:focus { outline: none; border-color: var(--gold); }
 .foot { padding: 20px 16px 40px; text-align: center; font-size: 12px; color: var(--muted); }
 .foot p { margin: 6px 0 0; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+
+/* Direct UPI (PAYMENT_MODE=upi) */
+.upipanel { margin-top: 4px; padding: 16px; border-radius: 14px; background: #fff; border: 1.5px solid var(--gold); display: flex; flex-direction: column; gap: 12px; }
+.upipanel > strong { font-family: var(--display); font-size: 20px; color: var(--navy); }
+.upi-sub { margin: -6px 0 0; font-size: 14px; color: #555; }
+a.cta { text-align: center; text-decoration: none; }
+.upipanel .cta[hidden] { display: none; }
+.upi-qr { width: 200px; height: 200px; margin: 0 auto; padding: 8px; border: 1px solid var(--rule, #e5e0d4); border-radius: 12px; background: #fff; }
+.upi-qr svg { width: 100%; height: 100%; display: block; }
+.upi-hint { margin: -6px 0 0; text-align: center; font-size: 13px; color: #666; }
+.upi-rows { font-size: 14px; border-top: 1px solid var(--rule, #e5e0d4); padding-top: 10px; display: grid; gap: 8px; }
+.upi-rows > div { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.upi-rows b { color: var(--navy); word-break: break-all; }
+.upi-copy { font-size: 12px; padding: 6px 10px; min-height: 32px; border: 1px solid var(--gold); border-radius: 8px; background: transparent; color: var(--gold-d); cursor: pointer; }
+.upi-utr { display: grid; gap: 6px; font-size: 14px; font-weight: 600; color: var(--navy); }
+.upi-utr small { font-weight: 400; color: #666; }
+.upi-utr input { font-size: 17px; letter-spacing: .08em; padding: 13px 12px; border: 1px solid #cfc7b5; border-radius: 10px; font-family: ui-monospace, Menlo, monospace; }

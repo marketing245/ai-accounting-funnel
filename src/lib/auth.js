@@ -142,6 +142,24 @@ function verifyClaim(orderId, token) {
   return typeof token === 'string' && token.length === expected.length && crypto.timingSafeEqual(Buffer.from(token), Buffer.from(expected));
 }
 
+// Access link for a buyer approved by hand (direct-UPI orders): opens a session, then /thank-you to set a password.
+// Bound to the password version, so it stops working once the student sets or changes a password. Separate key salt from sessions.
+function signAccess(user, orderId, ttlSeconds = 14 * 86400) {
+  const now = Math.floor(Date.now() / 1000);
+  const body = b64u(JSON.stringify({ e: normalizeEmail(user.email), o: orderId || '', pv: user.passwordSetAt ? Date.parse(user.passwordSetAt) : 0, exp: now + ttlSeconds }));
+  return `${body}.${b64u(hmac(`access|${body}`, '|access'))}`;
+}
+function verifyAccess(token) {
+  const i = String(token || '').lastIndexOf('.');
+  if (i < 1) return null;
+  const body = token.slice(0, i), sig = token.slice(i + 1);
+  const expected = b64u(hmac(`access|${body}`, '|access'));
+  if (sig.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return null;
+  let p; try { p = JSON.parse(Buffer.from(body, 'base64url').toString('utf8')); } catch { return null; }
+  if (!p.e || !p.exp || p.exp < Math.floor(Date.now() / 1000)) return null;
+  return p;
+}
+
 function signTestPayment(orderId) { return b64u(hmac(`test-payment|${orderId}`, '|test')); }
 function verifyTestPayment(orderId, token) {
   const expected = signTestPayment(orderId);
@@ -149,4 +167,4 @@ function verifyTestPayment(orderId, token) {
 }
 
 module.exports = { signToken, verifyToken, hashPassword, verifyPassword, normalizeEmail, userKey, getUser, saveUser,
-  setSession, clearSession, getSession, requireSession, loadSessionUser, hasAccess, sameOrigin, issueFormToken, checkFormToken, signTestPayment, verifyTestPayment, signClaim, verifyClaim, COOKIE, ownedAddons };
+  setSession, clearSession, getSession, requireSession, loadSessionUser, hasAccess, sameOrigin, issueFormToken, checkFormToken, signTestPayment, verifyTestPayment, signClaim, verifyClaim, signAccess, verifyAccess, COOKIE, ownedAddons };

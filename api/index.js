@@ -11,10 +11,12 @@ const ROUTES = {
   'checkout/webhook': () => require('../src/handlers/checkout/webhook'),
   'checkout/order': () => require('../src/handlers/checkout/order'),
   'checkout/claim': () => require('../src/handlers/checkout/claim'),
+  'checkout/upi-submit': () => require('../src/handlers/checkout/upi-submit'),
   'auth/login': () => require('../src/handlers/auth/login'),
   'auth/logout': () => require('../src/handlers/auth/logout'),
   'auth/me': () => require('../src/handlers/auth/me'),
   'auth/set-password': () => require('../src/handlers/auth/set-password'),
+  'auth/access': () => require('../src/handlers/auth/access'),
   'course/lessons': () => require('../src/handlers/course/lessons'),
   'course/progress': () => require('../src/handlers/course/progress'),
   'course/addon-file': () => require('../src/handlers/course/addon-file'),
@@ -27,6 +29,7 @@ const ROUTES = {
   'admin/export': () => require('../src/handlers/admin/export'),
   'admin/order': () => require('../src/handlers/admin/order'),
   'admin/student': () => require('../src/handlers/admin/student'),
+  'admin/upi': () => require('../src/handlers/admin/upi'),
 };
 
 module.exports = async (req, res) => {

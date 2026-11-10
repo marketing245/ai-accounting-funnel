@@ -74,6 +74,17 @@ module.exports = wrap(async (req, res) => {
       description: [PRODUCT.shortName].concat(addonIds.map((id) => ADDONS.find((a) => a.id === id).shortName)).join(' + '),
       prefill: payFirst ? {} : { name, email, contact: `+91${phone}` },
     };
+  } else if (mode === 'upi') {
+    // Direct UPI: show the payee, amount and QR; the buyer submits the UTR next (checkout/upi-submit) and access waits for admin approval.
+    const upi = require('../../lib/upi');
+    const { UPI } = require('../../lib/config');
+    order.id = `order_upi_${crypto.randomBytes(8).toString('hex')}`;
+    order.upi = { ref: upi.newRef(), vpa: UPI.vpa, utr: null, submittedAt: null, history: [] };
+    const payLink = upi.link({ amount: amount.total, ref: order.upi.ref });
+    response = {
+      gateway: 'upi', orderId: order.id, amountPaise: amount.totalPaise, currency: 'INR', submitToken: auth.signClaim(order.id),
+      upi: { vpa: UPI.vpa, payeeName: UPI.payeeName, ref: order.upi.ref, link: payLink, qrSvg: await upi.qrSvg(payLink), accessWithin: UPI.accessWithin },
+    };
   } else {
     order.id = `order_test_${crypto.randomBytes(8).toString('hex')}`;
     response = { gateway: 'test', orderId: order.id, amountPaise: amount.totalPaise, currency: 'INR', testToken: auth.signTestPayment(order.id) };

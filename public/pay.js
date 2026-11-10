@@ -10,6 +10,9 @@
 (function () {
   var CFG = null;
   var ORDER = null;
+  var UPI_PENDING = null; // UPI mode: { orderId, submitToken, utr, total } between "I have paid" and the details form
+  var isUpi = function () { return CFG && CFG.mode === 'upi'; };
+  var payLabel = function (a) { return 'Pay ' + fmt(a.total) + (isUpi() ? ' by UPI' : ' securely'); };
   var CLAIM_KEY = 'aae_pending_claim';
   var $ = function (id) { return document.getElementById(id); };
   var fmt = function (n) { return '₹' + Number(n || 0).toLocaleString('en-IN'); };
@@ -32,12 +35,13 @@
     var a = amount(); if (!a) return;
     document.querySelectorAll('[data-amt]').forEach(function (el) { el.textContent = fmt(a[el.getAttribute('data-amt')] || 0); });
     $('addonRow').hidden = !a.addons;
-    if (!$('payBtn').disabled) $('payBtn').textContent = 'Pay ' + fmt(a.total) + ' securely';
+    if (!$('payBtn').disabled) $('payBtn').textContent = payLabel(a);
   }
   function showError(id, msg) { var el = $(id); el.textContent = msg || 'Something went wrong. Please try again.'; el.hidden = false; }
   function clearError(id) { $(id).hidden = true; }
   function setStep(step) {
     var order = ['pay', 'details', 'start'];
+    var shown = step; if (step === 'done') step = 'start';
     document.querySelectorAll('#steps li').forEach(function (li) {
       var i = order.indexOf(li.getAttribute('data-step')), cur = order.indexOf(step);
       li.className = i < cur ? 'is-done' : i === cur ? 'is-on' : '';
@@ -45,6 +49,7 @@
     });
     $('payStep').hidden = step !== 'pay';
     $('claimStep').hidden = step !== 'details';
+    $('upiDoneStep').hidden = shown !== 'done';
     window.scrollTo(0, 0);
   }
 
@@ -52,6 +57,13 @@
     var r = await fetch('/api/checkout/config', { cache: 'no-store' });
     CFG = await r.json();
     $('testBadge').hidden = CFG.mode !== 'test';
+    if (isUpi()) {
+      var within = (CFG.upi && CFG.upi.accessWithin) || '24 hours';
+      $('payReassure').textContent = 'Pay by UPI to CA Varsha Varyani, then tell us where to send your access. It takes about a minute.';
+      $('payMethods').innerHTML = 'UPI: GPay · PhonePe · Paytm · BHIM · any bank app<br><span>Paid directly to CA Varsha Varyani. Access within ' + within + ' after we check the payment.</span>';
+      $('stepStart').textContent = '3 · Get access';
+      document.querySelectorAll('.upiWithin').forEach(function (el) { el.textContent = within; });
+    }
     var sel = $('cState');
     if (sel.options.length === 1) (CFG.states || []).forEach(function (s) { var o = document.createElement('option'); o.value = s.code; o.textContent = s.name; sel.appendChild(o); });
     render();
@@ -74,7 +86,7 @@
     return r.json();
   }
 
-  function busy(on, label) { var b = $('payBtn'); b.disabled = on; b.textContent = on ? (label || 'Opening secure payment…') : 'Pay ' + fmt(amount().total) + ' securely'; }
+  function busy(on, label) { var b = $('payBtn'); b.disabled = on; b.textContent = on ? (label || 'Opening secure payment…') : payLabel(amount()); }
 
   async function startPayment() {
     clearError('payError');
@@ -91,6 +103,7 @@
     if (!d || !d.ok) { busy(false); return showError('payError', d && d.error); }
     ORDER = d;
     if (d.gateway === 'razorpay') openRazorpay(d);
+    else if (d.gateway === 'upi') showUpiPanel(d);
     else { $('testOrderId').textContent = d.orderId; $('testAmount').textContent = fmt(d.amount.total); $('testPanel').hidden = false; busy(false); $('testPanel').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
   }
 
@@ -125,6 +138,37 @@
     showClaim(pending);
   }
 
+  // ── UPI mode: pay in any UPI app → UTR → details → submitted (access after the payment is checked in /admin) ──
+  var isPhone = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  function showUpiPanel(d) {
+    var u = d.upi || {};
+    $('upiAmt').textContent = fmt(d.amount.total);
+    $('upiVpa').textContent = u.vpa || ''; $('upiPayee').textContent = u.payeeName || '';
+    $('upiQr').innerHTML = u.qrSvg || '';
+    $('upiAppBtn').href = u.link || '#';
+    $('upiAppBtn').hidden = !isPhone;
+    $('upiHint').textContent = isPhone ? 'Or scan this QR from another phone' : "Scan with your phone's UPI app";
+    $('upiPanel').hidden = false; $('payBtn').hidden = true; $('payReassure').hidden = true;
+    $('addonSkills').disabled = true; // the amount is fixed once the QR is shown
+    busy(false);
+    $('upiPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (window.aaeTrack) aaeTrack('upi_payment_shown', { currency: 'INR', value: d.amount.total, checkout_source: source });
+  }
+  function upiNext() {
+    clearError('upiError');
+    var utr = $('upiUtr').value.replace(/\D/g, '');
+    if (!/^\d{12}$/.test(utr)) return showError('upiError', 'Please enter the 12-digit UPI transaction ID (UTR / UPI Ref No.) from your UPI app.');
+    UPI_PENDING = { orderId: ORDER.orderId, submitToken: ORDER.submitToken, utr: utr, total: ORDER.amount.total };
+    $('paidLabel').textContent = 'Payment submitted';
+    $('paidAmount').textContent = fmt(UPI_PENDING.total);
+    $('paidSub').textContent = 'UTR ' + utr + '. We will check it and send your access.';
+    $('claimHeading').textContent = 'Where should we send your course access?';
+    $('claimReassure').textContent = 'Your access is sent to this email and WhatsApp within ' + ((CFG.upi && CFG.upi.accessWithin) || '24 hours') + ', after we check the payment.';
+    $('claimBtn').textContent = 'Submit';
+    setStep('details');
+    setTimeout(function () { $('cEmail').focus(); }, 60);
+  }
+
   function showClaim(p) {
     $('paidAmount').textContent = p.total ? fmt(p.total) : 'confirmed';
     if (p.payer && p.payer.email && !$('cEmail').value) $('cEmail').value = p.payer.email;
@@ -147,8 +191,23 @@
     if (name.length < 2) return showError('claimError', 'Please enter your full name.');
     if (!state) return showError('claimError', 'Please select your state.');
     if (gstin && !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(gstin)) return showError('claimError', 'Please enter a valid 15-character GSTIN, or leave it blank.');
-    var btn = $('claimBtn'); btn.disabled = true; btn.textContent = 'Setting up your access…';
+    var btn = $('claimBtn'); btn.disabled = true; btn.textContent = UPI_PENDING ? 'Submitting…' : 'Setting up your access…';
     var d;
+    if (UPI_PENDING) {
+      try { d = await postJson('/api/checkout/upi-submit', { orderId: UPI_PENDING.orderId, submitToken: UPI_PENDING.submitToken, utr: UPI_PENDING.utr, email: email, phone: phone, name: name, state: state, gstin: gstin }); }
+      catch (e) { d = { ok: false, error: 'Network error. Your payment is safe. Please try again.' }; }
+      btn.disabled = false; btn.textContent = 'Submit';
+      if (!d || !d.ok) {
+        if (d && (d.code === 'BAD_UTR' || d.code === 'UTR_USED')) { setStep('pay'); return showError('upiError', d.error); }
+        return showError('claimError', d && d.error);
+      }
+      $('upiDoneUtr').textContent = UPI_PENDING.utr; $('upiDoneEmail').textContent = d.email || email;
+      var sup = (window.AAE_CONFIG || {}).SUPPORT_EMAIL; if (sup) { $('upiDoneSupport').textContent = sup; $('upiDoneSupport').href = 'mailto:' + sup; }
+      if (window.aaeTrack) aaeTrack('upi_payment_submitted', { currency: 'INR', value: UPI_PENDING.total, checkout_source: source });
+      UPI_PENDING = null;
+      setStep('done');
+      return;
+    }
     try { d = await postJson('/api/checkout/claim', { orderId: p.orderId, claimToken: p.claimToken, email: email, phone: phone, name: name, state: state, gstin: gstin }); }
     catch (e) { d = { ok: false, error: 'Network error. Your payment is safe. Please try again.' }; }
     if (!d || !d.ok) { btn.disabled = false; btn.textContent = 'Get my access'; return showError('claimError', d && d.error); }
@@ -165,6 +224,11 @@
   });
   $('addonSkills').addEventListener('change', render);
   $('payBtn').addEventListener('click', startPayment);
+  $('upiNextBtn').addEventListener('click', upiNext);
+  $('upiCopy').addEventListener('click', function () {
+    var b = this, done = function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1500); };
+    if (navigator.clipboard) navigator.clipboard.writeText($('upiVpa').textContent).then(done, done); else done();
+  });
   $('testPayBtn').addEventListener('click', function () { if (ORDER) verify({ orderId: ORDER.orderId, testToken: ORDER.testToken }); });
   $('claimForm').addEventListener('submit', submitClaim);
 

@@ -61,9 +61,16 @@
     <main class="p-5 space-y-4 max-w-[1500px] mx-auto">
       <div id="modeBanner" class="hidden text-xs rounded-xl px-4 py-2 bg-amber-900/40 border border-amber-500/40 text-amber-200"></div>
       <nav class="flex gap-1 overflow-auto pb-1" id="tabs">
-        <span class="tab active" data-tab="overview">Overview</span><span class="tab" data-tab="orders">Paid orders</span><span class="tab" data-tab="leads">Leads</span>
+        <span class="tab active" data-tab="overview">Overview</span><span class="tab" data-tab="upi" id="upiTab">UPI payments</span><span class="tab" data-tab="orders">Paid orders</span><span class="tab" data-tab="leads">Leads</span>
         <span class="tab" data-tab="students">Members &amp; engagement</span><span class="tab" data-tab="inquiries">Inquiries</span><span class="tab" data-tab="sources">Traffic sources</span><span class="tab" data-tab="signals">Conversion signals</span><span class="tab" data-tab="settings">Settings & health</span>
       </nav>
+
+      <!-- UPI PAYMENTS (PAYMENT_MODE=upi) -->
+      <section id="tab-upi" class="hidden card p-4 space-y-3">
+        <div class="flex flex-wrap items-center gap-2"><h3 id="upiTitle">UPI payments</h3><p class="text-[11px] text-white/50 mr-auto">Open your UPI app (the account behind <b id="upiVpaLabel"></b>) and find a payment with the same <b>amount</b> and <b>UTR</b>. Found it → <b>Approve</b> and send the access link. Not there → <b>Reject</b>.</p>
+          <select id="upiFilter" onchange="renderUpi()"><option value="awaiting_verification">To verify</option><option value="paid">Approved</option><option value="rejected">Rejected</option><option value="all">All</option></select></div>
+        <div class="overflow-auto max-h-[70vh]"><table id="t-upi"></table></div>
+      </section>
 
       <!-- OVERVIEW -->
       <section id="tab-overview" class="space-y-4">
@@ -186,7 +193,7 @@
     document.querySelectorAll('#tabs .tab').forEach((t) => t.addEventListener('click', () => { location.hash = t.dataset.tab; setTab(t.dataset.tab); }));
     function setTab(t) {
       TAB = t; document.querySelectorAll('#tabs .tab').forEach((el) => el.classList.toggle('active', el.dataset.tab === t));
-      ['overview', 'orders', 'students', 'inquiries', 'sources', 'signals', 'settings'].forEach((k) => $('tab-' + k).classList.toggle('hidden', !(k === t || (k === 'orders' && t === 'leads'))));
+      ['overview', 'upi', 'orders', 'students', 'inquiries', 'sources', 'signals', 'settings'].forEach((k) => $('tab-' + k).classList.toggle('hidden', !(k === t || (k === 'orders' && t === 'leads'))));
       if (t === 'orders' || t === 'leads') { ORDERS_MODE = t === 'orders' ? 'paid' : 'leads'; renderOrders(); }
     }
 
@@ -199,9 +206,14 @@
       $('loginView').classList.add('hidden'); $('dashView').classList.remove('hidden');
       $('meta').textContent = 'Updated ' + dt(DATA.generatedAt) + ' · payment mode: ' + DATA.settings.paymentMode + ' · range: ' + (days === 'all' ? 'all time' : 'last ' + days + ' days');
       $('modeBanner').classList.toggle('hidden', DATA.settings.paymentMode === 'razorpay');
-      $('modeBanner').textContent = 'Payment mode is "' + DATA.settings.paymentMode + '" — orders here are test orders (no real money). Add Razorpay keys and set PAYMENT_MODE=razorpay before running ads.';
+      $('modeBanner').textContent = DATA.settings.paymentMode === 'upi'
+        ? 'UPI mode: buyers pay ' + DATA.settings.upiVpa + ' directly and submit a UTR. Check each one in your UPI app, then Approve in "UPI payments" to give access (promised within ' + DATA.settings.upiAccessWithin + ').'
+        : 'Payment mode is "' + DATA.settings.paymentMode + '" — orders here are test orders (no real money). Add Razorpay keys and set PAYMENT_MODE=razorpay before running ads.';
+      $('upiTab').textContent = 'UPI payments' + (DATA.stats.upiAwaiting ? ' (' + DATA.stats.upiAwaiting + ' to verify)' : '');
+      $('upiTab').style.display = DATA.settings.paymentMode === 'upi' || (DATA.upiQueue || []).length ? '' : 'none';
+      $('upiVpaLabel').textContent = DATA.settings.upiVpa || 'your UPI ID';
       ['exportOrders', 'exportStudents', 'exportGoogle', 'exportMeta'].forEach((id) => { const t = { exportOrders: ORDERS_MODE === 'paid' ? 'orders' : 'leads', exportStudents: 'students', exportGoogle: 'google-offline', exportMeta: 'meta-offline' }[id]; $(id).href = '/api/admin/export?type=' + t + '&days=' + days; });
-      renderOverview(); renderOrders(); renderStudents(); renderInquiries(); renderSources(); renderSignals(); renderSettings();
+      renderOverview(); renderUpi(); renderOrders(); renderStudents(); renderInquiries(); renderSources(); renderSignals(); renderSettings();
       const h = (location.hash || '').slice(1); if (h && document.querySelector('#tabs .tab[data-tab="' + h + '"]')) setTab(h);
     }
 
@@ -224,6 +236,43 @@
     function groupTable(id, rows, labelCols) {
       $(id).innerHTML = '<tr>' + labelCols.map((c) => `<th>${c[1]}</th>`).join('') + '<th>Checkouts</th><th>Leads</th><th>Paid</th><th>Conv.</th><th>Revenue</th></tr>' +
         (rows.map((r) => '<tr>' + labelCols.map((c) => `<td>${esc(r[c[0]] || '—')}</td>`).join('') + `<td>${r.checkouts}</td><td>${r.leads}</td><td>${r.paid}</td><td>${pct(r.conversion)}</td><td>${inr(r.revenue)}</td></tr>`).join('') || '<tr><td class="muted" colspan="9">No data in this range</td></tr>');
+    }
+
+    function renderUpi() {
+      if (!DATA) return;
+      const f = $('upiFilter').value;
+      const rows = (DATA.upiQueue || []).filter((o) => f === 'all' || o.status === f);
+      const label = { awaiting_verification: 'to verify', paid: 'approved', rejected: 'rejected' };
+      $('upiTitle').textContent = 'UPI payments (' + rows.length + ')';
+      const wa = (p) => p ? `<a href="https://wa.me/91${esc(p)}" target="_blank" class="underline">${esc(p)}</a>` : '';
+      $('t-upi').innerHTML = '<tr><th>Submitted</th><th>Status</th><th>Name</th><th>WhatsApp</th><th>Email</th><th>Amount</th><th>UTR</th><th>Note ref</th><th></th></tr>' +
+        (rows.map((o) => `<tr><td>${dt(o.upiSubmittedAt || o.createdAt)}</td><td><span class="pill ${o.status === 'paid' ? 'paid' : 'lead'}">${label[o.status] || esc(o.status)}</span>${o.upiRejectReason ? '<div class="muted text-[10px]">' + esc(o.upiRejectReason) + '</div>' : ''}</td><td>${esc(o.name)}</td><td>${wa(o.phone)}</td><td>${esc(o.email)}</td><td><b>${inr(o.amount)}</b></td><td class="font-mono"><b>${esc(o.utr)}</b></td><td class="font-mono muted">${esc(o.upiRef)}</td><td class="whitespace-nowrap">` +
+          (o.status === 'awaiting_verification' ? `<button class="btn" onclick="upiAction('approve','${esc(o.id)}')">Approve</button> <button class="btn-ghost" onclick="upiAction('reject','${esc(o.id)}')">Reject</button>`
+            : o.status === 'paid' ? `<button class="btn-ghost" onclick="upiAction('link','${esc(o.id)}')">Access link</button>`
+            : `<button class="btn-ghost" onclick="upiAction('approve','${esc(o.id)}')">Approve anyway</button>`) + '</td></tr>').join('') ||
+          '<tr><td class="muted" colspan="9">Nothing here.</td></tr>');
+    }
+    async function upiAction(action, id) {
+      let reason = '';
+      if (action === 'approve' && !confirm('Approve this payment? Only do this after you have seen the money in your UPI app with the same amount and UTR.')) return;
+      if (action === 'reject') { reason = prompt('Why are you rejecting it? (for your records)', 'Payment not found in UPI app'); if (reason === null) return; }
+      const r = await api('/api/admin/upi', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, orderId: id, reason }) });
+      if (!r.data || !r.data.ok) { alert((r.data && r.data.error) || 'Failed'); return; }
+      const d = r.data;
+      $('dTitle').textContent = action === 'reject' ? 'Payment rejected' : 'Access ready for ' + (d.name || d.email);
+      const msg = d.message || '';
+      $('dBody').innerHTML = (action === 'reject'
+          ? '<p class="text-xs text-white/70">The order is marked rejected. Tell the buyer, so they can send a screenshot if they did pay:</p>'
+          : '<p class="text-xs text-white/70">The student account is active. Send this message (it has their personal access link). ' + (d.hasPassword ? 'They already have a password; the link logs them straight in.' : 'The link lets them create a password and opens the course.') + '</p>') +
+        `<textarea id="upiMsg" class="w-full h-44 text-xs" style="background:#0a1320;color:#fff;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:10px;line-height:1.5" readonly>${esc(msg)}</textarea>
+         <div class="flex flex-wrap gap-2">
+           ${d.phone ? `<a class="btn" target="_blank" href="https://wa.me/91${esc(d.phone)}?text=${encodeURIComponent(msg)}">Send on WhatsApp</a>` : ''}
+           ${d.email ? `<a class="btn-ghost" href="mailto:${esc(d.email)}?subject=${encodeURIComponent(action === 'reject' ? 'About your UPI payment' : 'Your AI in Accounting course access')}&body=${encodeURIComponent(msg)}">Send by email</a>` : ''}
+           <button class="btn-ghost" onclick="navigator.clipboard.writeText($('upiMsg').value).then(()=>this.textContent='Copied')">Copy message</button>
+           ${d.link ? `<button class="btn-ghost" onclick="navigator.clipboard.writeText('${esc(d.link)}').then(()=>this.textContent='Copied')">Copy link only</button>` : ''}
+         </div>`;
+      $('drawer').classList.add('open');
+      load(true);
     }
 
     function renderOrders() {

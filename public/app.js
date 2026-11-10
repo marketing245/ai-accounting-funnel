@@ -71,14 +71,16 @@ function updateCheckoutDisplay() {
   if ($('addonRow')) $('addonRow').classList.toggle('hidden', !a.addons);
   document.querySelectorAll('[data-price="total"]').forEach(function (el) { el.textContent = fmt(pick(el).total); });
   if ($('checkoutTotalAmount')) $('checkoutTotalAmount').textContent = fmt(a.total);
-  if ($('checkoutPayBtn') && !$('checkoutPayBtn').disabled) $('checkoutPayBtn').textContent = 'Proceed to secure payment → ' + fmt(a.total);
+  var isUpi = CHECKOUT && CHECKOUT.mode === 'upi';
+  if ($('checkoutPayBtn') && !$('checkoutPayBtn').disabled) $('checkoutPayBtn').textContent = (isUpi ? 'Continue to UPI payment → ' : 'Proceed to secure payment → ') + fmt(a.total);
+  if ($('paymentNote') && isUpi) $('paymentNote').textContent = 'You pay by UPI directly to CA Varsha Varyani. Your access is sent after we check the payment, within ' + ((CHECKOUT.upi && CHECKOUT.upi.accessWithin) || '24 hours') + '.';
   var badge = $('paymentModeBadge');
   if (badge) badge.classList.toggle('hidden', !(CHECKOUT && CHECKOUT.mode === 'test'));
 }
 
 function showStep(step) {
-  ['checkoutFormSection', 'testGatewaySection', 'checkoutProcessing'].forEach(function (id) { if ($(id)) $(id).classList.add('hidden'); });
-  var map = { form: 'checkoutFormSection', test: 'testGatewaySection', processing: 'checkoutProcessing' };
+  ['checkoutFormSection', 'testGatewaySection', 'checkoutProcessing', 'upiSection', 'upiDoneSection'].forEach(function (id) { if ($(id)) $(id).classList.add('hidden'); });
+  var map = { form: 'checkoutFormSection', test: 'testGatewaySection', processing: 'checkoutProcessing', upi: 'upiSection', upiDone: 'upiDoneSection' };
   if ($(map[step])) $(map[step]).classList.remove('hidden');
 }
 
@@ -94,7 +96,7 @@ function setBusy(busy) {
   var btn = $('checkoutPayBtn');
   if (!btn) return;
   btn.disabled = busy;
-  btn.textContent = busy ? 'Preparing secure payment…' : 'Proceed to secure payment → ' + fmt(amounts().total);
+  btn.textContent = busy ? 'Preparing secure payment…' : ((CHECKOUT && CHECKOUT.mode === 'upi') ? 'Continue to UPI payment → ' : 'Proceed to secure payment → ') + fmt(amounts().total);
 }
 
 function startUnifiedFunnel() {
@@ -144,6 +146,7 @@ async function submitCheckout(ev) {
   if (window.aaeTrack) aaeTrack('add_payment_info', { currency: 'INR', value: a.total, payment_type: data.gateway, items: items(a) });
 
   if (data.gateway === 'razorpay') openRazorpay(data);
+  else if (data.gateway === 'upi') showUpi(data, a);
   else { $('testOrderId').textContent = data.orderId; $('testOrderAmount').textContent = fmt(a.total); showStep('test'); }
   return false;
 }
@@ -184,6 +187,52 @@ function openRazorpay(d) {
     rz.open();
   }).catch(function (e) { backToDetails(); showError(e.message); });
 }
+
+// ── Direct UPI (PAYMENT_MODE=upi): pay in any UPI app, then submit the 12-digit UTR; access follows after admin approval ──
+var isPhone = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+function showUpi(d, a) {
+  setBusy(false);
+  var u = d.upi || {};
+  $('upiAmount').textContent = fmt(a.total); $('upiAmount2').textContent = fmt(a.total);
+  $('upiVpa').textContent = u.vpa || ''; $('upiPayee').textContent = u.payeeName || '';
+  $('upiQr').innerHTML = u.qrSvg || '';
+  $('upiAppBtn').href = u.link || '#';
+  $('upiAppBtn').style.display = isPhone ? '' : 'none';
+  document.querySelectorAll('.upi-qr-hint-desktop').forEach(function (el) { el.style.display = isPhone ? 'none' : ''; });
+  document.querySelectorAll('.upi-qr-hint-mobile').forEach(function (el) { el.style.display = isPhone ? '' : 'none'; });
+  document.querySelectorAll('.upiWithin').forEach(function (el) { el.textContent = u.accessWithin || '24 hours'; });
+  $('upiUtr').value = ''; $('upiError').classList.add('hidden');
+  showStep('upi');
+  if (window.aaeTrack) aaeTrack('upi_payment_shown', { currency: 'INR', value: a.total });
+}
+function upiError(msg) { var el = $('upiError'); el.textContent = msg || 'Something went wrong. Please try again.'; el.classList.remove('hidden'); }
+async function submitUpi(ev) {
+  if (ev) ev.preventDefault();
+  $('upiError').classList.add('hidden');
+  var utr = ($('upiUtr').value || '').replace(/\D/g, '');
+  if (!/^\d{12}$/.test(utr)) return upiError('Please enter the 12-digit UPI transaction ID (UTR / UPI Ref No.) from your UPI app.'), false;
+  var btn = $('upiSubmitBtn'); btn.disabled = true; btn.textContent = 'Submitting…';
+  var data;
+  try {
+    var r = await fetch('/api/checkout/upi-submit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderId: currentOrder.orderId, submitToken: currentOrder.submitToken, utr: utr }) });
+    data = await r.json();
+  } catch (e) { data = { ok: false, error: 'Network error. Your payment is safe. Please try again.' }; }
+  btn.disabled = false; btn.textContent = 'I have paid · submit →';
+  if (!data || !data.ok) return upiError(data && data.error), false;
+  $('upiDoneEmail').textContent = data.email || '';
+  $('upiDoneUtr').textContent = utr;
+  var support = (window.AAE_CONFIG || {}).SUPPORT_EMAIL; if (support) { $('upiDoneSupport').textContent = support; $('upiDoneSupport').href = 'mailto:' + support; }
+  showStep('upiDone');
+  if (window.aaeTrack) aaeTrack('upi_payment_submitted', { currency: 'INR', value: (currentOrder.amount || {}).total });
+  return false;
+}
+document.addEventListener('click', function (e) {
+  if (e.target && e.target.id === 'upiCopy') {
+    var v = $('upiVpa').textContent;
+    var done = function () { e.target.textContent = 'Copied'; setTimeout(function () { e.target.textContent = 'Copy'; }, 1500); };
+    if (navigator.clipboard) navigator.clipboard.writeText(v).then(done, done); else done();
+  }
+});
 
 function simulateTestPayment() {
   if (!currentOrder) return backToDetails();

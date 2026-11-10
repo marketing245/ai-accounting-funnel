@@ -49,15 +49,24 @@ function computeAmount(addonIds) {
   return { currency: PRICING.currency, base, addons, addonIds: ids, subtotal, gstPercent: PRICING.gstPercent, gst: Math.round(gst), total, totalPaise: total * 100 };
 }
 
-// 'razorpay' when keys exist, 'test' only when explicitly enabled, otherwise 'disabled'.
+// Direct UPI to the instructor's own UPI ID (PAYMENT_MODE=upi + UPI_VPA): the buyer pays in their UPI app and submits the UTR;
+// access is granted only after the payment is checked and approved in /admin (no gateway confirms UPI payments to a personal ID).
+const UPI = {
+  vpa: String(process.env.UPI_VPA || '').trim(),
+  payeeName: process.env.UPI_PAYEE_NAME || 'Varsha Varyani',
+  accessWithin: process.env.UPI_ACCESS_WITHIN || '24 hours',
+};
+
+// 'razorpay' when keys exist, 'upi' when chosen with a UPI ID, 'test' only when explicitly enabled, otherwise 'disabled'.
 function paymentMode() {
   const explicit = (process.env.PAYMENT_MODE || '').toLowerCase();
   const hasRzp = !!(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
   if (explicit === 'razorpay') return hasRzp ? 'razorpay' : 'disabled';
+  if (explicit === 'upi') return UPI.vpa ? 'upi' : 'disabled';
   if (explicit === 'test') return 'test';
   if (hasRzp) return 'razorpay';
   if (process.env.VERCEL_ENV === 'production') return 'disabled';
   return 'test';
 }
 
-module.exports = { PRICING, PRODUCT, ADDONS, cleanAddonIds, computeAmount, paymentMode };
+module.exports = { PRICING, PRODUCT, ADDONS, UPI, cleanAddonIds, computeAmount, paymentMode };

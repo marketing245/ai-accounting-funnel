@@ -1511,3 +1511,10 @@ footer {
 @media (max-width: 440px) {
   nav .nav-inner > div > a[href="/login"] { display: none; }
 }
+
+/* Direct UPI checkout (PAYMENT_MODE=upi) */
+.upi-qr-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.upi-qr { width: 200px; height: 200px; background: #fff; border-radius: 12px; padding: 8px; }
+.upi-qr svg { width: 100%; height: 100%; display: block; }
+.upi-copy { font-size: 11px; padding: 4px 10px; min-height: 30px; border-radius: 6px; border: 1px solid rgba(196,149,58,.6); color: #e3c27e; background: transparent; cursor: pointer; }
+.upi-app-btn { display: flex; text-decoration: none; }

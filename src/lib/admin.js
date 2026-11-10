@@ -45,6 +45,7 @@ function flat(o) {
     vid: a.vid || '', sessions: a.sessions || 0, pageviews: a.pageviews || 0, touches: (a.touches || []).length,
     hoursToPurchase: o.paidAt && (first.at || a.firstSeen) ? Math.round((new Date(o.paidAt) - new Date(first.at || a.firstSeen)) / 36e5 * 10) / 10 : null,
     fbp: !!a.fbp, fbc: !!a.fbc,
+    utr: o.upi?.utr || '', upiRef: o.upi?.ref || '', upiSubmittedAt: o.upi?.submittedAt || '', upiApprovedAt: o.upi?.approvedAt || '', upiRejectedAt: o.upi?.rejectedAt || '', upiRejectReason: o.upi?.rejectReason || '',
     metaInitiateCheckout: sig.metaInitiateCheckout?.status || '', metaPurchase: sig.metaPurchase?.status || '', metaError: sig.metaPurchase?.error || sig.metaInitiateCheckout?.error || '',
   };
 }
@@ -91,6 +92,7 @@ async function overview({ days = 30, force = false } = {}) {
     withClickId: rows.filter((r) => r.platform).length,
     metaSent: rows.filter((r) => r.metaPurchase === 'sent').length,
     inquiries: inquiryRows.length,
+    upiAwaiting: rowsAll.filter((r) => r.gateway === 'upi' && r.status === 'awaiting_verification').length,
   };
   const series = [];
   const n = days === 'all' ? 90 : Math.min(Number(days), 365);
@@ -104,6 +106,7 @@ async function overview({ days = 30, force = false } = {}) {
   const engagement = engagementSummary(students);
   return {
     stats, series, orders: rows, students, engagement, inquiries: inquiryRows,
+    upiQueue: rowsAll.filter((r) => r.gateway === 'upi' && ['awaiting_verification', 'paid', 'rejected'].includes(r.status)).slice(0, 300),
     bySource: group(rows, (r) => `${r.source}|${r.medium}`, (r) => ({ source: r.source, medium: r.medium })),
     byCampaign: group(rows, (r) => `${r.source}|${r.medium}|${r.campaign}|${r.term}|${r.content}`, (r) => ({ source: r.source, medium: r.medium, campaign: r.campaign, term: r.term, content: r.content })),
     byPlatform: group(rows, (r) => r.platform || 'no click id', (r) => ({ platform: r.platform || 'no click id' })),
@@ -174,7 +177,7 @@ async function studentDetail(email) {
 function settingsHealth() {
   const env = (k) => !!process.env[k];
   return {
-    paymentMode: paymentMode(), razorpayKeys: env('RAZORPAY_KEY_ID') && env('RAZORPAY_KEY_SECRET'), razorpayWebhook: env('RAZORPAY_WEBHOOK_SECRET'),
+    paymentMode: paymentMode(), upiVpa: require('./config').UPI.vpa, upiAccessWithin: require('./config').UPI.accessWithin, razorpayKeys: env('RAZORPAY_KEY_ID') && env('RAZORPAY_KEY_SECRET'), razorpayWebhook: env('RAZORPAY_WEBHOOK_SECRET'),
     metaCapi: env('META_PIXEL_ID') && env('META_CAPI_TOKEN'), metaPixelIdServer: process.env.META_PIXEL_ID || '', metaTestEventCode: env('META_TEST_EVENT_CODE'),
     googleOfflineConversionName: process.env.GOOGLE_OFFLINE_CONVERSION_NAME || 'Course Purchase',
     bunnyTokenAuth: env('BUNNY_TOKEN_AUTH_KEY'), bunnyStreamKey: env('BUNNY_STREAM_API_KEY'), whatsappGroup: env('WHATSAPP_GROUP_URL'),

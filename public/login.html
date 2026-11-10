@@ -42,6 +42,10 @@
       var next = new URLSearchParams(location.search).get('next') || '/portal';
       if (!/^\/[a-z0-9\-\/]*$/i.test(next)) next = '/portal';
       fetch('/api/auth/me', { cache: 'no-store' }).then(function (r) { if (r.ok) location.replace(next); }).catch(function () {});
+      // Coming from an access link that has expired or was already used (a password is set): explain instead of failing silently.
+      var linkState = new URLSearchParams(location.search).get('link');
+      if (linkState === 'used') { err.textContent = 'You have already set your password with this link. Log in with your email and password.'; err.classList.add('show'); }
+      if (linkState === 'expired') { err.textContent = 'This access link has expired. Email us from your registered address and we will send a new one.'; err.classList.add('show'); }
       form.addEventListener('submit', async function (e) {
         e.preventDefault(); err.classList.remove('show'); btn.disabled = true; btn.textContent = 'Checking…';
         var data;
