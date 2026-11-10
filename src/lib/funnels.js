@@ -15,15 +15,15 @@ const FUNNELS = [
     what: 'Main website. "Enroll Now" opens the checkout popup (details first, then payment).', match: (o) => o.flow !== 'payfirst' && !o.checkoutSource },
   { id: 'pay', name: 'Website · /pay page', kind: 'course', url: () => PRODUCT.siteUrl.replace(/\/$/, '') + '/pay', deployed: true,
     what: 'One-page checkout: pay first, details after. The funnels below send buyers here.', match: (o) => o.flow === 'payfirst' && (!o.checkoutSource || o.checkoutSource === 'pay') },
-  { id: 'express', name: 'Express funnel', kind: 'course', url: () => 'https://aiae-funnel-express.vercel.app', deployed: true, probe: true,
+  { id: 'express', name: 'Express funnel', kind: 'course', url: () => 'https://express.cavarshavaryani.com', deployed: true, probe: true,
     what: 'Short sales page; every button goes to /pay.', match: (o) => o.checkoutSource === 'express' },
-  { id: 'calculator', name: 'Time calculator funnel', kind: 'course', url: () => 'https://aiae-funnel-calculator.vercel.app', deployed: true, probe: true,
+  { id: 'calculator', name: 'Time calculator funnel', kind: 'course', url: () => 'https://calculator.cavarshavaryani.com', deployed: true, probe: true,
     what: 'One tap on hours spent per month → time saved → /pay.', match: (o) => o.checkoutSource === 'calculator' },
   { id: 'quiz_payfirst', name: 'Quiz funnel (pay first)', kind: 'course', url: () => null, deployed: false,
     what: '7-question quiz → score → /pay. Built, not live yet.', match: (o) => o.checkoutSource === 'quiz_payfirst' },
   { id: 'quiz_lead', name: 'Quiz funnel (lead first)', kind: 'external', url: () => null, deployed: false,
     what: 'Quiz that sends buyers to the SuperProfile course page. Built, not live; its sales happen on SuperProfile, so they are not counted here.' },
-  { id: 'b2b', name: 'B2B team-training funnel', kind: 'b2b', url: () => 'https://aiae-funnel-b2b.vercel.app', deployed: true, probe: true,
+  { id: 'b2b', name: 'B2B team-training funnel', kind: 'b2b', url: () => 'https://teams.cavarshavaryani.com', deployed: true, probe: true,
     what: 'Lead form for companies + paid 30-minute consultancy call (₹999 incl. GST).' },
 ];
 
