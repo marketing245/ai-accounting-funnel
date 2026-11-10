@@ -42,9 +42,15 @@
 <body class="min-h-screen">
   <div id="loginView" class="min-h-screen flex items-center justify-center p-6">
     <form id="loginForm" class="card p-7 w-full max-w-sm space-y-4">
-      <div class="flex items-center gap-2"><div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#c4953a] to-[#8a6520] flex items-center justify-center font-bold text-black text-sm">AI</div><div class="font-bold">Admin panel</div></div>
+      <div class="flex items-center gap-2"><div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#c4953a] to-[#8a6520] flex items-center justify-center font-bold text-black text-sm">CA</div><div class="font-bold">Admin panel</div></div>
       <p class="text-xs text-white/60">Orders, leads, students, traffic sources and conversion signals.</p>
-      <input type="password" id="pw" placeholder="Admin password" autocomplete="current-password" class="w-full">
+      <div class="relative">
+        <input type="password" id="pw" placeholder="Admin password" autocomplete="current-password" class="w-full" style="padding-right:44px">
+        <button type="button" id="pwEye" aria-label="Show password" title="Show password" onclick="togglePw()" style="position:absolute;right:4px;top:50%;transform:translateY(-50%);width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:transparent;border:0;color:rgba(255,255,255,.6);cursor:pointer">
+          <svg id="pwEyeOpen" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg id="pwEyeOff" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
       <div id="loginErr" class="hidden text-xs text-red-300"></div>
       <button class="btn w-full" type="submit">Log in</button>
     </form>
@@ -206,6 +212,12 @@
       const r = await api('/api/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: $('pw').value }) });
       if (r.data && r.data.ok) { $('pw').value = ''; load(); } else { $('loginErr').textContent = (r.data && r.data.error) || 'Login failed'; $('loginErr').classList.remove('hidden'); }
     });
+    function togglePw() {
+      const show = $('pw').type === 'password';
+      $('pw').type = show ? 'text' : 'password';
+      $('pwEyeOpen').style.display = show ? 'none' : ''; $('pwEyeOff').style.display = show ? '' : 'none';
+      $('pwEye').setAttribute('aria-label', show ? 'Hide password' : 'Show password'); $('pwEye').title = show ? 'Hide password' : 'Show password';
+    }
     async function logout() { await api('/api/admin/logout', { method: 'POST' }); location.reload(); }
     document.querySelectorAll('#tabs .tab').forEach((t) => t.addEventListener('click', () => { location.hash = t.dataset.tab; setTab(t.dataset.tab); }));
     function setTab(t) {
