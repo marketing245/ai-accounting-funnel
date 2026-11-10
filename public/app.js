@@ -71,6 +71,8 @@ function updateCheckoutDisplay() {
   if ($('addonRow')) $('addonRow').classList.toggle('hidden', !a.addons);
   document.querySelectorAll('[data-price="total"]').forEach(function (el) { el.textContent = fmt(pick(el).total); });
   if ($('checkoutTotalAmount')) $('checkoutTotalAmount').textContent = fmt(a.total);
+  // Page buttons always show what the course costs right now, GST included ("Pay ₹1,769")
+  document.querySelectorAll('[data-pay-btn]').forEach(function (el) { el.textContent = 'Pay ' + fmt(course.total); });
   var isUpi = CHECKOUT && CHECKOUT.mode === 'upi';
   if ($('checkoutPayBtn') && !$('checkoutPayBtn').disabled) $('checkoutPayBtn').textContent = (isUpi ? 'Continue to UPI payment → ' : 'Proceed to secure payment → ') + fmt(a.total);
   if ($('paymentNote') && isUpi) $('paymentNote').textContent = 'You pay by UPI directly to CA Varsha Varyani. Your access is sent after we check the payment, within ' + ((CHECKOUT.upi && CHECKOUT.upi.accessWithin) || '24 hours') + '.';
