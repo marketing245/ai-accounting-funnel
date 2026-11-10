@@ -96,4 +96,30 @@ async function writeSharedFile(pathname, buffer, contentType) {
   return put(k, buffer, { access: 'private', addRandomSuffix: false, allowOverwrite: true, contentType });
 }
 
-module.exports = { readJson, writeJson, listJson, readSharedFile, writeSharedFile, PREFIX, hasBlob, setOnWrite: (fn) => { onWrite = fn; } };
+// Read-only: every JSON document under another app's prefix in the same Blob store (e.g. the B2B funnel's 'b2b-prod/leads/').
+async function listJsonAt(prefix, folder) {
+  const out = [];
+  if (!hasBlob) {
+    const dir = path.join(process.cwd(), '.data', prefix, folder);
+    if (!fs.existsSync(dir)) return out;
+    for (const f of fs.readdirSync(dir)) if (f.endsWith('.json')) { try { out.push(JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'))); } catch {} }
+    return out;
+  }
+  const { list, get } = require('@vercel/blob');
+  const paths = [];
+  let cursor;
+  do {
+    const page = await list({ prefix: `${prefix}/${folder}`, limit: 1000, cursor });
+    for (const b of page.blobs) if (b.pathname.endsWith('.json')) paths.push(b.pathname);
+    cursor = page.hasMore ? page.cursor : undefined;
+  } while (cursor && paths.length < 2000);
+  for (let i = 0; i < paths.length; i += 12) {
+    const batch = await Promise.all(paths.slice(i, i + 12).map(async (p) => {
+      try { const r = await get(p, { access: 'private', useCache: false }); if (!r || r.statusCode !== 200) return null; const t = await new Response(r.stream).text(); return t ? JSON.parse(t) : null; } catch { return null; }
+    }));
+    for (const d of batch) if (d) out.push(d);
+  }
+  return out;
+}
+
+module.exports = { readJson, writeJson, listJson, listJsonAt, readSharedFile, writeSharedFile, PREFIX, hasBlob, setOnWrite: (fn) => { onWrite = fn; } };

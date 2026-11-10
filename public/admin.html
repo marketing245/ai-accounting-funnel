@@ -18,6 +18,7 @@
     .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
     .paid { background: rgba(52,211,153,.15); color: #6ee7b7; } .lead { background: rgba(251,191,36,.15); color: #fcd34d; }
     .ok { color: #6ee7b7; } .warn { color: #fcd34d; } .bad { color: #fca5a5; } .muted { color: rgba(255,255,255,.45); }
+    .pill.bad { background: rgba(248,113,113,.15); } .pill.warn { background: rgba(251,191,36,.15); } .pill:not(.paid):not(.lead):not(.bad):not(.warn) { background: rgba(255,255,255,.08); color: rgba(255,255,255,.7); }
     .kpi { font-size: 24px; font-weight: 800; color: #dfb35a; line-height: 1.1; } .kpi-sub { font-size: 11px; color: rgba(255,255,255,.5); }
     .tab { padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 700; color: rgba(255,255,255,.6); cursor: pointer; white-space: nowrap; }
     .tab.active { background: rgba(196,149,58,.2); color: #dfb35a; border: 1px solid rgba(196,149,58,.5); }
@@ -61,9 +62,24 @@
     <main class="p-5 space-y-4 max-w-[1500px] mx-auto">
       <div id="modeBanner" class="hidden text-xs rounded-xl px-4 py-2 bg-amber-900/40 border border-amber-500/40 text-amber-200"></div>
       <nav class="flex gap-1 overflow-auto pb-1" id="tabs">
-        <span class="tab active" data-tab="overview">Overview</span><span class="tab" data-tab="upi" id="upiTab">UPI payments</span><span class="tab" data-tab="orders">Paid orders</span><span class="tab" data-tab="leads">Leads</span>
+        <span class="tab active" data-tab="overview">Overview</span><span class="tab" data-tab="upi" id="upiTab">UPI payments</span><span class="tab" data-tab="funnels">Funnels</span><span class="tab" data-tab="videos" id="videosTab">Course videos</span><span class="tab" data-tab="orders">Paid orders</span><span class="tab" data-tab="leads">Leads</span>
         <span class="tab" data-tab="students">Members &amp; engagement</span><span class="tab" data-tab="inquiries">Inquiries</span><span class="tab" data-tab="sources">Traffic sources</span><span class="tab" data-tab="signals">Conversion signals</span><span class="tab" data-tab="settings">Settings & health</span>
       </nav>
+
+      <div id="testNote" class="hidden text-[11px] rounded-xl px-4 py-2 bg-white/5 border border-white/10 text-white/60"></div>
+
+      <!-- FUNNELS -->
+      <section id="tab-funnels" class="hidden space-y-3">
+        <div class="card p-4"><h3>Marketing funnels</h3><p class="text-[11px] text-white/50 mt-1">Every page that sells the course or the B2B call. Numbers are real buyers only (test data left out) for the date range above. "Started" = opened the checkout (or filled the B2B form).</p></div>
+        <div id="funnelCards" class="grid md:grid-cols-2 xl:grid-cols-3 gap-3"></div>
+      </section>
+
+      <!-- COURSE VIDEOS -->
+      <section id="tab-videos" class="hidden space-y-3">
+        <div id="videoService" class="card p-4"></div>
+        <div class="card p-4 space-y-2"><h3>Modules</h3><p class="text-[11px] text-white/50">Which video each module plays and how students watch it (real students only).</p>
+          <div class="overflow-auto"><table id="t-videos"></table></div></div>
+      </section>
 
       <!-- UPI PAYMENTS (PAYMENT_MODE=upi) -->
       <section id="tab-upi" class="hidden card p-4 space-y-3">
@@ -193,7 +209,7 @@
     document.querySelectorAll('#tabs .tab').forEach((t) => t.addEventListener('click', () => { location.hash = t.dataset.tab; setTab(t.dataset.tab); }));
     function setTab(t) {
       TAB = t; document.querySelectorAll('#tabs .tab').forEach((el) => el.classList.toggle('active', el.dataset.tab === t));
-      ['overview', 'upi', 'orders', 'students', 'inquiries', 'sources', 'signals', 'settings'].forEach((k) => $('tab-' + k).classList.toggle('hidden', !(k === t || (k === 'orders' && t === 'leads'))));
+      ['overview', 'upi', 'funnels', 'videos', 'orders', 'students', 'inquiries', 'sources', 'signals', 'settings'].forEach((k) => $('tab-' + k).classList.toggle('hidden', !(k === t || (k === 'orders' && t === 'leads'))));
       if (t === 'orders' || t === 'leads') { ORDERS_MODE = t === 'orders' ? 'paid' : 'leads'; renderOrders(); }
     }
 
@@ -213,7 +229,11 @@
       $('upiTab').style.display = DATA.settings.paymentMode === 'upi' || (DATA.upiQueue || []).length ? '' : 'none';
       $('upiVpaLabel').textContent = DATA.settings.upiVpa || 'your UPI ID';
       ['exportOrders', 'exportStudents', 'exportGoogle', 'exportMeta'].forEach((id) => { const t = { exportOrders: ORDERS_MODE === 'paid' ? 'orders' : 'leads', exportStudents: 'students', exportGoogle: 'google-offline', exportMeta: 'meta-offline' }[id]; $(id).href = '/api/admin/export?type=' + t + '&days=' + days; });
-      renderOverview(); renderUpi(); renderOrders(); renderStudents(); renderInquiries(); renderSources(); renderSignals(); renderSettings();
+      const ht = DATA.stats.hiddenTest || {};
+      const hiddenN = (ht.orders || 0) + (ht.students || 0) + (ht.inquiries || 0);
+      $('testNote').classList.toggle('hidden', !DATA.stats.hideTest || !hiddenN);
+      $('testNote').textContent = 'Showing real data only. Hidden test records (simulated payments and @example.com addresses from our checks): ' + (ht.orders || 0) + ' orders, ' + (ht.students || 0) + ' student accounts, ' + (ht.certificates || 0) + ' certificates, ' + (ht.inquiries || 0) + ' inquiries.';
+      renderOverview(); renderUpi(); renderFunnels(); renderVideos(); renderOrders(); renderStudents(); renderInquiries(); renderSources(); renderSignals(); renderSettings();
       const h = (location.hash || '').slice(1); if (h && document.querySelector('#tabs .tab[data-tab="' + h + '"]')) setTab(h);
     }
 
@@ -236,6 +256,41 @@
     function groupTable(id, rows, labelCols) {
       $(id).innerHTML = '<tr>' + labelCols.map((c) => `<th>${c[1]}</th>`).join('') + '<th>Checkouts</th><th>Leads</th><th>Paid</th><th>Conv.</th><th>Revenue</th></tr>' +
         (rows.map((r) => '<tr>' + labelCols.map((c) => `<td>${esc(r[c[0]] || '—')}</td>`).join('') + `<td>${r.checkouts}</td><td>${r.leads}</td><td>${r.paid}</td><td>${pct(r.conversion)}</td><td>${inr(r.revenue)}</td></tr>`).join('') || '<tr><td class="muted" colspan="9">No data in this range</td></tr>');
+    }
+
+    function renderFunnels() {
+      const list = DATA.funnels || [];
+      const yes = (t) => '<span class="pill paid">' + t + '</span>', no = (t) => '<span class="pill bad">' + t + '</span>', grey = (t) => '<span class="pill">' + t + '</span>';
+      const host = (u) => String(u || '').replace(/^https?:\/\//, '');
+      $('funnelCards').innerHTML = list.map((f) => {
+        const status = !f.deployed ? grey('not live yet') : f.up === false ? no('page down') : yes('live');
+        let checkout = '';
+        if (f.kind === 'course' && f.checkoutUrl) checkout = f.checkoutOk
+          ? '<div class="text-[11px] text-emerald-300">Checkout goes to this site ✓</div>'
+          : '<div class="text-[11px] text-amber-300">Checkout still goes to ' + esc(host(f.checkoutUrl)) + ' (old test site). Buyers from here are not counted until it is switched.</div>';
+        const box = (n, label) => '<div><div class="kpi" style="font-size:20px">' + n + '</div><div class="kpi-sub">' + label + '</div></div>';
+        const nums = f.started == null ? '<p class="text-[11px] text-white/50">Not tracked here.</p>'
+          : '<div class="grid grid-cols-4 gap-2 text-center">' + box(f.started, f.unit === 'leads' ? 'leads' : 'started') +
+            box(f.kind === 'b2b' ? f.checkout : f.toVerify, f.kind === 'b2b' ? 'at payment' : 'UPI to verify') +
+            box(f.paid, 'paid · ' + pct(f.conversion)) + box(inr(f.revenue), 'revenue') + '</div>';
+        const link = f.url ? '<a class="text-[11px] underline text-white/60 break-all" href="' + esc(f.url) + '" target="_blank">' + esc(host(f.url)) + '</a>' : '';
+        const foot = (f.lastAt ? 'Last activity ' + dt(f.lastAt) : f.started === 0 ? 'No activity in this range' : '') + (f.hiddenTest ? ' · ' + f.hiddenTest + ' test leads hidden' : '');
+        return '<div class="card p-4 space-y-2"><div class="flex items-start justify-between gap-2"><div><div class="font-bold text-sm">' + esc(f.name) + '</div>' + link + '</div>' + status + '</div>' +
+          '<p class="text-[11px] text-white/60">' + esc(f.what) + '</p>' + checkout + nums + '<div class="text-[10px] text-white/40">' + foot + '</div></div>';
+      }).join('') || '<div class="card p-4 muted">No funnels.</div>';
+    }
+    function renderVideos() {
+      const v = DATA.videos;
+      if (!v) { $('videoService').innerHTML = '<p class="muted text-xs">Could not load the video status.</p>'; $('t-videos').innerHTML = ''; return; }
+      const s = v.service || {};
+      $('videosTab').textContent = 'Course videos' + (s.checked && !s.ok ? ' ⚠' : '');
+      if (!s.checked) $('videoService').innerHTML = '<h3>Video service</h3><p class="text-[11px] text-white/60 mt-1">' + esc(s.note || '') + '</p>';
+      else if (s.ok) $('videoService').innerHTML = '<h3>Video service <span class="pill paid">on</span></h3><p class="text-[11px] text-white/60 mt-1">Bunny Stream · ' + s.videoCount + ' videos · ' + s.storageMb + ' MB stored · ' + s.trafficMb + ' MB streamed · balance $' + s.balanceUsd + '</p>';
+      else $('videoService').innerHTML = '<h3>Video service <span class="pill bad">off</span></h3><p class="text-sm text-red-200 mt-2">' + esc(s.problem) + '</p><p class="text-[11px] text-white/50 mt-1">Bunny balance: $' + (s.balanceUsd == null ? '?' : s.balanceUsd) + (s.videoCount == null ? '' : ' · ' + s.videoCount + ' videos stored (nothing is lost)') + '</p>';
+      const st = (m) => !m.video ? '<span class="pill bad">no video</span>' : m.video.ready === true ? '<span class="pill paid">ready</span>' : m.video.ready === false ? '<span class="pill warn">' + esc(m.video.status) + '</span>' : '<span class="pill">' + esc(m.video.status) + '</span>';
+      $('t-videos').innerHTML = '<tr><th>Module</th><th>Video</th><th>Status</th><th>Length</th><th>Students started</th><th>Completed</th><th>Avg watch</th></tr>' +
+        v.modules.map((m) => '<tr><td><b>' + esc(m.code) + '</b> ' + esc(m.title) + '</td><td class="text-[11px]">' + (m.video ? esc(m.video.title || m.video.id) : '—') + '</td><td>' + st(m) + '</td><td>' + (m.video && m.video.lengthMin ? m.video.lengthMin + ' min' : esc(m.plannedDuration || '')) + '</td><td>' + m.viewed + ' <span class="muted">(' + pct(m.viewedPct) + ')</span></td><td>' + m.completed + ' <span class="muted">(' + pct(m.completedPct) + ')</span></td><td>' + m.avgWatchMin + ' min</td></tr>').join('') +
+        '<tr><td colspan="7" class="muted text-[11px]">' + v.students + ' real student' + (v.students === 1 ? '' : 's') + ' so far.</td></tr>';
     }
 
     function renderUpi() {

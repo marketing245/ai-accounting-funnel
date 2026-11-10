@@ -70,8 +70,21 @@ async function loadAll(force) {
 function invalidate() { cache = { at: 0, data: null }; }
 store.setOnWrite(() => invalidate());
 
+// Test data (simulated payments, @example.com addresses, live checks) is left out of every number once the site takes real money.
+const isTestEmail = (e) => /@example\.com$/i.test(String(e || ''));
+const isTestOrder = (o) => o.gateway === 'test' || isTestEmail(o.customer?.email) || o.source === 'live-check' || String(o.source || '').startsWith('smoke');
+const isTestUser = (u) => isTestEmail(u.email) || ((u.purchases || []).length > 0 && u.purchases.every((p) => p.gateway === 'test'));
+
 async function overview({ days = 30, force = false } = {}) {
-  const { orders, users, certs, inquiries } = await loadAll(force);
+  const all = await loadAll(force);
+  const hideTest = paymentMode() !== 'test';
+  const testUsers = hideTest ? all.users.filter(isTestUser) : [];
+  const testHashes = new Set(testUsers.map((u) => auth.userKey(u.email)));
+  const orders = hideTest ? all.orders.filter((o) => !isTestOrder(o)) : all.orders;
+  const users = hideTest ? all.users.filter((u) => !isTestUser(u)) : all.users;
+  const certs = hideTest ? all.certs.filter((c) => !testHashes.has(c.emailHash)) : all.certs;
+  const inquiries = hideTest ? all.inquiries.filter((q) => !isTestEmail(q.email)) : all.inquiries;
+  const hiddenTest = { orders: all.orders.length - orders.length, students: all.users.length - users.length, certificates: all.certs.length - certs.length, inquiries: all.inquiries.length - inquiries.length };
   const now = Date.now(), day = 86400000;
   const inRange = (o) => days === 'all' || now - new Date(o.createdAt).getTime() < Number(days) * day;
   const inquiryRows = inquiries.filter(inRange).map((q) => ({ id: q.id, createdAt: q.createdAt, type: q.type, name: q.name, email: q.email, phone: q.phone, notes: q.notes, status: q.status, source: q.source || 'unknown', medium: q.medium || '', campaign: q.campaign || '', landing: q.landing || '', city: q.city || '', country: q.country || '' }));
@@ -93,6 +106,7 @@ async function overview({ days = 30, force = false } = {}) {
     metaSent: rows.filter((r) => r.metaPurchase === 'sent').length,
     inquiries: inquiryRows.length,
     upiAwaiting: rowsAll.filter((r) => r.gateway === 'upi' && r.status === 'awaiting_verification').length,
+    hiddenTest, hideTest,
   };
   const series = [];
   const n = days === 'all' ? 90 : Math.min(Number(days), 365);
@@ -104,8 +118,12 @@ async function overview({ days = 30, force = false } = {}) {
   const certByHash = new Map(certs.map((c) => [c.emailHash, c]));
   const students = users.filter((u) => (u.purchases || []).length).map((u) => studentRow(u, certByHash)).sort((a, b) => new Date(b.purchasedAt || 0) - new Date(a.purchasedAt || 0));
   const engagement = engagementSummary(students);
+  const [funnels, videos] = await Promise.all([
+    require('./funnels').funnelReport(rows, inRange).catch((e) => { console.error('[admin] funnels', e.message); return []; }),
+    require('./video-health').videoReport(engagement.modules, students.length).catch((e) => { console.error('[admin] videos', e.message); return null; }),
+  ]);
   return {
-    stats, series, orders: rows, students, engagement, inquiries: inquiryRows,
+    stats, series, orders: rows, students, engagement, inquiries: inquiryRows, funnels, videos,
     upiQueue: rowsAll.filter((r) => r.gateway === 'upi' && ['awaiting_verification', 'paid', 'rejected'].includes(r.status)).slice(0, 300),
     bySource: group(rows, (r) => `${r.source}|${r.medium}`, (r) => ({ source: r.source, medium: r.medium })),
     byCampaign: group(rows, (r) => `${r.source}|${r.medium}|${r.campaign}|${r.term}|${r.content}`, (r) => ({ source: r.source, medium: r.medium, campaign: r.campaign, term: r.term, content: r.content })),
