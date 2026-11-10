@@ -12,7 +12,7 @@
   var ORDER = null;
   var UPI_PENDING = null; // UPI mode: { orderId, submitToken, total } between "Yes, I have paid" and the details form
   var isUpi = function () { return CFG && CFG.mode === 'upi'; };
-  var payLabel = function (a) { return 'Pay ' + fmt(a.total) + (isUpi() ? ' by UPI' : ' securely'); };
+  var payLabel = function (a) { return 'Pay ' + fmt(a.total) + (isUpi() ? ' with Google Pay' : ' securely'); };
   var CLAIM_KEY = 'aae_pending_claim';
   var $ = function (id) { return document.getElementById(id); };
   var fmt = function (n) { return '₹' + Number(n || 0).toLocaleString('en-IN'); };
@@ -57,8 +57,9 @@
     $('testBadge').hidden = CFG.mode !== 'test';
     if (isUpi()) {
       var within = (CFG.upi && CFG.upi.accessWithin) || '24 hours';
-      $('payReassure').textContent = 'Pay by UPI to CA Varsha Varyani, then tell us where to send your access. It takes about a minute.';
-      $('payMethods').innerHTML = 'UPI: GPay · PhonePe · Paytm · BHIM · any bank app<br><span>Paid directly to CA Varsha Varyani. Access within ' + within + ' after we check the payment.</span>';
+      $('payReassure').textContent = 'Google Pay opens with the amount filled in. After paying, tell us where to send your access.';
+      $('payBtn').classList.add('gpay-cta');
+      $('payMethods').innerHTML = 'Pay with Google Pay<br><span>Paid directly to CA Varsha Varyani. Access within ' + within + ' after we confirm the payment.</span>';
       $('stepStart').textContent = '3 · Get access';
       document.querySelectorAll('.upiWithin').forEach(function (el) { el.textContent = within; });
     }
@@ -136,51 +137,58 @@
     showClaim(pending);
   }
 
-  // ── UPI mode, gateway style: phone → the UPI app opens; desktop → QR. Back on the page: "Did it go through?" → details →
-  // /payment-received (conversion page). Access follows after the payment is approved in /admin. ──
+  // ── UPI mode, Google Pay only: "Pay with Google Pay" → the order is created → Google Pay opens (Android intent with the GPay
+  // package, iPhone tez://). Back on the page → the details form opens by itself → /payment-received (conversion page).
+  // Desktop: QR to scan with Google Pay, with the details form right below it. Access follows after approval in /admin. ──
   var UA = navigator.userAgent;
   var isAndroid = /Android/i.test(UA);
   var isIOS = /iPhone|iPad|iPod/i.test(UA) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   var upiState = { launchedAt: 0, link: '' };
-  function appLink(link, app) { var q = link.split('?')[1] || ''; return { gpay: 'tez://upi/pay?' + q, phonepe: 'phonepe://pay?' + q, paytm: 'paytmmp://pay?' + q, upi: 'upi://pay?' + q }[app] || link; }
-  function launch(href) {
+  var GPAY_PKG = 'com.google.android.apps.nbu.paisa.user';
+  function gpayLink(link) {
+    var q = link.split('?')[1] || '';
+    if (isAndroid) return 'intent://pay?' + q + '#Intent;scheme=upi;package=' + GPAY_PKG + ';end';
+    if (isIOS) return 'tez://upi/pay?' + q;
+    return link;
+  }
+  function launch() {
     upiState.launchedAt = Date.now(); $('upiNoApp').hidden = true;
-    location.href = href;
-    setTimeout(function () { if (document.visibilityState === 'visible' && Date.now() - upiState.launchedAt < 4000 && $('upiConfirm').hidden) { $('upiNoApp').hidden = false; $('upiQrBox').hidden = false; $('upiShowQr').hidden = true; } }, 2500);
-    if (window.aaeTrack) aaeTrack('upi_app_opened', { currency: 'INR', value: ORDER && ORDER.amount.total, checkout_source: source });
+    location.href = gpayLink(upiState.link);
+    // still here after 2.5 s → Google Pay did not open: show the QR as a fallback
+    setTimeout(function () { if (document.visibilityState === 'visible' && Date.now() - upiState.launchedAt < 4000 && !$('payStep').hidden) { $('upiNoApp').hidden = false; $('upiQrBox').hidden = false; } }, 2500);
+    if (window.aaeTrack) aaeTrack('upi_app_opened', { currency: 'INR', value: ORDER && ORDER.amount.total, checkout_source: source, app: 'gpay' });
   }
   function showUpiPanel(d) {
     var u = d.upi || {};
     upiState = { launchedAt: 0, link: u.link || '' };
+    UPI_PENDING = { orderId: d.orderId, submitToken: d.submitToken, total: d.amount.total };
     document.querySelectorAll('.upiAmt').forEach(function (el) { el.textContent = fmt(d.amount.total); });
-    $('upiPayee').textContent = u.payeeName || ''; $('upiVpa').textContent = u.vpa || '';
+    document.querySelectorAll('.upiPayee').forEach(function (el) { el.textContent = u.payeeName || ''; });
+    $('upiVpa').textContent = u.vpa || '';
     $('upiQr').innerHTML = u.qrSvg || '';
-    $('upiAppBtn').href = u.link || '#';
-    $('upiAppBtn').hidden = !isAndroid; $('upiIos').hidden = !isIOS;
     var phone = isAndroid || isIOS;
-    $('upiQrBox').hidden = phone; $('upiShowQr').hidden = !phone;
-    $('upiPayBox').hidden = false; $('upiConfirm').hidden = true; clearError('upiError');
+    $('upiPhoneBox').hidden = !phone; $('upiQrBox').hidden = phone; clearError('upiError');
     $('upiPanel').hidden = false; $('payBtn').hidden = true; $('payReassure').hidden = true;
     $('addonSkills').disabled = true; // the amount is fixed once the payment is shown
     busy(false);
-    $('upiPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    prepDetails();
     if (window.aaeTrack) aaeTrack('upi_payment_shown', { currency: 'INR', value: d.amount.total, checkout_source: source });
-    if (isAndroid && u.link) launch(u.link); // straight into the UPI app, like a gateway
+    if (phone) launch();
+    else { $('claimStep').hidden = false; $('upiPanel').scrollIntoView({ behavior: 'smooth', block: 'start' }); } // desktop: QR + details on one screen
   }
-  function askConfirm() { $('upiPayBox').hidden = true; $('upiConfirm').hidden = false; }
-  function upiPaid() {
-    UPI_PENDING = { orderId: ORDER.orderId, submitToken: ORDER.submitToken, total: ORDER.amount.total };
-    $('paidLabel').textContent = 'Payment done';
+  function prepDetails() {
+    $('paidLabel').textContent = 'Paying by Google Pay';
     $('paidAmount').textContent = fmt(UPI_PENDING.total);
-    $('paidSub').textContent = 'Thank you! One last step so we can send your access.';
+    $('paidSub').textContent = isAndroid || isIOS ? 'Thank you! One last step so we can send your access.' : 'After paying, fill this in so we can send your access.';
     $('claimHeading').textContent = 'Where should we send your course access?';
     $('claimReassure').textContent = 'Your access is sent to this email and WhatsApp within ' + ((CFG.upi && CFG.upi.accessWithin) || '24 hours') + ', after we confirm the payment.';
     $('claimBtn').textContent = 'Send me my access';
-    setStep('details');
-    setTimeout(function () { $('cEmail').focus(); }, 60);
   }
   document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'visible' && upiState.launchedAt && Date.now() - upiState.launchedAt > 1500 && !$('upiPanel').hidden && !$('payStep').hidden) askConfirm();
+    // back from Google Pay → straight to the details form
+    if (document.visibilityState === 'visible' && upiState.launchedAt && Date.now() - upiState.launchedAt > 1500 && !$('payStep').hidden) {
+      setStep('details'); setTimeout(function () { $('cEmail').focus(); }, 60);
+    }
   });
 
   function showClaim(p) {
@@ -231,12 +239,7 @@
   });
   $('addonSkills').addEventListener('change', render);
   $('payBtn').addEventListener('click', startPayment);
-  $('upiAppBtn').addEventListener('click', function (e) { e.preventDefault(); launch(this.href); });
-  document.querySelectorAll('#upiIos .upi-app').forEach(function (el) { el.addEventListener('click', function (e) { e.preventDefault(); launch(appLink(upiState.link, el.getAttribute('data-app'))); }); });
-  $('upiShowQr').addEventListener('click', function () { $('upiQrBox').hidden = false; this.hidden = true; });
-  $('upiDesktopDone').addEventListener('click', upiPaid);
-  $('upiYes').addEventListener('click', upiPaid);
-  $('upiRetry').addEventListener('click', function () { $('upiConfirm').hidden = true; $('upiPayBox').hidden = false; upiState.launchedAt = 0; });
+  $('gpayAgain').addEventListener('click', function (e) { e.preventDefault(); launch(); });
   $('upiCopy').addEventListener('click', function () {
     var b = this, done = function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1500); };
     if (navigator.clipboard) navigator.clipboard.writeText($('upiVpa').textContent).then(done, done); else done();
