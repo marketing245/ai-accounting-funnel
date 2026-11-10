@@ -9,7 +9,7 @@ const { PRODUCT } = require('./config');
 
 const COURSE_TITLE = 'AI in Accounting';
 const INSTRUCTOR = 'CA Varsha Varyani';
-const INSTRUCTOR_LINE = 'Instructor  ·  Chartered Accountant, CFA, Dip. IFRS';
+const INSTRUCTOR_LINE = 'Instructor  ·  CA, CFA, DipIFRS';
 const MODULE_SUMMARY = 'Five recorded modules: Claude foundations, journal entries, bank reconciliation & fixed-asset depreciation, GST reconciliation and month-end close.';
 
 function isComplete(user) {
