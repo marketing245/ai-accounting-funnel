@@ -5,10 +5,12 @@
 set -euo pipefail
 HOST=ec2-user@13.210.107.3
 KEY="$HOME/.ssh/aiae-aws.pem"
+# Retries: the first SSH connection sometimes times out on this network.
+SSHO="-o ConnectTimeout=15 -o ConnectionAttempts=4 -o ServerAliveInterval=10 -i $KEY"
 SITE=https://www.cavarshavaryani.com
 cd "$(dirname "$0")/.."
 
-ssh -i "$KEY" "$HOST" 'sudo chown -R ec2-user:ec2-user /opt/aiae/app'
-rsync -az --delete -e "ssh -i $KEY" --exclude node_modules --exclude .git --exclude '.env*' --exclude .vercel --exclude .data --exclude parked ./ "$HOST:/opt/aiae/app/"
-ssh -i "$KEY" "$HOST" 'cd /opt/aiae/app && npm ci --omit=dev --no-audit --no-fund --loglevel=error && sudo chown -R root:root /opt/aiae/app && sudo chmod -R a+rX /opt/aiae/app && sudo systemctl restart aiae && sleep 2 && systemctl is-active aiae'
+ssh $SSHO "$HOST" 'sudo chown -R ec2-user:ec2-user /opt/aiae/app'
+rsync -az --delete -e "ssh $SSHO" --exclude node_modules --exclude .git --exclude '.env*' --exclude .vercel --exclude .data --exclude parked ./ "$HOST:/opt/aiae/app/"
+ssh $SSHO "$HOST" 'cd /opt/aiae/app && npm ci --omit=dev --no-audit --no-fund --loglevel=error && sudo chown -R root:root /opt/aiae/app && sudo chmod -R a+rX /opt/aiae/app && sudo systemctl restart aiae && sleep 2 && systemctl is-active aiae'
 curl -fsS "$SITE/api/health" && echo && echo "Deployed → $SITE"
