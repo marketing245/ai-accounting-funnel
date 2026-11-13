@@ -240,7 +240,6 @@
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return showError('claimError', 'Please enter a valid email. It becomes your login.');
     if (!/^[6-9]\d{9}$/.test(phone)) return showError('claimError', 'Please enter a valid 10-digit mobile number.');
     if (name.length < 2) return showError('claimError', 'Please enter your full name.');
-    if (!state) return showError('claimError', 'Please select your state.');
     if (gstin && !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(gstin)) return showError('claimError', 'Please enter a valid 15-character GSTIN, or leave it blank.');
     var btn = $('claimBtn'); btn.disabled = true; btn.textContent = UPI_PENDING ? 'Submitting…' : 'Setting up your access…';
     var d;

@@ -16,12 +16,15 @@ const GSTIN_RE = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/;
 const byCode = (code) => STATES.find((s) => s.code === String(code || ''));
 
 /** Returns { state, gstin } or { error } for the checkout form. State is required, GSTIN optional. */
+// State is optional. With a GSTIN and no state, the state comes from the GSTIN's first two digits.
 function checkPlaceOfSupply(stateCode, gstinRaw) {
-  const state = byCode(stateCode);
-  if (!state) return { error: 'Please select your state.' };
   const gstin = String(gstinRaw || '').toUpperCase().replace(/\s+/g, '');
+  if (gstin && !GSTIN_RE.test(gstin)) return { error: 'Please enter a valid 15-character GSTIN, or leave it blank.' };
+  const picked = String(stateCode || '').trim();
+  const state = picked ? byCode(picked) : (gstin ? byCode(gstin.slice(0, 2)) : null);
+  if (picked && !state) return { error: 'Please choose a state from the list.' };
+  if (!state) return gstin ? { error: 'This GSTIN does not start with a valid state code. Please check it.' } : { state: { name: '', code: '' }, gstin: '' };
   if (!gstin) return { state, gstin: '' };
-  if (!GSTIN_RE.test(gstin)) return { error: 'Please enter a valid 15-character GSTIN, or leave it blank.' };
   if (gstin.slice(0, 2) !== state.code) {
     const other = byCode(gstin.slice(0, 2));
     return { error: `This GSTIN is registered in ${other ? other.name : 'another state'}. Please select that state or check the GSTIN.` };

@@ -139,7 +139,6 @@ async function submitCheckout(ev) {
   if (!/^[6-9]\d{9}$/.test(phone)) return showError('Please enter a valid 10-digit mobile number.'), false;
   var state = ($('custState') && $('custState').value) || '';
   var gstin = (($('custGstin') && $('custGstin').value) || '').toUpperCase().replace(/\s+/g, '');
-  if (!state) return showError('Please select your state.'), false;
   if (gstin && !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(gstin)) return showError('Please enter a valid 15-character GSTIN, or leave it blank.'), false;
 
   setBusy(true);
