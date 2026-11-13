@@ -102,9 +102,9 @@ function setBusy(busy) {
 }
 
 function startUnifiedFunnel() {
-  // UPI mode: payment first (Google Pay), details after → the one-page checkout at /pay (UTM tags and click ids travel along).
+  // UPI and Cashfree modes: payment first, details after → the one-page checkout at /pay (UTM tags and click ids travel along).
   if (!CHECKOUT) { loadCheckoutConfig().then(function () { if (CHECKOUT) startUnifiedFunnel(); }); return; } // decide after the config is known
-  if (CHECKOUT.mode === 'upi') {
+  if (CHECKOUT.mode === 'upi' || CHECKOUT.mode === 'cashfree') {
     var q = new URLSearchParams(location.search); q.delete('open'); q.delete('enroll'); q.set('src', 'pay');
     location.href = '/pay?' + q.toString(); return;
   }

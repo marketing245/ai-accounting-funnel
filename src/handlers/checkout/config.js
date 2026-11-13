@@ -11,6 +11,7 @@ module.exports = wrap(async (req, res) => {
     mode,
     formToken: require('../../lib/auth').issueFormToken(),
     keyId: mode === 'razorpay' ? rzp.keyId() : null,
+    cashfree: mode === 'cashfree' ? { env: require('../../lib/cashfree').env() } : null,
     upi: mode === 'upi' ? { accessWithin: require('../../lib/config').UPI.accessWithin } : null,
     pricing: PRICING,
     product: { id: PRODUCT.id, name: PRODUCT.name, supportEmail: PRODUCT.supportEmail },

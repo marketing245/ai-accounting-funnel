@@ -57,10 +57,12 @@ const UPI = {
   accessWithin: process.env.UPI_ACCESS_WITHIN || '24 hours',
 };
 
-// 'razorpay' when keys exist, 'upi' when chosen with a UPI ID, 'test' only when explicitly enabled, otherwise 'disabled'.
+// 'cashfree' / 'razorpay' when chosen and keys exist, 'upi' when chosen with a UPI ID, 'test' only when explicitly enabled, otherwise 'disabled'.
 function paymentMode() {
   const explicit = (process.env.PAYMENT_MODE || '').toLowerCase();
   const hasRzp = !!(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
+  const hasCf = !!(process.env.CASHFREE_APP_ID && process.env.CASHFREE_SECRET_KEY);
+  if (explicit === 'cashfree') return hasCf ? 'cashfree' : 'disabled';
   if (explicit === 'razorpay') return hasRzp ? 'razorpay' : 'disabled';
   if (explicit === 'upi') return UPI.vpa ? 'upi' : 'disabled';
   if (explicit === 'test') return 'test';

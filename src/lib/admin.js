@@ -195,7 +195,7 @@ async function studentDetail(email) {
 function settingsHealth() {
   const env = (k) => !!process.env[k];
   return {
-    paymentMode: paymentMode(), upiVpa: require('./config').UPI.vpa, upiAccessWithin: require('./config').UPI.accessWithin, razorpayKeys: env('RAZORPAY_KEY_ID') && env('RAZORPAY_KEY_SECRET'), razorpayWebhook: env('RAZORPAY_WEBHOOK_SECRET'),
+    paymentMode: paymentMode(), upiVpa: require('./config').UPI.vpa, upiAccessWithin: require('./config').UPI.accessWithin, razorpayKeys: env('RAZORPAY_KEY_ID') && env('RAZORPAY_KEY_SECRET'), razorpayWebhook: env('RAZORPAY_WEBHOOK_SECRET'), cashfreeKeys: env('CASHFREE_APP_ID') && env('CASHFREE_SECRET_KEY'), cashfreeEnv: require('./cashfree').env(),
     metaCapi: env('META_PIXEL_ID') && env('META_CAPI_TOKEN'), metaPixelIdServer: process.env.META_PIXEL_ID || '', metaTestEventCode: env('META_TEST_EVENT_CODE'),
     googleOfflineConversionName: process.env.GOOGLE_OFFLINE_CONVERSION_NAME || 'Course Purchase',
     bunnyTokenAuth: env('BUNNY_TOKEN_AUTH_KEY'), bunnyStreamKey: env('BUNNY_STREAM_API_KEY'), whatsappGroup: env('WHATSAPP_GROUP_URL'),

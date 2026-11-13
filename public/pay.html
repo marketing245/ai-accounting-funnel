@@ -65,6 +65,11 @@
         <div class="total"><span>Total</span><span data-amt="total">₹1,769</span></div>
       </div>
 
+      <!-- Cashfree mode: the gateway needs a mobile number before payment (one field; the rest is asked after paying) -->
+      <label class="payphone" id="payPhoneBox" hidden>
+        <span class="payphone-l">Mobile number <small>(for your payment receipt)</small></span>
+        <span class="phone"><span>+91</span><input id="payPhone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="10" placeholder="10-digit mobile"></span>
+      </label>
       <p class="error" id="payError" role="alert" hidden></p>
       <button class="cta" id="payBtn" type="button">Pay ₹1,769 securely</button>
       <p class="reassure" id="payReassure">No forms before payment. After paying, you tell us where to send your login. It takes about 20 seconds.</p>

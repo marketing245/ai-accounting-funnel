@@ -37,6 +37,19 @@ module.exports = wrap(async (req, res) => {
     if (p.order_id !== orderId || Number(p.amount) !== order.amount.totalPaise || !['captured', 'authorized'].includes(p.status)) {
       return fail(res, 400, 'Payment details do not match this order.');
     }
+  } else if (order.gateway === 'cashfree') {
+    // Only the browser that created the order holds its token (the order id alone travels in URLs, so it is not enough).
+    if (!auth.verifyClaim(orderId, String(body.verifyToken || ''))) return fail(res, 403, 'This payment session is not valid on this device. Please contact support if money was deducted.');
+    // Never trust the browser: ask Cashfree whether this order is PAID for the exact amount.
+    if (order.status !== 'paid') {
+      const r = await require('../../lib/cashfree').confirmPaid(orderId, order.amount.total);
+      if (!r.paid) {
+        const msg = r.status === 'ACTIVE' ? 'The payment was not completed. Nothing has been charged. Please try again.' : 'Payment details do not match this order. If money was deducted, please contact support.';
+        return fail(res, 402, msg, { code: 'NOT_PAID', status: r.status });
+      }
+      paymentId = r.paymentId;
+      if (order.flow === 'payfirst') order.payer = { email: r.payer.email || '', phone: r.payer.phone || (order.payer && order.payer.phone) || '' };
+    } else paymentId = order.paymentId;
   } else if (order.gateway === 'test') {
     if (paymentMode() !== 'test') return fail(res, 400, 'Test orders cannot be completed on the live site. Please start a new checkout.');
     if (!auth.verifyTestPayment(orderId, String(body.testToken || ''))) return fail(res, 400, 'Invalid test payment token.');

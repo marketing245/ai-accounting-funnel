@@ -32,6 +32,8 @@ module.exports = wrap(async (req, res) => {
 
   const mode = paymentMode();
   if (mode === 'disabled') return fail(res, 503, 'Payments are not configured yet. Please try again later.');
+  // Cashfree needs the buyer's mobile number before payment, so the pay-first page asks for just that one field.
+  if (mode === 'cashfree' && payFirst && !PHONE_RE.test(phone)) return fail(res, 400, 'Please enter your 10-digit mobile number.');
 
   const addonIds = cleanAddonIds(body.addons);
   const amount = computeAmount(addonIds);
@@ -65,7 +67,22 @@ module.exports = wrap(async (req, res) => {
   };
 
   let response;
-  if (mode === 'razorpay') {
+  if (mode === 'cashfree') {
+    const cf = require('../../lib/cashfree');
+    order.id = `order_cf_${crypto.randomBytes(8).toString('hex')}`;
+    if (payFirst) order.payer = { phone, email: '' }; // contact for follow-up if the buyer pays but never claims
+    const site = PRODUCT.siteUrl.replace(/\/$/, '');
+    const r = await cf.createOrder({
+      orderId: order.id, amount: amount.total,
+      customer: { id: `c_${phone}`, phone, email: payFirst ? '' : email, name: payFirst ? '' : name },
+      returnUrl: `${site}/pay?cf_return=${order.id}`,
+      notifyUrl: /^https:/.test(site) ? `${site}/api/checkout/webhook` : '',
+      note: [PRODUCT.shortName].concat(addonIds.map((id) => ADDONS.find((a) => a.id === id).shortName)).join(' + '),
+      tags: { product: PRODUCT.id, addons: addonIds.join(',') || 'none', flow: payFirst ? 'payfirst' : 'standard', state: place.state.name || '', gstin: place.gstin || '' },
+    });
+    order.cashfree = { cfOrderId: r.cf_order_id, env: cf.env() };
+    response = { gateway: 'cashfree', orderId: order.id, verifyToken: auth.signClaim(order.id), paymentSessionId: r.payment_session_id, cfEnv: cf.env(), amountPaise: amount.totalPaise, currency: 'INR' };
+  } else if (mode === 'razorpay') {
     const receipt = `aiae_${Date.now().toString(36)}_${crypto.randomBytes(3).toString('hex')}`;
     const r = await rzp.createOrder({ amountPaise: amount.totalPaise, receipt, notes: { email, phone, name, product: PRODUCT.id, addons: addonIds.join(','), state: place.state.name, gstin: place.gstin, flow: payFirst ? 'payfirst' : 'standard' } });
     order.id = r.id; order.receipt = receipt;

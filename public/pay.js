@@ -12,6 +12,8 @@
   var ORDER = null;
   var UPI_PENDING = null; // UPI mode: { orderId, submitToken, total } between "Yes, I have paid" and the details form
   var isUpi = function () { return CFG && CFG.mode === 'upi'; };
+  var isCf = function () { return CFG && CFG.mode === 'cashfree'; };
+  var CF_KEY = 'aae_cf_order'; // { orderId, verifyToken } so the return from a redirect payment can be confirmed
   var payLabel = function (a) { return 'Pay ' + fmt(a.total) + (isUpi() ? ' with Google Pay' : ' securely'); };
   var CLAIM_KEY = 'aae_pending_claim';
   var $ = function (id) { return document.getElementById(id); };
@@ -63,6 +65,11 @@
       $('stepStart').textContent = '3 · Get access';
       document.querySelectorAll('.upiWithin').forEach(function (el) { el.textContent = within; });
     }
+    if (isCf()) {
+      $('payPhoneBox').hidden = false;
+      $('payReassure').textContent = 'After paying, you tell us where to send your login. It takes about 20 seconds.';
+      $('payMethods').innerHTML = 'UPI · RuPay · Visa · Mastercard · Net banking<br><span>Secured by Cashfree Payments. One-time payment, no subscription.</span>';
+    }
     var sel = $('cState');
     if (sel.options.length === 1) (CFG.states || []).forEach(function (s) { var o = document.createElement('option'); o.value = s.code; o.textContent = s.name; sel.appendChild(o); });
     render();
@@ -90,18 +97,21 @@
   async function startPayment() {
     clearError('payError');
     if (!CFG) { try { await loadConfig(); } catch (e) { return showError('payError', 'Could not reach the server. Please check your connection.'); } }
+    var payPhone = $('payPhone').value.replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '');
+    if (isCf() && !/^[6-9]\d{9}$/.test(payPhone)) { $('payPhone').focus(); return showError('payError', 'Please enter your 10-digit mobile number.'); }
     busy(true);
     var a = amount();
     if (window.aaeTrack) aaeTrack('begin_checkout', { currency: 'INR', value: a.total, checkout_flow: 'payfirst', checkout_source: source });
     var d;
     try {
       d = await postForm('/api/checkout/create-order', function () {
-        return JSON.stringify({ flow: 'payfirst', source: source, addons: selectedAddons(), website: $('hpWebsite').value || '', formToken: CFG && CFG.formToken, attribution: window.aaeAttribution ? aaeAttribution() : null });
+        return JSON.stringify({ flow: 'payfirst', source: source, phone: isCf() ? payPhone : '', addons: selectedAddons(), website: $('hpWebsite').value || '', formToken: CFG && CFG.formToken, attribution: window.aaeAttribution ? aaeAttribution() : null });
       });
     } catch (e) { d = { ok: false, error: 'Network error. Please check your connection and try again.' }; }
     if (!d || !d.ok) { busy(false); return showError('payError', d && d.error); }
     ORDER = d;
-    if (d.gateway === 'razorpay') openRazorpay(d);
+    if (d.gateway === 'cashfree') openCashfree(d);
+    else if (d.gateway === 'razorpay') openRazorpay(d);
     else if (d.gateway === 'upi') showUpiPanel(d);
     else { $('testOrderId').textContent = d.orderId; $('testAmount').textContent = fmt(d.amount.total); $('testPanel').hidden = false; busy(false); $('testPanel').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
   }
@@ -126,11 +136,30 @@
     }).catch(function (e) { busy(false); showError('payError', e.message); });
   }
 
-  async function verify(body) {
+  // Cashfree checkout (JS SDK v3) as a pop-up over this page. Some banks redirect instead: they come back to
+  // /pay?cf_return=<order> and the same check runs (the token is remembered in this browser).
+  function openCashfree(d) {
+    try { localStorage.setItem(CF_KEY, JSON.stringify({ orderId: d.orderId, verifyToken: d.verifyToken, at: Date.now() })); } catch (e) {}
+    loadScript('https://sdk.cashfree.com/js/v3/cashfree.js').then(function () {
+      var cf = window.Cashfree({ mode: d.cfEnv === 'sandbox' ? 'sandbox' : 'production' });
+      return cf.checkout({ paymentSessionId: d.paymentSessionId, redirectTarget: '_modal' });
+    }).then(function (result) {
+      if (result && result.redirect) return; // the bank page takes over; we come back via cf_return
+      // pop-up closed: paid or not, the server asks Cashfree (never trust the browser)
+      verify({ orderId: d.orderId, verifyToken: d.verifyToken }, true);
+    }).catch(function (e) { busy(false); showError('payError', (e && e.message) || 'Could not open the payment window. Please try again.'); });
+  }
+
+  async function verify(body, quietIfUnpaid) {
     busy(true, 'Confirming your payment…');
     var d;
     try { d = await postJson('/api/checkout/verify', body); } catch (e) { d = { ok: false, error: 'Network error while confirming. If money was deducted, your access is safe: refresh this page.' }; }
-    if (!d || !d.ok) { busy(false); return showError('payError', d && d.error); }
+    if (!d || !d.ok) {
+      busy(false);
+      if (quietIfUnpaid && d && d.code === 'NOT_PAID' && d.status === 'ACTIVE') return showError('payError', 'Payment not completed. Nothing has been charged. Tap the button to try again.');
+      return showError('payError', d && d.error);
+    }
+    try { localStorage.removeItem(CF_KEY); } catch (e) {}
     if (!d.claim) { location.href = d.next; return; }
     var pending = { orderId: d.orderId, claimToken: d.claimToken, payer: d.payer || {}, total: d.amount && d.amount.total, at: Date.now() };
     store.set(pending);
@@ -253,6 +282,15 @@
   var pending = store.get();
   if (pending && Date.now() - (pending.at || 0) > 7 * 864e5) { store.clear(); pending = null; }
 
+  // Back from a Cashfree redirect payment: confirm it with the server.
+  var cfReturn = params.get('cf_return');
+  var cfSaved = null;
+  try { cfSaved = JSON.parse(localStorage.getItem(CF_KEY)); } catch (e) {}
+
   loadConfig().catch(function () { showError('payError', 'Could not reach the server. Please refresh the page.'); })
-    .then(function () { if (pending && pending.orderId && pending.claimToken) showClaim(pending); });
+    .then(function () {
+      if (pending && pending.orderId && pending.claimToken) return showClaim(pending);
+      if (cfReturn && cfSaved && cfSaved.orderId === cfReturn) verify({ orderId: cfSaved.orderId, verifyToken: cfSaved.verifyToken }, true);
+      else if (cfReturn) showError('payError', 'We could not confirm this payment on this device. If money was deducted, WhatsApp us at +91 77981 99019 with your payment SMS and we will send your access.');
+    });
 })();
