@@ -71,8 +71,8 @@ function updateCheckoutDisplay() {
   if ($('addonRow')) $('addonRow').classList.toggle('hidden', !a.addons);
   document.querySelectorAll('[data-price="total"]').forEach(function (el) { el.textContent = fmt(pick(el).total); });
   if ($('checkoutTotalAmount')) $('checkoutTotalAmount').textContent = fmt(a.total);
-  // Page buttons show the course price with GST stated as extra ("Pay ₹1,499 + GST"); the checkout shows the full total
-  document.querySelectorAll('[data-pay-btn]').forEach(function (el) { el.textContent = 'Pay ' + fmt(course.base) + ' + GST'; });
+  // Page buttons show the course price before GST ("Pay ₹1,499"); GST is stated in the price section and the checkout shows the full total
+  document.querySelectorAll('[data-pay-btn]').forEach(function (el) { el.textContent = 'Pay ' + fmt(course.base); });
   var isUpi = CHECKOUT && CHECKOUT.mode === 'upi';
   if ($('checkoutPayBtn') && !$('checkoutPayBtn').disabled) $('checkoutPayBtn').textContent = (isUpi ? 'Continue to UPI payment → ' : 'Proceed to secure payment → ') + fmt(a.total);
   if ($('paymentNote') && isUpi) $('paymentNote').textContent = 'You pay by UPI directly to CA Varsha Varyani. Your access is sent after we check the payment, within ' + ((CHECKOUT.upi && CHECKOUT.upi.accessWithin) || '24 hours') + '.';
